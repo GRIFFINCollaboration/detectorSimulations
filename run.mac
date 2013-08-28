@@ -1,0 +1,12 @@
+/DetSys/det/add8pi 20
+/DetSys/det/addPaces 5
+#/DetSys/app/add8piVacuumChamber
+#/control/execute vis.mac
+/DetSys/run/enableHEX
+#/DetSys/run/timeUnit second
+#/DetSys/gun/radioactiveDecayHalflife 166349000 second
+#/DetSys/gun/numberOfRadioactiveNuclei 100000
+/DetSys/gun/radioactiveBetaDecay /media/disk/geant4/simulations/tin_paces_Jul2013/isotope_data/60Co/
+#/DetSys/gun/particle gamma
+#/DetSys/gun/energy 1 keV
+/run/beamOn 1000000

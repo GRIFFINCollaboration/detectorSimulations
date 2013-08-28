@@ -1,0 +1,25 @@
+#
+# Macro file to display the geometry using the OpenGL drivers
+# when running in interactive mode
+#
+# create empty scene
+#
+/vis/scene/create
+#
+# Create a scene handler for a specific graphics system
+#
+/vis/open OGLIX
+#
+#
+/vis/viewer/set/viewpointThetaPhi 45 45 deg
+/vis/viewer/zoom 1.4
+/vis/viewer/set/style surface
+/vis/viewer/flush
+/vis/scene/add/axes 0 0 0 80. cm
+/vis/viewer/flush
+#
+# for drawing the tracks
+# (if too many tracks cause core dump => storeTrajectory 0)
+/tracking/storeTrajectory 1
+/vis/scene/endOfEventAction accumulate
+
