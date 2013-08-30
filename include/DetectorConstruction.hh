@@ -115,7 +115,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double hall_z;
     G4bool   hall_vis;
     G4bool   builtDetectors;
+    G4double griffinFwdBackPosition;
 
+    void DefineSuppressedParameters();
     void DefineMaterials();
 
     G4double coords[20][5];
