@@ -1,0 +1,5 @@
+/DetSys/det/addGriffinForward 1
+/DetSys/run/enableLM
+/DetSys/gun/particle gamma
+/DetSys/gun/energy 100 keV
+/run/beamOn 1000
