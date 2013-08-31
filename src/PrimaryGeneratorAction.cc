@@ -207,9 +207,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     if(!directionSpecified)
     {
       // random direction
-      G4double costheta = 2.*UniformRand48()-1.0;
+      //G4double costheta = 2.*UniformRand48()-1.0;
+      G4double costheta = 2.*(CLHEP::RandFlat::shoot())-1.0;
       G4double sintheta = sqrt( 1. - costheta*costheta );
-      G4double phi      = (360.*deg)*UniformRand48();
+      //G4double phi      = (360.*deg)*UniformRand48();
+      G4double phi      = (360.*deg)*(CLHEP::RandFlat::shoot());
       direction = G4ThreeVector(sintheta*cos(phi), sintheta*sin(phi), costheta);
     }
 
