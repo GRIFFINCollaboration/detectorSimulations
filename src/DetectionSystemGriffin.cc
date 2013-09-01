@@ -252,74 +252,31 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   /////////////////////////////////////////////////////////////////////
   copy_number = back_suppressor_copy_number + detector_number*4;
 
+  // Back Suppressors
   if(include_back_suppressors) {
     x0 = (this->detector_total_width/4.0);
     y0 = (this->detector_total_width/4.0);
     z0 = (this->back_BGO_thickness - this->can_face_thickness)/2.0 + this->suppressor_shell_thickness
     + this->detector_total_length +this->BGO_can_seperation + this->shift + this->applied_back_shift + dist_from_origin;
 
-    // Back Suppressors
-    // this one goes behind Ge 1
-    G4RotationMatrix* rotate_back_quarter_suppressor1 = new G4RotationMatrix;
-    rotate_back_quarter_suppressor1->rotateX(alpha);
-    rotate_back_quarter_suppressor1->rotateY(beta);
-    rotate_back_quarter_suppressor1->rotateZ(gamma);    
+    G4RotationMatrix* rotate_back_quarter_suppressor[4];
+    G4ThreeVector move_back_quarter_suppressor[4];
 
-    x = x0;
-    y = y0;
-    z = z0;
+    for(i=0; i<4; i++){
+      rotate_back_quarter_suppressor[i] = new G4RotationMatrix;
+      rotate_back_quarter_suppressor[i]->rotateX(-M_PI/2.0*i);
+      rotate_back_quarter_suppressor[i]->rotateX(alpha);
+      rotate_back_quarter_suppressor[i]->rotateY(beta);
+      rotate_back_quarter_suppressor[i]->rotateZ(gamma);
 
-    G4ThreeVector move_back_quarter_suppressor1((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
+      x = x0*pow(-1, floor(i/2) );
+      y = y0*pow(-1, floor((i+1)/2) ); 
+      z = z0;            
 
-    this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor1, rotate_back_quarter_suppressor1, copy_number++);
+      move_back_quarter_suppressor[i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
 
-
-    // this one goes behind Ge 2
-    G4RotationMatrix* rotate_back_quarter_suppressor2 = new G4RotationMatrix;
-    rotate_back_quarter_suppressor2->rotateX(-M_PI/2.0);
-    rotate_back_quarter_suppressor2->rotateX(alpha);
-    rotate_back_quarter_suppressor2->rotateY(beta);
-    rotate_back_quarter_suppressor2->rotateZ(gamma);    
-      
-    x = x0;
-    y = -y0;
-    z = z0;
-
-    G4ThreeVector move_back_quarter_suppressor2((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
-
-    this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor2, rotate_back_quarter_suppressor2, copy_number++);
-
-
-    // this one goes behind Ge 3
-    G4RotationMatrix* rotate_back_quarter_suppressor3 = new G4RotationMatrix;
-    rotate_back_quarter_suppressor3->rotateX(M_PI);
-    rotate_back_quarter_suppressor3->rotateX(alpha);
-    rotate_back_quarter_suppressor3->rotateY(beta);
-    rotate_back_quarter_suppressor3->rotateZ(gamma);    
-
-    x = -x0;
-    y = -y0;
-    z = z0;
-
-    G4ThreeVector move_back_quarter_suppressor3((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
-
-    this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor3, rotate_back_quarter_suppressor3, copy_number++);
-
-    // this one goes behind Ge 3
-    G4RotationMatrix* rotate_back_quarter_suppressor4 = new G4RotationMatrix;
-    rotate_back_quarter_suppressor4->rotateX(M_PI/2.0);
-    rotate_back_quarter_suppressor4->rotateX(alpha);
-    rotate_back_quarter_suppressor4->rotateY(beta);
-    rotate_back_quarter_suppressor4->rotateZ(gamma);    
-      
-    x = -x0;
-    y = y0;
-    z = z0;
-
-    G4ThreeVector move_back_quarter_suppressor4((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
-
-    this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor4, rotate_back_quarter_suppressor4, copy_number++);
-  }
+      this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor[i], rotate_back_quarter_suppressor[i], copy_number++);
+    }
 
   // Now Side Suppressors
   /////////////////////////////////////////////////////////////////////
