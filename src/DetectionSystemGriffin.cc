@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
 #include "SensitiveDetector.hh"
@@ -225,9 +227,31 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   /////////////////////////////////////////////////////////////////////
   copy_number = germanium_copy_number + detector_number*4;
 
+  G4RotationMatrix* rotate_germanium[4];
+  G4ThreeVector move_germanium[4];
+
+  for(int i=0; i<4; i++){
+    rotate_germanium[i] = new G4RotationMatrix;
+    rotate_germanium[i]->rotateY(-M_PI/2.0);
+    rotate_germanium[i]->rotateX(-M_PI/2.0*i); 
+    rotate_germanium[i]->rotateX(alpha);
+    rotate_germanium[i]->rotateY(beta);
+    rotate_germanium[i]->rotateZ(gamma);
+
+    x = x0*pow(-1, floor(i/2) );
+    y = y0*pow(-1, floor((i+1)/2) );       
+    z = z0;
+
+    move_germanium[i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi), DetectionSystemGriffin::transY(x,y,z,theta,phi), DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+
+    this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium[i], rotate_germanium[i], copy_number++);    
+  }
+
+/*
   // 1st
   G4RotationMatrix* rotate_germanium1 = new G4RotationMatrix;
   rotate_germanium1->rotateY(-M_PI/2.0);
+  rotate_germanium1->rotateX(0);
   rotate_germanium1->rotateX(alpha);
   rotate_germanium1->rotateY(beta);
   rotate_germanium1->rotateZ(gamma); 
@@ -287,7 +311,7 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   G4ThreeVector move_germanium4(DetectionSystemGriffin::transX(x,y,z,theta,phi), DetectionSystemGriffin::transY(x,y,z,theta,phi), DetectionSystemGriffin::transZ(x,y,z,theta,phi));
 
   this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium4, rotate_germanium4, copy_number++);
-    
+*/    
   /////////////////////////////////////////////////////////////////////
   // end germanium_block1_log
   /////////////////////////////////////////////////////////////////////
