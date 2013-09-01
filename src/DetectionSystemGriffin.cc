@@ -183,6 +183,8 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   G4double y;
   G4double z;
   
+  G4double x0, y0, z0;
+
   G4RotationMatrix* rotate = new G4RotationMatrix; 		// rotation matrix corresponding to direction vector
   rotate->rotateX(M_PI/2.0);  
   rotate->rotateX(alpha);
@@ -201,6 +203,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   this->assembly->MakeImprint(exp_hall_log, move, rotate, 0);
   this->suppressorShellAssembly->MakeImprint(exp_hall_log, move, rotate, 0);
 
+  x0 = (this->germanium_width + this->germanium_separation)/2.0;
+  y0 = (this->germanium_width + this->germanium_separation)/2.0;
+  z0 = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+
   /////////////////////////////////////////////////////////////////////
   // now we place all 4 of the 1/4 detectors using the LogicalVolume
   // of the 1st, ensuring that they too will have the hole   
@@ -214,9 +220,9 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   rotate_germanium1->rotateY(beta);
   rotate_germanium1->rotateZ(gamma); 
 
-  x = (this->germanium_width + this->germanium_separation)/2.0;
-  y = (this->germanium_width + this->germanium_separation)/2.0;
-  z = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+  x = x0;
+  y = y0;
+  z = z0;
 
   G4ThreeVector move_germanium1((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
 
@@ -230,9 +236,9 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   rotate_germanium2->rotateY(beta);
   rotate_germanium2->rotateZ(gamma); 
 
-  x = (this->germanium_width + this->germanium_separation)/2.0;
-  y = -(this->germanium_width + this->germanium_separation)/2.0;
-  z = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+  x = x0;
+  y = -y0;
+  z = z0;
 
   G4ThreeVector move_germanium2((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
 
@@ -246,9 +252,9 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   rotate_germanium3->rotateY(beta);
   rotate_germanium3->rotateZ(gamma);     
 
-  x = -(this->germanium_width + this->germanium_separation)/2.0;
-  y = -(this->germanium_width + this->germanium_separation)/2.0;
-  z = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+  x = -x0;
+  y = -y0;
+  z = z0;
     
   G4ThreeVector move_germanium3((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
 
@@ -262,9 +268,9 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   rotate_germanium4->rotateY(beta);
   rotate_germanium4->rotateZ(gamma);     
 
-  x = -(this->germanium_width + this->germanium_separation)/2.0;
-  y = (this->germanium_width + this->germanium_separation)/2.0;
-  z = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+  x = -x0;
+  y = y0;
+  z = z0;
     
   G4ThreeVector move_germanium4((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));
 
