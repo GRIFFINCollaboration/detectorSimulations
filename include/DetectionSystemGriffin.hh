@@ -431,6 +431,10 @@ class DetectionSystemGriffin
     void BuildOneDetector();  
 //    void PlaceDetector(G4int detector_number);
   public:
+    G4double transX(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transY(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+
     G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector moveBAH, G4RotationMatrix* rotateBAH, G4int detector_number); 
         
 };
