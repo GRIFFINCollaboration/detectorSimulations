@@ -199,6 +199,8 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   
   G4double x0, y0, z0;
 
+  G4int i;
+
   G4RotationMatrix* rotate = new G4RotationMatrix; 		// rotation matrix corresponding to direction vector
   rotate->rotateX(M_PI/2.0);  
   rotate->rotateX(alpha);
@@ -230,7 +232,7 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   G4RotationMatrix* rotate_germanium[4];
   G4ThreeVector move_germanium[4];
 
-  for(int i=0; i<4; i++){
+  for(i=0; i<4; i++){
     rotate_germanium[i] = new G4RotationMatrix;
     rotate_germanium[i]->rotateY(-M_PI/2.0);
     rotate_germanium[i]->rotateX(-M_PI/2.0*i); 
@@ -277,7 +279,7 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
       this->suppressorBackAssembly->MakeImprint(exp_hall_log, move_back_quarter_suppressor[i], rotate_back_quarter_suppressor[i], copy_number++);
     }
-
+  }
   // Now Side Suppressors
   /////////////////////////////////////////////////////////////////////
   // Note : Left and Right are read from the BACK of the detector
