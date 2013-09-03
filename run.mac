@@ -1,6 +1,4 @@
-/DetSys/det/add8pi 20
 /DetSys/det/addPaces 5
-#/DetSys/app/add8piVacuumChamber
 #/control/execute vis.mac
 /DetSys/run/enableHEX
 #/DetSys/run/timeUnit second
