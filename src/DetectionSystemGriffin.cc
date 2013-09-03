@@ -322,7 +322,8 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   if(include_side_suppressors) {
      
-    G4RotationMatrix* rotateSideSuppressor[4];
+    G4RotationMatrix* rotateSideSuppressor[8];
+    G4ThreeVector moveInnerSuppressor[8];
 
     x0 = this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness + this->detector_total_width/2.0 +this->BGO_can_seperation;
     y0 = (this->detector_total_width/2.0 +this->BGO_can_seperation + this->side_BGO_thickness/2.0)/2.0;
@@ -330,7 +331,40 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
       +(this->BGO_can_seperation + this->BGO_chopped_tip)/tan(this->bent_end_angle) +this->shift 
       + this->applied_back_shift - this->suppressor_shell_thickness/2.0 + dist_from_origin);
 
+    for(i=0; i<4; i++){
+      rotateSideSuppressor[2*i] = new G4RotationMatrix;
+      rotateSideSuppressor[2*i]->rotateZ(M_PI/2.0);
+      rotateSideSuppressor[2*i]->rotateY(M_PI/2.0);
+      rotateSideSuppressor[2*i]->rotateX(-M_PI/2.0*i);
+      rotateSideSuppressor[2*i]->rotateX(alpha);
+      rotateSideSuppressor[2*i]->rotateY(beta);
+      rotateSideSuppressor[2*i]->rotateZ(gamma);
 
+      x = x0*cos(i*M_PI/2.0) + y0*sin(i*M_PI/2);
+      y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      z = z0;
+
+      moveInnerSuppressor[i*2] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+
+      this->rightSuppressorCasingAssembly->MakeImprint(exp_hall_log, moveInnerSuppressor[2*i], rotateSideSuppressor[2*i], copy_number++);
+
+
+      rotateSideSuppressor[2*i+1] = new G4RotationMatrix;
+      rotateSideSuppressor[2*i+1]->rotateY(-M_PI/2.0);    
+      rotateSideSuppressor[2*i+1]->rotateX(-M_PI/2.0*(i+2));
+      rotateSideSuppressor[2*i+1]->rotateX(alpha);
+      rotateSideSuppressor[2*i+1]->rotateY(beta);
+      rotateSideSuppressor[2*i+1]->rotateZ(gamma);     
+
+      x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
+      z = z0;
+
+      moveInnerSuppressor[i*2+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+
+      this->leftSuppressorCasingAssembly->MakeImprint(exp_hall_log, moveInnerSuppressor[2*i+1], rotateSideSuppressor[2*i+1], copy_number_two++);
+    }
+/*
     G4RotationMatrix* rotate_suppressor1 = new G4RotationMatrix;
     rotate_suppressor1->rotateZ(M_PI/2.0);
     rotate_suppressor1->rotateY(M_PI/2.0);
@@ -338,9 +372,9 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor1->rotateY(beta);
     rotate_suppressor1->rotateZ(gamma);     
 
-    z = z0;
-    y = y0;
     x = x0;
+    y = y0;
+    z = z0;
 
     G4ThreeVector move_inner_suppressor1((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
@@ -353,10 +387,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor2->rotateY(beta);
     rotate_suppressor2->rotateZ(gamma);     
 
-    z = z0;
     x = y0;
     y = x0;
-      
+    z = z0;
+
     G4ThreeVector move_inner_suppressor2((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->leftSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor2, rotate_suppressor2, copy_number_two++);
@@ -369,10 +403,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor3->rotateY(beta);
     rotate_suppressor3->rotateZ(gamma);     
 
-    z = z0;
     x = y0;
     y = -x0;
-      
+    z = z0;
+
     G4ThreeVector move_inner_suppressor3((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->rightSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor3, rotate_suppressor3, copy_number++);
@@ -384,10 +418,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor4->rotateY(beta);
     rotate_suppressor4->rotateZ(gamma);     
 
-    z = z0;
-    y = -y0;
     x = x0;
-      
+    y = -y0;
+    z = z0;
+
     G4ThreeVector move_inner_suppressor4((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->leftSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor4, rotate_suppressor4, copy_number_two++);
@@ -400,10 +434,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor5->rotateY(beta);
     rotate_suppressor5->rotateZ(gamma);     
 
-    z = z0;
-    y = -y0;
     x = -x0;
-      
+    y = -y0;
+    z = z0;
+
     G4ThreeVector move_inner_suppressor5((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->rightSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor5, rotate_suppressor5, copy_number++);
@@ -414,10 +448,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor6->rotateY(beta);
     rotate_suppressor6->rotateZ(gamma);     
 
-    z = z0;
     x = -y0;
     y = -x0;
-      
+    z = z0;
+
     G4ThreeVector move_inner_suppressor6((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->leftSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor6, rotate_suppressor6, copy_number_two++);
@@ -430,10 +464,10 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor7->rotateY(beta);
     rotate_suppressor7->rotateZ(gamma);     
 
-    z = z0;
     x = -y0;
     y = x0;
-      
+    z = z0;
+
     G4ThreeVector move_inner_suppressor7((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->rightSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor7, rotate_suppressor7, copy_number++);
@@ -445,13 +479,14 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
     rotate_suppressor8->rotateY(beta);
     rotate_suppressor8->rotateZ(gamma);     
 
-    z = z0;
-    y = y0;
     x = -x0;
-      
+    y = y0;
+    z = z0;
+
     G4ThreeVector move_inner_suppressor8((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
 
     this->leftSuppressorCasingAssembly->MakeImprint(exp_hall_log, move_inner_suppressor8, rotate_suppressor8, copy_number_two++);
+*/
   }
 
   // now we add the side pieces of suppressor that extend out in front of the can when it's in the back position
