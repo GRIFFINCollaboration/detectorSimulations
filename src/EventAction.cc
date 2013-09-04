@@ -73,6 +73,9 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     G4String      collection;
 
     G4bool        writeTime = true;
+    
+    char          evh[128];
+    G4String      eventheader;
 
     for(nn = 0; nn < nHCEV; nn++) 
     {
@@ -81,6 +84,9 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
       parte      = theAction->GetParticleEnergy(); // Initial Particle Info
       if(nhits > 0) { // this will only write ONCE per enent, unlike code below.
+         sprintf(evh,"Hits: %d\n",nhits);
+         eventheader = G4String(evh);
+         if( theRun->DoWriteLMD() ) {theRun->LMwrite(eventheader);}
 //      if( theRun->DoWriteHEX() ) {
 //          theRun->ParticleInfoFlagStart();
 //          theRun->ParticleInfoEntry(parte);
