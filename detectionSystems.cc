@@ -28,12 +28,9 @@
 // GEANT4 tag $Name: geant4-09-04-patch-02 $
 //
 //
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-
 #include "Randomize.hh"
 
 #include "DetectorConstruction.hh"
