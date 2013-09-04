@@ -373,12 +373,6 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   if(this->applied_back_shift == 0.0 && include_extension_suppressors){   // If the detectors are forward, put the extensions in the back position
     // the placement of the extensions matches the placement of the side_suppressor pieces
-    G4RotationMatrix* rotate_extension1 = new G4RotationMatrix;
-    rotate_extension1->rotateZ(M_PI/2.0);
-    rotate_extension1->rotateY(this->bent_end_angle);
-    rotate_extension1->rotateX(alpha);
-    rotate_extension1->rotateY(beta);
-    rotate_extension1->rotateZ(gamma);      
 
     x0 = -((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
   / cos(this->bent_end_angle) 
@@ -408,124 +402,40 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   - this->forward_inner_radius +extension_back_shift
   - this->suppressor_shell_thickness/2.0 + dist_from_origin;
 
-    x = x0;
-    y = y0;
-    z = z0;
+    G4RotationMatrix* rotateExtension[8];
+    G4ThreeVector moveInnerExtension[8];
 
-    G4ThreeVector move_inner_extension1((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
+    for(i=0; i<4; i++){
+      rotateExtension[2*i] = new G4RotationMatrix;
+      rotateExtension[2*i]->rotateZ(M_PI/2.0);
+      rotateExtension[2*i]->rotateY(this->bent_end_angle);
+      rotateExtension[2*i]->rotateX(-M_PI/2.0*i);
+      rotateExtension[2*i]->rotateX(alpha);
+      rotateExtension[2*i]->rotateY(beta);
+      rotateExtension[2*i]->rotateZ(gamma); 
 
-    this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension1, rotate_extension1, copy_number++);
+      x = x0*cos(i*M_PI/2.0) + y0*sin(i*M_PI/2);
+      y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      z = z0;
 
-    G4RotationMatrix* rotate_extension2 = new G4RotationMatrix;
-    rotate_extension2->rotateY(M_PI/2.0);
-    rotate_extension2->rotateZ(M_PI/2.0 + this->bent_end_angle);  
-    rotate_extension2->rotateX(alpha);
-    rotate_extension2->rotateY(beta);
-    rotate_extension2->rotateZ(gamma);      
+      moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+      this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, moveInnerExtension[2*i], rotateExtension[2*i], copy_number++);
 
-    x = y0;  
-    y = x0;
-    z = z0;
+      rotateExtension[2*i+1] = new G4RotationMatrix;
+      rotateExtension[2*i+1]->rotateY(M_PI/2.0);
+      rotateExtension[2*i+1]->rotateZ(M_PI/2.0 + this->bent_end_angle);  
+      rotateExtension[2*i+1]->rotateX(-M_PI/2.0*i); 
+      rotateExtension[2*i+1]->rotateX(alpha);
+      rotateExtension[2*i+1]->rotateY(beta);
+      rotateExtension[2*i+1]->rotateZ(gamma); 
 
-    G4ThreeVector move_inner_extension2((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
+      x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
+      z = z0;   
 
-    this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension2, rotate_extension2, copy_number_two++);
-
-    G4RotationMatrix* rotate_extension3 = new G4RotationMatrix;
-    rotate_extension3->rotateZ(M_PI/2.0);
-    rotate_extension3->rotateY(this->bent_end_angle);
-    rotate_extension3->rotateX(-M_PI/2.0);
-    rotate_extension3->rotateX(alpha);
-    rotate_extension3->rotateY(beta);
-    rotate_extension3->rotateZ(gamma);      
-
-    x = y0;  
-    y = -x0;
-    z = z0;
-
-    G4ThreeVector move_inner_extension3((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension3, rotate_extension3, copy_number++);
-
-    G4RotationMatrix* rotate_extension4 = new G4RotationMatrix;
-    rotate_extension4->rotateY(M_PI/2.0);
-    rotate_extension4->rotateZ(M_PI/2.0 + this->bent_end_angle);  
-    rotate_extension4->rotateX(-M_PI/2.0); 
-    rotate_extension4->rotateX(alpha);
-    rotate_extension4->rotateY(beta);
-    rotate_extension4->rotateZ(gamma);      
-
-    x = x0;
-    y = -y0;
-    z = z0;
-
-    G4ThreeVector move_inner_extension4((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension4, rotate_extension4, copy_number_two++);
-
-    G4RotationMatrix* rotate_extension5 = new G4RotationMatrix;
-    rotate_extension5->rotateZ(M_PI/2.0);
-    rotate_extension5->rotateY(this->bent_end_angle);
-    rotate_extension5->rotateX(-M_PI);
-    rotate_extension5->rotateX(alpha);
-    rotate_extension5->rotateY(beta);
-    rotate_extension5->rotateZ(gamma);      
-
-    x = -x0;
-    y = -y0;
-    z = z0;
-
-    G4ThreeVector move_inner_extension5((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension5, rotate_extension5, copy_number++);
-
-    G4RotationMatrix* rotate_extension6 = new G4RotationMatrix;
-    rotate_extension6->rotateY(M_PI/2.0);
-    rotate_extension6->rotateZ(M_PI/2.0 + this->bent_end_angle);  
-    rotate_extension6->rotateX(-M_PI); 
-    rotate_extension6->rotateX(alpha);
-    rotate_extension6->rotateY(beta);
-    rotate_extension6->rotateZ(gamma);      
-
-    x = -y0;    
-    y = -x0;
-    z = z0;
-
-    G4ThreeVector move_inner_extension6((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension6, rotate_extension6, copy_number_two++);
-
-    G4RotationMatrix* rotate_extension7 = new G4RotationMatrix;
-    rotate_extension7->rotateZ(M_PI/2.0);
-    rotate_extension7->rotateY(this->bent_end_angle);
-    rotate_extension7->rotateX(M_PI/2.0);
-    rotate_extension7->rotateX(alpha);
-    rotate_extension7->rotateY(beta);
-    rotate_extension7->rotateZ(gamma);      
-
-    x = -y0;    
-    y = x0;
-    z = z0;
-
-    G4ThreeVector move_inner_extension7((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension7, rotate_extension7, copy_number++);
-
-    G4RotationMatrix* rotate_extension8 = new G4RotationMatrix;
-    rotate_extension8->rotateY(M_PI/2.0);
-    rotate_extension8->rotateZ(M_PI/2.0 + this->bent_end_angle);  
-    rotate_extension8->rotateX(M_PI/2.0); 
-    rotate_extension8->rotateX(alpha);
-    rotate_extension8->rotateY(beta);
-    rotate_extension8->rotateZ(gamma);      
-   
-    x = -x0;
-    y = y0; 
-    z = z0;
-    
-    G4ThreeVector move_inner_extension8((x*cos(theta)+z*sin(theta))*cos(phi)-y*sin(phi),(x*cos(theta)+z*sin(theta))*sin(phi)+y*cos(phi),-x*sin(theta)+z*cos(theta));     
-
-    this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, move_inner_extension8, rotate_extension8, copy_number_two++);
+      moveInnerExtension[2*i+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+      this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, moveInnerExtension[2*i+1], rotateExtension[2*i+1], copy_number_two++);
+    }
 
   }//end if(detectors forward) statement
 
