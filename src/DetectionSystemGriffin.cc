@@ -771,6 +771,12 @@ void DetectionSystemGriffin::BuildelectrodeMatElectrodes()
 ///////////////////////////////////////////////////////////////////////
 void DetectionSystemGriffin::ConstructDetector() 
 {
+
+  G4double x0, y0, z0, yMov, zMov;
+  G4int i;
+  G4RotationMatrix* rotate_piece[4] ;
+  G4ThreeVector move_piece[4] ; 
+  
   G4Material* structureMaterial = G4Material::GetMaterial(this->structureMaterial);
   if( !structureMaterial ) {
     G4cout << " ----> Material " << this->crystal_material << " not found, cannot build the detector shell! " << G4endl;
@@ -786,322 +792,228 @@ void DetectionSystemGriffin::ConstructDetector()
   this->assembly->AddPlacedVolume(front_face_log, move_front_face, this->rotate_null); 
 
   // now we put on the four angled side pieces
-  G4Para* right_bent_piece = this->bentSidePiece();
-  G4RotationMatrix* rotate_right_bent_piece = new G4RotationMatrix;
-  rotate_right_bent_piece->rotateY(-this->bent_end_angle);
-  G4ThreeVector move_right_bent_piece(((this->bent_end_length)/2.0) +this->shift 
-	+ this->applied_back_shift, 0, ((this->can_face_thickness 
-	- this->bent_end_length)*tan(this->bent_end_angle) 
-	+ this->detector_total_width -this->can_face_thickness)/2.0);
-
-  right_bent_piece_log = new G4LogicalVolume(right_bent_piece, structureMaterial, "right_bent_piece", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(right_bent_piece_log, move_right_bent_piece, rotate_right_bent_piece); 
-
-  G4Para* left_bent_piece = this->bentSidePiece();
-  G4RotationMatrix* rotate_left_bent_piece = new G4RotationMatrix;
-  rotate_left_bent_piece->rotateX(M_PI);
-  rotate_left_bent_piece->rotateY(this->bent_end_angle);
-
-  G4ThreeVector move_left_bent_piece(((this->bent_end_length)/2.0) +this->shift 
-	+ this->applied_back_shift, 0, -((this->can_face_thickness 
-	- this->bent_end_length) *tan(this->bent_end_angle) 
-	+ this->detector_total_width -this->can_face_thickness)/2.0);
-
-  left_bent_piece_log = new G4LogicalVolume(left_bent_piece, structureMaterial, "left_bent_piece", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(left_bent_piece_log, move_left_bent_piece, rotate_left_bent_piece);
-
-  G4Para* top_bent_piece = this->bentSidePiece();
-
-  G4RotationMatrix* rotate_top_bent_piece = new G4RotationMatrix;
-  rotate_top_bent_piece->rotateY(-this->bent_end_angle);
-  rotate_top_bent_piece->rotateX(-M_PI/2.0);
-
-  G4ThreeVector move_top_bent_piece(((this->bent_end_length)/2.0) 
-  	+ this->shift +this->applied_back_shift,
-	((this->can_face_thickness -this->bent_end_length)
-	* tan(this->bent_end_angle) + this->detector_total_width
-	- this->can_face_thickness)/2.0, 0);
-
-  top_bent_piece_log = new G4LogicalVolume(top_bent_piece, structureMaterial, "top_bent_piece", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(top_bent_piece_log, move_top_bent_piece, rotate_top_bent_piece);
   
-  G4Para* bottom_bent_piece = this->bentSidePiece();
+  x0 = ((this->bent_end_length)/2.0) + this->shift + this->applied_back_shift ; 
 
-  G4RotationMatrix* rotate_bottom_bent_piece = new G4RotationMatrix;
-  rotate_bottom_bent_piece->rotateY(-this->bent_end_angle);
-  rotate_bottom_bent_piece->rotateX(M_PI/2.0);
+  z0 = ((this->can_face_thickness - this->bent_end_length) * tan(this->bent_end_angle) 
+  + this->detector_total_width - this->can_face_thickness)/2.0 ; 
+  
+  G4Para* side_piece[4] ; 
+    
+  for( i = 0 ; i < 4 ; i++ )
+    {
+      // Top, Right, Bottom, Left
+      side_piece[i] = this->bentSidePiece() ;  // G4Para*
+      rotate_piece[i] = new G4RotationMatrix ;  // G4RotationMatrix*
+          
+      // The left side is slightly different than the others, so this if statement is required. The order of rotation matters.  
+      if(i == 3)
+        {
+          rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ; 
+          rotate_piece[i]->rotateY(this->bent_end_angle) ; 
+        }
+      else
+        {
+          rotate_piece[i]->rotateY(-this->bent_end_angle) ; // Note the negative -this
+          rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ;   
+        }
+      
+      yMov = z0 * cos( i * M_PI/2.0 ) ;
+      zMov = z0 * sin( i * M_PI/2.0 ) ;
+          
+      move_piece[i] = G4ThreeVector(x0, yMov, zMov) ;
+    } 
 
-  G4ThreeVector move_bottom_bent_piece(((this->bent_end_length)/2.0) +this->shift 
-	+ this->applied_back_shift, -((this->can_face_thickness 
-	- this->bent_end_length)*tan(this->bent_end_angle) 
-	+ this->detector_total_width -this->can_face_thickness)/2.0, 0);
+  top_bent_piece_log = new G4LogicalVolume(side_piece[0], structureMaterial, "top_bent_piece", 0, 0, 0);
+  this->assembly->AddPlacedVolume(top_bent_piece_log, move_piece[0], rotate_piece[0]); 
 
-  bottom_bent_piece_log = new G4LogicalVolume(bottom_bent_piece, structureMaterial, "bottom_bent_piece", 0, 0, 0);
+  right_bent_piece_log = new G4LogicalVolume(side_piece[1], structureMaterial, "right_bent_piece", 0, 0, 0);
+  this->assembly->AddPlacedVolume(right_bent_piece_log, move_piece[1], rotate_piece[1]); 
 
-  this->assembly->AddPlacedVolume(bottom_bent_piece_log, move_bottom_bent_piece, rotate_bottom_bent_piece);
+  bottom_bent_piece_log = new G4LogicalVolume(side_piece[2], structureMaterial, "right_bent_piece", 0, 0, 0);
+  this->assembly->AddPlacedVolume(right_bent_piece_log, move_piece[2], rotate_piece[2]); 
+
+  left_bent_piece_log = new G4LogicalVolume(side_piece[3], structureMaterial, "right_bent_piece", 0, 0, 0);
+  this->assembly->AddPlacedVolume(right_bent_piece_log, move_piece[3], rotate_piece[3]); 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // now we add the wedges to the edges of the face. These complete the angled side pieces 
-  G4Trap* right_wedge = this->cornerWedge();
+  G4Trap* side_wedge[4] ;
 
-  G4RotationMatrix* rotate_right_wedge = new G4RotationMatrix;
-  rotate_right_wedge->rotateX(M_PI/2.0);
-  rotate_right_wedge->rotateY(-M_PI/2.0);
+  x0 = this->shift +this->applied_back_shift ; 
 
-  G4ThreeVector move_right_wedge(this->shift +this->applied_back_shift, 0, 
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) +(this->can_face_thickness/2.0)
-	* tan(this->bent_end_angle)/2.0);  	
+  y0 = (this->detector_total_width/2.0) - (this->bent_end_length * tan(this->bent_end_angle))  
+  + (this->can_face_thickness/2.0) *tan(this->bent_end_angle)/2.0 ; 
 
-  right_wedge_log = new G4LogicalVolume(right_wedge, structureMaterial, "right_wedge_log", 0, 0, 0);
+  for( i = 0 ; i < 4 ; i++ )
+    { 
+      // Top, Right, Bottom, Left
+      side_wedge[i] = this->cornerWedge() ; 
+      rotate_piece[i] = new G4RotationMatrix ; 
 
-  this->assembly->AddPlacedVolume(right_wedge_log, move_right_wedge, rotate_right_wedge);
+      rotate_piece[i]->rotateX( M_PI/2.0 ) ;
+      rotate_piece[i]->rotateY( -M_PI/2.0 ) ;
+      rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ;
 
-  G4Trap* left_wedge = this->cornerWedge();
+      yMov = y0 * cos( i*M_PI/2.0 ) ; 
+      zMov = y0 * sin( i*M_PI/2.0 ) ; 
 
-  G4RotationMatrix* rotate_left_wedge = new G4RotationMatrix;
-  rotate_left_wedge->rotateX(M_PI/2.0);
-  rotate_left_wedge->rotateY(-M_PI/2.0);
-  rotate_left_wedge->rotateX(M_PI);
+      move_piece[i] = G4ThreeVector(x0, yMov, zMov) ;
+    }
 
-  G4ThreeVector move_left_wedge(this->shift +this->applied_back_shift, 0, 
-	-((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) +(this->can_face_thickness/2.0)				  
-	* tan(this->bent_end_angle)/2.0));  	
+  top_wedge_log = new G4LogicalVolume(side_wedge[0], structureMaterial, "top_wedge_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(top_wedge_log, move_piece[0], rotate_piece[0]);
 
-  left_wedge_log = new G4LogicalVolume(left_wedge, structureMaterial, "left_wedge_log", 0, 0, 0);
+  right_wedge_log = new G4LogicalVolume(side_wedge[1], structureMaterial, "right_wedge_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(right_wedge_log, move_piece[1], rotate_piece[1]);
 
-  this->assembly->AddPlacedVolume(left_wedge_log, move_left_wedge, rotate_left_wedge);
+  bottom_wedge_log = new G4LogicalVolume(side_wedge[2], structureMaterial, "bottom_wedge_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(bottom_wedge_log, move_piece[2], rotate_piece[2]);
 
-  G4Trap* top_wedge = this->cornerWedge();
+  left_wedge_log = new G4LogicalVolume(side_wedge[3], structureMaterial, "left_wedge_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(left_wedge_log, move_piece[3], rotate_piece[3]);
 
-  G4RotationMatrix* rotate_top_wedge = new G4RotationMatrix;
-  rotate_top_wedge->rotateX(M_PI/2.0);
-  rotate_top_wedge->rotateY(-M_PI/2.0);
-  rotate_top_wedge->rotateX(-M_PI/2.0);
-  
-  G4ThreeVector move_top_wedge(this->shift +this->applied_back_shift, 
-  	(this->detector_total_width/2.0) -(this->bent_end_length *tan(this->bent_end_angle))  
-	+ (this->can_face_thickness/2.0) *tan(this->bent_end_angle)/2.0, 0);  	
 
-  top_wedge_log = new G4LogicalVolume(top_wedge, structureMaterial, "top_wedge_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(top_wedge_log, move_top_wedge, rotate_top_wedge);
-
-  G4Trap* bottom_wedge = this->cornerWedge();
-
-  G4RotationMatrix* rotate_bottom_wedge = new G4RotationMatrix;
-  rotate_bottom_wedge->rotateX(M_PI/2.0);
-  rotate_bottom_wedge->rotateY(-M_PI/2.0);
-  rotate_bottom_wedge->rotateX(M_PI/2.0);  
-
-  G4ThreeVector move_bottom_wedge(this->shift +this->applied_back_shift, 
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) +(this->can_face_thickness/2.0)				  
-	* tan(this->bent_end_angle)/2.0), 0);  	
-
-  bottom_wedge_log = new G4LogicalVolume(bottom_wedge, structureMaterial, "bottom_wedge_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(bottom_wedge_log, move_bottom_wedge, rotate_bottom_wedge);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // now we add the rounded corners, made from a quarter of a cone
   
   // Correction factor used to move the corner cones so as to avoid 
   // holes left in the can caused by the bent side pieces
+
   G4double hole_eliminator = this->can_face_thickness *(1.0 -tan(this->bent_end_angle));	
-
-  G4Cons* upper_right_cone = this->roundedEndEdge();
-
-  G4RotationMatrix* rotate_upper_right_cone = new G4RotationMatrix;
-  rotate_upper_right_cone->rotateY(M_PI/2.0);
-  rotate_upper_right_cone->rotateX(M_PI/2.0);
-
-  G4ThreeVector move_upper_right_cone(this->bent_end_length/2.0 +this->shift +this->applied_back_shift,
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	*tan(this->bent_end_angle)) -hole_eliminator, 
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	*tan(this->bent_end_angle)) - hole_eliminator);
-
-  upper_right_cone_log = new G4LogicalVolume(upper_right_cone, structureMaterial, "upper_right_cone_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(upper_right_cone_log, move_upper_right_cone, rotate_upper_right_cone);
-
-  G4Cons* lower_right_cone = this->roundedEndEdge();
-
-  G4RotationMatrix* rotate_lower_right_cone = new G4RotationMatrix;
-  rotate_lower_right_cone->rotateY(M_PI/2.0);
-  rotate_lower_right_cone->rotateX(M_PI);
-
-  G4ThreeVector move_lower_right_cone(this->bent_end_length/2.0 +this->shift +this->applied_back_shift,
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator),
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator);
-
-  lower_right_cone_log = new G4LogicalVolume(lower_right_cone, structureMaterial, "lower_right_cone_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(lower_right_cone_log, move_lower_right_cone, rotate_lower_right_cone);
-
-  G4Cons* upper_left_cone = this->roundedEndEdge();
-
-  G4RotationMatrix* rotate_upper_left_cone = new G4RotationMatrix;
-  rotate_upper_left_cone->rotateY(M_PI/2.0);
-
-  G4ThreeVector move_upper_left_cone(this->bent_end_length/2.0 +this->shift +this->applied_back_shift,
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator,
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator));
-
-  upper_left_cone_log = new G4LogicalVolume(upper_left_cone, structureMaterial, "upper_left_cone_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(upper_left_cone_log, move_upper_left_cone, rotate_upper_left_cone);
-
-  G4Cons* lower_left_cone = this->roundedEndEdge();
-
-  G4RotationMatrix* rotate_lower_left_cone = new G4RotationMatrix;
-  rotate_lower_left_cone->rotateY(M_PI/2.0);
-  rotate_lower_left_cone->rotateX(-M_PI/2.0);
-
-  G4ThreeVector move_lower_left_cone(this->bent_end_length/2.0 +this->shift +this->applied_back_shift,
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator),
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)) -hole_eliminator));
-
-  lower_left_cone_log = new G4LogicalVolume(lower_left_cone, structureMaterial, "lower_left_cone_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(lower_left_cone_log, move_lower_left_cone, rotate_lower_left_cone);
-
-  // now we add the corner tubes which extend the rounded corners to the back of the can
-  G4Tubs* upper_right_tube = this->cornerTube();
-
-  G4RotationMatrix* rotate_upper_right_tube = new G4RotationMatrix;
-  rotate_upper_right_tube->rotateY(M_PI/2.0);
-  rotate_upper_right_tube->rotateX(M_PI/2.0);
-
-  G4ThreeVector move_upper_right_tube((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift,
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)), (this->detector_total_width/2.0)
-	- (this->bent_end_length *tan(this->bent_end_angle)));
-
-  upper_right_tube_log = new G4LogicalVolume(upper_right_tube, structureMaterial, "upper_right_tube_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(upper_right_tube_log, move_upper_right_tube, rotate_upper_right_tube);
-
-  G4Tubs* lower_right_tube = this->cornerTube();
-
-  G4RotationMatrix* rotate_lower_right_tube = new G4RotationMatrix;
-  rotate_lower_right_tube->rotateY(M_PI/2.0);
-  rotate_lower_right_tube->rotateX(M_PI);
-
-  G4ThreeVector move_lower_right_tube((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift,
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle))), (this->detector_total_width/2.0)
-	- (this->bent_end_length *tan(this->bent_end_angle)));
-
-  lower_right_tube_log = new G4LogicalVolume(lower_right_tube, structureMaterial, "lower_right_tube_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(lower_right_tube_log, move_lower_right_tube, rotate_lower_right_tube);
-
-  G4Tubs* upper_left_tube = this->cornerTube();
-
-  G4RotationMatrix* rotate_upper_left_tube = new G4RotationMatrix;
-  rotate_upper_left_tube->rotateY(M_PI/2.0);
+  G4Cons* cone_location[4] ;
   
-  G4ThreeVector move_upper_left_tube((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift,
-	(this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle)), -((this->detector_total_width/2.0)
-	- (this->bent_end_length *tan(this->bent_end_angle))));
+  x0 = this->bent_end_length/2.0 +this->shift +this->applied_back_shift ; 
 
-  upper_left_tube_log = new G4LogicalVolume(upper_left_tube, structureMaterial, "upper_left_tube_log", 0, 0, 0);
+  y0 = (this->detector_total_width/2.0) - (this->bent_end_length * tan(this->bent_end_angle)) - hole_eliminator ; 
 
-  this->assembly->AddPlacedVolume(upper_left_tube_log, move_upper_left_tube, rotate_upper_left_tube);
+  for( i = 0 ; i < 4 ; i++ )
+    {
+      // Lower Left, Upper Left, Upper Right, Lower Right
+      cone_location[i] = this->roundedEndEdge() ; 
+      rotate_piece[i] = new G4RotationMatrix ; 
 
-  G4Tubs* lower_left_tube = this->cornerTube();
+      rotate_piece[i]->rotateY( M_PI/2.0 ) ;
+      rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ;
 
-  G4RotationMatrix* rotate_lower_left_tube = new G4RotationMatrix;
-  rotate_lower_left_tube->rotateY(M_PI/2.0);
-  rotate_lower_left_tube->rotateX(-M_PI/2.0);
+      yMov = y0 * ( -cos(i*M_PI/2.0) + sin(i*M_PI/2.0) ) ; 
+      zMov = y0 * ( -cos(i*M_PI/2.0) - sin(i*M_PI/2.0) ) ; 
 
-  G4ThreeVector move_lower_left_tube((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift,
-	- ((this->detector_total_width/2.0) -(this->bent_end_length 
-	* tan(this->bent_end_angle))), -((this->detector_total_width/2.0)
-	- (this->bent_end_length *tan(this->bent_end_angle))));
+      move_piece[i] = G4ThreeVector(x0, yMov, zMov) ; 
+    }
 
-  lower_left_tube_log = new G4LogicalVolume(lower_left_tube, structureMaterial, "lower_left_tube_log", 0, 0, 0);
+  lower_left_cone_log = new G4LogicalVolume(cone_location[0], structureMaterial, "lower_left_cone_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(lower_left_cone_log, move_piece[0],  rotate_piece[0]);
 
-  this->assembly->AddPlacedVolume(lower_left_tube_log, move_lower_left_tube, rotate_lower_left_tube);
+  upper_left_cone_log = new G4LogicalVolume(cone_location[1], structureMaterial, "upper_left_cone_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(upper_left_cone_log, move_piece[1], rotate_piece[1]);
+
+  upper_right_cone_log = new G4LogicalVolume(cone_location[2], structureMaterial, "upper_right_cone_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(upper_right_cone_log, move_piece[2], rotate_piece[2]);
+
+  lower_right_cone_log = new G4LogicalVolume(cone_location[3], structureMaterial, "lower_right_cone_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(lower_right_cone_log, move_piece[3], rotate_piece[3]);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ /* now we add the corner tubes which extend the rounded corners to the back of the can
+  *
+  * This is extremely similar to the previous loop but they are not exactly the same. While it would be 
+  * possible to consolidate them into one, they would only share the rotation variables, so it
+  * might not be a huge benefit. 
+  */
+
+  G4Tubs* tube_location[4] ;
+  
+  x0 = (this->detector_total_length +this->bent_end_length 
+    - this->rear_plate_thickness -this->can_face_thickness)/2.0 
+    + this->shift +this->applied_back_shift ; 
+
+  y0 = (this->detector_total_width/2.0) - (this->bent_end_length * tan(this->bent_end_angle)) ;
+
+  for( i = 0 ; i < 4 ; i++ )
+    {
+      // Lower Left, Upper Left, Upper Right, Lower Right 
+      tube_location[i] = this->cornerTube() ; 
+      rotate_piece[i] = new G4RotationMatrix ;
+      rotate_piece[i]->rotateY(M_PI/2.0) ; 
+      rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ;
+
+      yMov = y0 * ( -cos(i*M_PI/2.0) + sin(i*M_PI/2.0) ) ; 
+      zMov = y0 * ( -cos(i*M_PI/2.0) - sin(i*M_PI/2.0) ) ; 
+
+      move_piece[i] = G4ThreeVector(x0, yMov, zMov) ; 
+
+    }
+
+  lower_left_tube_log = new G4LogicalVolume(tube_location[0], structureMaterial, "lower_left_tube_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(lower_left_tube_log, move_piece[0], rotate_piece[0]);
+  
+  upper_left_tube_log = new G4LogicalVolume(tube_location[1], structureMaterial, "upper_left_tube_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(upper_left_tube_log, move_piece[1], rotate_piece[1]);
+
+  upper_right_tube_log = new G4LogicalVolume(tube_location[2], structureMaterial, "upper_right_tube_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(upper_right_tube_log, move_piece[2], rotate_piece[2]);
+
+  lower_right_tube_log = new G4LogicalVolume(tube_location[3], structureMaterial, "lower_right_tube_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(lower_right_tube_log, move_piece[3], rotate_piece[3]);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // now we add the side panels that extend from the bent pieces to the back of the can
-  G4Box* right_side_panel = this->sidePanel();
+  
 
-  G4RotationMatrix* rotate_right_side_panel = new G4RotationMatrix;
-  rotate_right_side_panel->rotateX(M_PI/2.0);
+  G4Box* panel_location[4] ; 
+  
+  x0 = (this->detector_total_length +this->bent_end_length - this->rear_plate_thickness -this->can_face_thickness)/2.0 
+  + this->shift +this->applied_back_shift ;
 
-  G4ThreeVector move_right_side_panel((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift, 0,
-	(this->detector_total_width -this->can_side_thickness)/2.0);
+  y0 = 0 ; 
 
-  right_side_panel_log = new G4LogicalVolume(right_side_panel, structureMaterial, "right_side_panel_log", 0, 0, 0);
+  z0 = (this->detector_total_width -this->can_side_thickness)/2.0 ;
 
-  this->assembly->AddPlacedVolume(right_side_panel_log, move_right_side_panel, rotate_right_side_panel);
+  for( i = 0 ; i < 4 ; i++ )
+  {
+    // Right, Top, Left, Bottom
+    panel_location[i] = this->sidePanel() ;
+    rotate_piece[i] = new G4RotationMatrix ; 
+    rotate_piece[i]->rotateX( M_PI/2.0 - i*M_PI/2.0 ) ; 
 
-  G4Box* left_side_panel = this->sidePanel();
+    yMov = z0*sin( i*M_PI/2.0 ) ;
+    zMov = z0*cos( i*M_PI/2.0 ) ;
 
-  G4RotationMatrix* rotate_left_side_panel = new G4RotationMatrix;
-  rotate_left_side_panel->rotateX(-M_PI/2.0);
+    move_piece[i] = G4ThreeVector( x0, yMov, zMov ) ; 
 
-  G4ThreeVector move_left_side_panel((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift, 0,
-	- (this->detector_total_width -this->can_side_thickness)/2.0);
+  }
 
-  left_side_panel_log = new G4LogicalVolume(left_side_panel, structureMaterial, "left_side_panel_log", 0, 0, 0);
+  right_side_panel_log = new G4LogicalVolume(panel_location[0], structureMaterial, "right_side_panel_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(right_side_panel_log, move_piece[0], rotate_piece[0]);
 
-  this->assembly->AddPlacedVolume(left_side_panel_log, move_left_side_panel, rotate_left_side_panel);
+  top_side_panel_log = new G4LogicalVolume(panel_location[1], structureMaterial, "top_side_panel_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(top_side_panel_log, move_piece[1], this->rotate_null);
 
-  G4Box* top_side_panel = this->sidePanel();
+  left_side_panel_log = new G4LogicalVolume(panel_location[2], structureMaterial, "left_side_panel_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(left_side_panel_log, move_piece[2], rotate_piece[2]);
 
-  G4ThreeVector move_top_side_panel((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift, (this->detector_total_width
-	- this->can_side_thickness)/2.0, 0);
+  bottom_side_panel_log = new G4LogicalVolume(panel_location[3], structureMaterial, "bottom_side_panel_log", 0, 0, 0);
+  this->assembly->AddPlacedVolume(bottom_side_panel_log, move_piece[3], rotate_piece[3]);
 
-  top_side_panel_log = new G4LogicalVolume(top_side_panel, structureMaterial, "top_side_panel_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(top_side_panel_log, move_top_side_panel, this->rotate_null);
-
-  G4Box* bottom_side_panel = this->sidePanel();
-
-  G4RotationMatrix* rotate_bottom_side_panel = new G4RotationMatrix;
-  rotate_bottom_side_panel->rotateX(-M_PI);
-
-  G4ThreeVector move_bottom_side_panel((this->detector_total_length +this->bent_end_length 
-	- this->rear_plate_thickness -this->can_face_thickness)/2.0 
-	+ this->shift +this->applied_back_shift, -(this->detector_total_width
-	- this->can_side_thickness)/2.0, 0);
-
-  bottom_side_panel_log = new G4LogicalVolume(bottom_side_panel, structureMaterial, "bottom_side_panel_log", 0, 0, 0);
-
-  this->assembly->AddPlacedVolume(bottom_side_panel_log, move_bottom_side_panel, rotate_bottom_side_panel);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // now we add the rear plate, which has a hole for the cold finger to pass through
   G4SubtractionSolid* rear_plate = this->rearPlate();
 
   G4RotationMatrix* rotate_rear_plate = new G4RotationMatrix;
   rotate_rear_plate->rotateY(M_PI/2.0);
+
+  x0 = this->detector_total_length -this->can_face_thickness/2.0
+  - this->rear_plate_thickness/2.0 +this->shift 
+  + this->applied_back_shift ; 
 
   G4ThreeVector move_rear_plate(this->detector_total_length -this->can_face_thickness/2.0
 	- this->rear_plate_thickness/2.0 +this->shift 
