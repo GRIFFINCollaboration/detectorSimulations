@@ -45,6 +45,7 @@ class SensitiveDetector;
 class DetectionSystemBrillance380V1;
 class DetectionSystemGammaTracking;
 class DetectionSystemGriffin;
+class DetectionSystem8pi;
 class DetectionSystemSceptar;
 class DetectionSystemSpice;
 class DetectionSystemSpiceV02;
@@ -84,6 +85,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetFieldBoxMagneticField( G4ThreeVector );
     void SetFieldBox( );
     void AddApparatusSpiceTargetChamber();
+    void AddApparatus8piVacuumChamber();
+    void AddApparatus8piVacuumChamberAuxMatShell(G4int thickness);
 
   public:
     G4VPhysicalVolume* Construct();
@@ -94,6 +97,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGammaTracking(G4int ndet);
     void AddDetectionSystemBrillance380V1(G4int ndet);
     void AddDetectionSystemSodiumIodide(G4int ndet);
+    void AddDetectionSystem8pi(G4int ndet);
+    void AddDetectionSystem8piDetector(G4int ndet);
     void AddDetectionSystemGriffinForward(G4int ndet);
     void AddDetectionSystemGriffinForwardDetector(G4int ndet);
     void AddDetectionSystemGriffinBack(G4int ndet);
@@ -141,6 +146,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     DetectionSystemGammaTracking* myGammaTracking;
     DetectionSystemGriffin* myGriffinForward;
     DetectionSystemGriffin* myGriffinBack;
+    DetectionSystem8pi* my8pi;
     DetectionSystemSceptar* mySceptar;
     DetectionSystemSpice* mySpice;
     DetectionSystemSpiceV02* mySpiceV02;
