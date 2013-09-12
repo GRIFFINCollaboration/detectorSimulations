@@ -118,6 +118,14 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddApparatusSpiceTargetChamberCmd->SetGuidance("Add SPICE target chamber.");
   AddApparatusSpiceTargetChamberCmd->AvailableForStates(G4State_Idle);
 
+  AddApparatus8piVacuumChamberCmd = new G4UIcmdWithoutParameter("/DetSys/app/add8piVacuumChamber",this);
+  AddApparatus8piVacuumChamberCmd->SetGuidance("Add 8pi vacuum chamber.");
+  AddApparatus8piVacuumChamberCmd->AvailableForStates(G4State_Idle);
+
+  AddApparatus8piVacuumChamberAuxMatShellCmd = new G4UIcmdWithAnInteger("/DetSys/app/add8piVacuumChamberAuxMatShell",this);
+  AddApparatus8piVacuumChamberAuxMatShellCmd->SetGuidance("Add AuxMat shell around 8pi vacuum chamber");
+  AddApparatus8piVacuumChamberAuxMatShellCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
   UpdateCmd = new G4UIcmdWithoutParameter("/DetSys/det/update",this);
   UpdateCmd->SetGuidance("Update geometry.");
   UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
@@ -135,6 +143,14 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemSodiumIodideCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSodiumIodide",this);
   AddDetectionSystemSodiumIodideCmd->SetGuidance("Add Detection System SodiumIodide");
   AddDetectionSystemSodiumIodideCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  AddDetectionSystem8piCmd = new G4UIcmdWithAnInteger("/DetSys/det/add8pi",this);
+  AddDetectionSystem8piCmd->SetGuidance("Add Detection System 8pi");
+  AddDetectionSystem8piCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  AddDetectionSystem8piDetectorCmd = new G4UIcmdWithAnInteger("/DetSys/det/add8piDetector",this);
+  AddDetectionSystem8piDetectorCmd->SetGuidance("Add 8pi Detector");
+  AddDetectionSystem8piDetectorCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   AddDetectionSystemGriffinForwardCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinForward",this);
   AddDetectionSystemGriffinForwardCmd->SetGuidance("Add Detection System GriffinForward");
@@ -192,8 +208,12 @@ DetectorMessenger::~DetectorMessenger()
   delete FieldBoxMagneticFieldCmd;
   delete AddApparatusSpiceTargetChamberCmd;
   delete AddDetectionSystemGammaTrackingCmd;
+  delete AddApparatus8piVacuumChamberCmd;
+  delete AddApparatus8piVacuumChamberAuxMatShellCmd;
   delete AddDetectionSystemBrillance380V1Cmd;
   delete AddDetectionSystemSodiumIodideCmd;
+  delete AddDetectionSystem8piCmd;
+  delete AddDetectionSystem8piDetectorCmd;
   delete AddDetectionSystemSceptarCmd;
   delete AddDetectionSystemGriffinForwardCmd;
   delete AddDetectionSystemGriffinForwardDetectorCmd;
@@ -247,6 +267,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddApparatusSpiceTargetChamberCmd ) { 
     Detector->AddApparatusSpiceTargetChamber(); 
   }
+  if( command == AddApparatus8piVacuumChamberCmd ) {
+    Detector->AddApparatus8piVacuumChamber();
+  }
+  if( command == AddApparatus8piVacuumChamberAuxMatShellCmd ) {
+    Detector->AddApparatus8piVacuumChamberAuxMatShell(AddApparatus8piVacuumChamberAuxMatShellCmd->GetNewIntValue(newValue));
+  }
   if( command == AddDetectionSystemGammaTrackingCmd ) {
     Detector->AddDetectionSystemGammaTracking(AddDetectionSystemGammaTrackingCmd->GetNewIntValue(newValue)); 
   }
@@ -255,6 +281,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }
   if( command == AddDetectionSystemSodiumIodideCmd ) {
     Detector->AddDetectionSystemSodiumIodide(AddDetectionSystemSodiumIodideCmd->GetNewIntValue(newValue));
+  }
+  if( command == AddDetectionSystem8piCmd ) { 
+    Detector->AddDetectionSystem8pi(AddDetectionSystem8piCmd->GetNewIntValue(newValue)); 
+  }
+  if( command == AddDetectionSystem8piDetectorCmd ) { 
+    Detector->AddDetectionSystem8piDetector(AddDetectionSystem8piDetectorCmd->GetNewIntValue(newValue)); 
   }
   if( command == AddDetectionSystemSceptarCmd ) { 
     Detector->AddDetectionSystemSceptar(AddDetectionSystemSceptarCmd->GetNewIntValue(newValue)); 

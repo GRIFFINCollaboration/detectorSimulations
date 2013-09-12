@@ -69,6 +69,7 @@
 
 #include "DetectionSystemGammaTracking.hh"
 #include "DetectionSystemBrillance380V1.hh"
+#include "DetectionSystem8pi.hh"
 #include "DetectionSystemGriffin.hh"
 #include "DetectionSystemSceptar.hh"
 #include "DetectionSystemSpice.hh"
@@ -78,6 +79,8 @@
 
 #include "ApparatusGenericTarget.hh"
 #include "ApparatusSpiceTargetChamber.hh"
+#include "Apparatus8piVacuumChamber.hh"
+#include "Apparatus8piVacuumChamberAuxMatShell.hh"
 #include "ApparatusFieldBox.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -177,6 +180,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
       this->myGriffinBack = pGriffinBack;
       this->myGriffinBack->Build(mySDman);
+
+      DetectionSystem8pi* p8pi = new DetectionSystem8pi();
+      this->my8pi = p8pi;
+      this->my8pi->Build(mySDman);
 
       DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar();
       this->mySceptar = pSceptar;
@@ -338,6 +345,20 @@ void DetectorConstruction::AddApparatusSpiceTargetChamber()
    //Create Target Chamber
    ApparatusSpiceTargetChamber* myApparatusSpiceTargetChamber = new ApparatusSpiceTargetChamber();
    myApparatusSpiceTargetChamber->Build(this->hallLog); 
+}
+
+void DetectorConstruction::AddApparatus8piVacuumChamber()
+{
+   //Create Vacuum Chamber
+   Apparatus8piVacuumChamber* myApparatus8piVacuumChamber = new Apparatus8piVacuumChamber();
+   myApparatus8piVacuumChamber->Build(this->hallLog);
+}
+
+void DetectorConstruction::AddApparatus8piVacuumChamberAuxMatShell(G4int thickness)
+{
+   //Create Shell Around Vacuum Chamber
+   Apparatus8piVacuumChamberAuxMatShell* myApparatus8piVacuumChamberAuxMatShell = new Apparatus8piVacuumChamberAuxMatShell();
+   myApparatus8piVacuumChamberAuxMatShell->Build(this->hallLog, thickness);
 }
 
 void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
