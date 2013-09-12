@@ -121,6 +121,26 @@ void RunAction::HEXwrite(G4int ndet, G4double ener, G4double time, G4ThreeVector
   {
     sd_type = 2001;    
   }
+  else if (collection == "Collection8piGermanium")
+  {
+    sd_type = 3001;    
+    ndet = ndet - (20*0);
+  }
+  else if (collection == "Collection8piInnerBGO")
+  {
+    sd_type = 3002;    
+    ndet = ndet - (20*1);
+  }
+  else if (collection == "Collection8piOuterLowerBGO")
+  {
+    sd_type = 3003;    
+    ndet = ndet - (20*2);
+  }
+  else if (collection == "Collection8piOuterUpperBGO")
+  {
+    sd_type = 3004;    
+    ndet = ndet - (20*3);
+  }
   else if (collection == "CollectionGriffinForwardGe" || collection == "CollectionGriffinBackGe")
   {
     sd_type = 4001;    
