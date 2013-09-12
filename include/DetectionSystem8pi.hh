@@ -170,7 +170,9 @@ class DetectionSystem8pi
 
     //suppressed:
     G4double extraClearance;
-
+    G4String electrodeMat;
+    G4String structureMat;
+    G4String auxMat;
 
   public: 
     G4int Build(G4SDManager* mySDman); 
