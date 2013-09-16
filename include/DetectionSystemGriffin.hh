@@ -265,7 +265,6 @@ class DetectionSystemGriffin
     void ConstructDetector();
     void ConstructComplexDetectorBlock();
     void ConstructColdFinger();
-    void ConstructNewSuppressorCasing();
     void ConstructNewHeavyMet();
 
   private:
