@@ -1101,19 +1101,16 @@ void DetectionSystemGriffin::ConstructColdFinger()
 
   for( i = 0 ; i < 4 ; i++ )
   {
-
     y = y0 * ( -cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
     z = z0 * ( cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
-    move_piece[i] = G4ThreeVector( 0 , y, z ) ; // 1, 2, 3, 4 
+    move_piece[i] = G4ThreeVector( 0 , y, z ) ; 
 
     if( i == 0 )
       // Slightly different than the rest. Sorry I couldnt think of a better workaround
       end_plate_cut[i] = new G4SubtractionSolid("end_plate_cut", end_plate, fet_air_hole_cut, rotate_fet_air_hole, move_piece[i] ) ; 
     else
       end_plate_cut[i] = new G4SubtractionSolid("end_plate_cut", end_plate_cut[i-1], fet_air_hole_cut, rotate_fet_air_hole, move_piece[i] ) ; 
-
   }
-
 
   x = this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
     + this->germanium_dist_from_can_face +this->germanium_length 
@@ -1135,7 +1132,7 @@ void DetectionSystemGriffin::ConstructColdFinger()
 
   for( i = 0 ; i < 4 ; i++ )
   {
-    y = y0 * ( -cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; /// ROTATE SIN
+    y = y0 * ( -cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ;
     z = z0 * ( cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
     move_piece[i] = G4ThreeVector( x, y, z ) ; 
     this->assembly->AddPlacedVolume( fet_air_hole_log, move_piece[i], rotate_fet_air_hole ) ; 
@@ -1164,9 +1161,9 @@ void DetectionSystemGriffin::ConstructColdFinger()
   rotate_extra_cold_block->rotateY(M_PI/2.0);
 
   G4ThreeVector move_extra_cold_block(this->detector_total_length -this->can_face_thickness/2.0
-	- this->rear_plate_thickness +this->shift 
-	+ this->applied_back_shift -this->extra_block_distance_from_back_plate
-        - this->extra_block_thickness/2.0, 0, 0);
+	     - this->rear_plate_thickness +this->shift 
+	     + this->applied_back_shift -this->extra_block_distance_from_back_plate
+       - this->extra_block_thickness/2.0, 0, 0);
 
   extra_cold_block_log = new G4LogicalVolume(extra_cold_block, structureMaterial, "extra_cold_block_log", 0, 0, 0);
 
@@ -1199,10 +1196,10 @@ void DetectionSystemGriffin::ConstructColdFinger()
   G4RotationMatrix* rotate_piece[8] ; 
   
   x = this->cooling_side_block_thickness/2.0
-  + this->cold_finger_end_plate_thickness 
-  + this->can_face_thickness/2.0 
-  + this->germanium_dist_from_can_face +this->germanium_length 
-  + this->cold_finger_space +this->shift +this->applied_back_shift ; 
+      + this->cold_finger_end_plate_thickness 
+      + this->can_face_thickness/2.0 
+      + this->germanium_dist_from_can_face +this->germanium_length 
+      + this->cold_finger_space +this->shift +this->applied_back_shift ; 
 
   y01 = this->germanium_width - this->cooling_side_block_horizontal_depth/2.0 ; 
 
@@ -1237,7 +1234,6 @@ void DetectionSystemGriffin::ConstructColdFinger()
     this->assembly->AddPlacedVolume( cooling_bar_log, move_piece[2*i+1], rotate_piece[2*i+1] );  
   }
 
-
   // Triangle posts from "Cut A"
   // First, find how far from the centre to place the tips of the triangles
 
@@ -1255,7 +1251,6 @@ void DetectionSystemGriffin::ConstructColdFinger()
 
   G4Trd* triangle_post = this->trianglePost();
   triangle_post_log = new G4LogicalVolume(triangle_post, structureMaterial, "triangle_post_log", 0, 0, 0);
-   
 
   x = this->can_face_thickness/2.0 
   + this->germanium_dist_from_can_face +this->germanium_length 
@@ -1271,15 +1266,12 @@ void DetectionSystemGriffin::ConstructColdFinger()
     rotate_piece[i]->rotateX( M_PI/2.0 - i*M_PI/2.0 ) ;  // 4, 1, 2, 3
 
     y = -y0 * cos( i*M_PI/2.0 ) ; 
-    z = y0 * sin( i*M_PI/2.0 ) ; 
+    z =  y0 * sin( i*M_PI/2.0 ) ; 
 
     move_piece[i] = G4ThreeVector( x, y, z ) ; 
 
     this->assembly->AddPlacedVolume(triangle_post_log, move_piece[i], rotate_piece[i]);  
-
-  }
-   
-  
+  }  
 }//end ::ConstructColdFinger
 
 ///////////////////////////////////////////////////////////////////////
