@@ -1054,6 +1054,7 @@ void DetectionSystemGriffin::ConstructDetector()
 ///////////////////////////////////////////////////////////////////////
 void DetectionSystemGriffin::ConstructColdFinger()
 {
+
   G4Material* materialAir = G4Material::GetMaterial("Air");
   if( !materialAir ) {
     G4cout << " ----> Material " << this->crystal_material << " not found, cannot build the detector shell! " << G4endl;
@@ -1089,29 +1090,36 @@ void DetectionSystemGriffin::ConstructColdFinger()
   rotate_fet_air_hole->rotateY(M_PI/2.0);
   
   G4Tubs* fet_air_hole_cut = this->airHoleCut();   
+ 
+  G4ThreeVector move_piece[8] ; 
+  G4SubtractionSolid* end_plate_cut[4] ; 
+  G4int i ; 
+  G4double x, y, z, y0, z0, y01, y02; 
 
-  G4ThreeVector move_cut1(0 ,-air_hole_distance, air_hole_distance);
-  G4ThreeVector move_cut2(0 ,air_hole_distance, air_hole_distance);
-  G4ThreeVector move_cut3(0 ,air_hole_distance, -air_hole_distance);  
-  G4ThreeVector move_cut4(0 ,-air_hole_distance, -air_hole_distance);   
-  
-  G4SubtractionSolid* end_plate_cut1 = new G4SubtractionSolid("end_plate_cut1", 
-  	end_plate, fet_air_hole_cut, rotate_fet_air_hole, move_cut1);
+  y0 = air_hole_distance ; 
+  z0 = air_hole_distance ; 
 
-  G4SubtractionSolid* end_plate_cut2 = new G4SubtractionSolid("end_plate_cut2", 
-  	end_plate_cut1, fet_air_hole_cut, rotate_fet_air_hole, move_cut2);
+  for( i = 0 ; i < 4 ; i++ )
+  {
+    y = y0 * ( -cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
+    z = z0 * ( cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
+    move_piece[i] = G4ThreeVector( 0 , y, z ) ; 
 
-  G4SubtractionSolid* end_plate_cut3 = new G4SubtractionSolid("end_plate_cut3", 
-  	end_plate_cut2, fet_air_hole_cut, rotate_fet_air_hole, move_cut3);
+    if( i == 0 )
+      // Slightly different than the rest. Sorry I couldnt think of a better workaround
+      end_plate_cut[i] = new G4SubtractionSolid("end_plate_cut", end_plate, fet_air_hole_cut, rotate_fet_air_hole, move_piece[i] ) ; 
+    else
+      end_plate_cut[i] = new G4SubtractionSolid("end_plate_cut", end_plate_cut[i-1], fet_air_hole_cut, rotate_fet_air_hole, move_piece[i] ) ; 
+  }
 
-  G4SubtractionSolid* end_plate_cut4 = new G4SubtractionSolid("end_plate_cut4", 
-  	end_plate_cut3, fet_air_hole_cut, rotate_fet_air_hole, move_cut4);  	  	  
-  	
-  G4ThreeVector move_end_plate(this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 0, 0);
+  x = this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
+    + this->germanium_dist_from_can_face +this->germanium_length 
+    + this->cold_finger_space +this->shift +this->applied_back_shift ; 
+    
+  G4ThreeVector move_end_plate( x, 0, 0 ) ; 
+ 
+  end_plate_log = new G4LogicalVolume(end_plate_cut[3], structureMaterial, "end_plate_log", 0, 0, 0); 
 
-  end_plate_log = new G4LogicalVolume(end_plate_cut4, structureMaterial, "end_plate_log", 0, 0, 0);
   end_plate_log->SetVisAttributes(structureMat_vis_att);
 
   this->assembly->AddPlacedVolume(end_plate_log, move_end_plate, 0);
@@ -1122,26 +1130,13 @@ void DetectionSystemGriffin::ConstructColdFinger()
   fet_air_hole_log = new G4LogicalVolume(fet_air_hole, materialAir, "fet_air_hole_log", 0, 0, 0);
   fet_air_hole_log->SetVisAttributes(air_vis_att);
 
-  G4ThreeVector move_fet_air_hole1(this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift,-air_hole_distance, air_hole_distance);
-
-  G4ThreeVector move_fet_air_hole2(this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, air_hole_distance, air_hole_distance);  
-
-  G4ThreeVector move_fet_air_hole3(this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, air_hole_distance, -air_hole_distance);
-
-  G4ThreeVector move_fet_air_hole4(this->cold_finger_end_plate_thickness/2.0 +this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, -air_hole_distance, -air_hole_distance);
-   
-  this->assembly->AddPlacedVolume(fet_air_hole_log, move_fet_air_hole1, rotate_fet_air_hole);
-  this->assembly->AddPlacedVolume(fet_air_hole_log, move_fet_air_hole2, rotate_fet_air_hole);
-  this->assembly->AddPlacedVolume(fet_air_hole_log, move_fet_air_hole3, rotate_fet_air_hole);
-  this->assembly->AddPlacedVolume(fet_air_hole_log, move_fet_air_hole4, rotate_fet_air_hole);    
+  for( i = 0 ; i < 4 ; i++ )
+  {
+    y = y0 * ( -cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ;
+    z = z0 * ( cos( i*M_PI/2.0 ) + sin( i*M_PI/2.0 ) ) ; 
+    move_piece[i] = G4ThreeVector( x, y, z ) ; 
+    this->assembly->AddPlacedVolume( fet_air_hole_log, move_piece[i], rotate_fet_air_hole ) ; 
+  }
   
   // Cold Finger
   G4Tubs* finger = this->finger();
@@ -1164,10 +1159,12 @@ void DetectionSystemGriffin::ConstructColdFinger()
   G4SubtractionSolid* extra_cold_block = this->extraColdBlock();
   G4RotationMatrix* rotate_extra_cold_block = new G4RotationMatrix;
   rotate_extra_cold_block->rotateY(M_PI/2.0);
+
   G4ThreeVector move_extra_cold_block(this->detector_total_length -this->can_face_thickness/2.0
-	- this->rear_plate_thickness +this->shift 
-	+ this->applied_back_shift -this->extra_block_distance_from_back_plate
-        - this->extra_block_thickness/2.0, 0, 0);
+	     - this->rear_plate_thickness +this->shift 
+	     + this->applied_back_shift -this->extra_block_distance_from_back_plate
+       - this->extra_block_thickness/2.0, 0, 0);
+
   extra_cold_block_log = new G4LogicalVolume(extra_cold_block, structureMaterial, "extra_cold_block_log", 0, 0, 0);
 
   this->assembly->AddPlacedVolume(extra_cold_block_log, move_extra_cold_block, rotate_extra_cold_block);  
@@ -1192,180 +1189,89 @@ void DetectionSystemGriffin::ConstructColdFinger()
   cooling_side_block_log = new G4LogicalVolume(cooling_side_block, structureMaterial, "cooling_side_block_log", 0, 0, 0);
   cooling_side_block_log->SetVisAttributes(structureMat_vis_att);
 
-  G4RotationMatrix* rotate_cooling_side_block1 = new G4RotationMatrix;
-  rotate_cooling_side_block1->rotateZ(M_PI/2.0);
-  G4ThreeVector move_cooling_side_block1(this->cooling_side_block_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	0, this->germanium_width - this->cooling_side_block_horizontal_depth/2.0);
-  
-  this->assembly->AddPlacedVolume(cooling_side_block_log, move_cooling_side_block1, rotate_cooling_side_block1);    
-  
-  G4RotationMatrix* rotate_cooling_side_block2 = new G4RotationMatrix;
-  rotate_cooling_side_block2->rotateZ(M_PI/2.0);
-  rotate_cooling_side_block2->rotateX(-M_PI/2.0);
-  G4ThreeVector move_cooling_side_block2(this->cooling_side_block_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	this->germanium_width - this->cooling_side_block_horizontal_depth/2.0, 0);
-
-  this->assembly->AddPlacedVolume(cooling_side_block_log, move_cooling_side_block2, rotate_cooling_side_block2);    
-  
-  G4RotationMatrix* rotate_cooling_side_block3 = new G4RotationMatrix;
-  rotate_cooling_side_block3->rotateZ(M_PI/2.0);
-  rotate_cooling_side_block3->rotateX(-M_PI);
-  G4ThreeVector move_cooling_side_block3(this->cooling_side_block_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	0, -(this->germanium_width - this->cooling_side_block_horizontal_depth/2.0));
-	
-  this->assembly->AddPlacedVolume(cooling_side_block_log, move_cooling_side_block3, rotate_cooling_side_block3);
-  
-  G4RotationMatrix* rotate_cooling_side_block4 = new G4RotationMatrix;
-  rotate_cooling_side_block4->rotateZ(M_PI/2.0);
-  rotate_cooling_side_block4->rotateX(M_PI/2.0);
-  G4ThreeVector move_cooling_side_block4(this->cooling_side_block_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	- (this->germanium_width - this->cooling_side_block_horizontal_depth/2.0), 0);
-
-  this->assembly->AddPlacedVolume(cooling_side_block_log, move_cooling_side_block4, rotate_cooling_side_block4);  
-  
-  // Cooling Side Bars
   G4Box* cooling_bar = this->coolingBar();
-  cooling_bar_log = new G4LogicalVolume(cooling_bar, structureMaterial, "cooling_bar_log", 0, 0, 0);
+  cooling_bar_log = new G4LogicalVolume(cooling_bar, structureMaterial, "cooling_bar_log", 0, 0, 0); // Note: This was copied here so that it would run before the loop. 
   cooling_bar_log->SetVisAttributes(structureMat_vis_att);
-   
-  G4RotationMatrix* rotate_cooling_bar1 = new G4RotationMatrix;
-  rotate_cooling_bar1->rotateZ(M_PI/2.0);
-  G4ThreeVector move_cooling_bar1(this->cooling_bar_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	0, (this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - (this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - this->structureMat_cold_finger_radius)/2.0));
 
-  this->assembly->AddPlacedVolume(cooling_bar_log, move_cooling_bar1, rotate_cooling_bar1);  
-
-  G4RotationMatrix* rotate_cooling_bar2 = new G4RotationMatrix;
-  rotate_cooling_bar2->rotateZ(M_PI/2.0);  
-  rotate_cooling_bar2->rotateX(-M_PI/2.0);
-  G4ThreeVector move_cooling_bar2(this->cooling_bar_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	( this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - (this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - this->structureMat_cold_finger_radius)/2.0), 0);
-
-  this->assembly->AddPlacedVolume(cooling_bar_log, move_cooling_bar2, rotate_cooling_bar2);  
+  G4RotationMatrix* rotate_piece[8] ; 
   
-  G4RotationMatrix* rotate_cooling_bar3 = new G4RotationMatrix;
-  rotate_cooling_bar3->rotateZ(M_PI/2.0);  
-  rotate_cooling_bar3->rotateX(-M_PI);
-  G4ThreeVector move_cooling_bar3(this->cooling_bar_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	0, -(this->germanium_width 
+  x = this->cooling_side_block_thickness/2.0
+      + this->cold_finger_end_plate_thickness 
+      + this->can_face_thickness/2.0 
+      + this->germanium_dist_from_can_face +this->germanium_length 
+      + this->cold_finger_space +this->shift +this->applied_back_shift ; 
+
+  y01 = this->germanium_width - this->cooling_side_block_horizontal_depth/2.0 ; 
+
+  y02 = this->germanium_width 
         - this->cooling_side_block_horizontal_depth
         - (this->germanium_width 
         - this->cooling_side_block_horizontal_depth
-        - this->structureMat_cold_finger_radius)/2.0));
+        - this->structureMat_cold_finger_radius)/2.0 ; 
 
-  this->assembly->AddPlacedVolume(cooling_bar_log, move_cooling_bar3, rotate_cooling_bar3);  
-  
-  G4RotationMatrix* rotate_cooling_bar4 = new G4RotationMatrix;
-  rotate_cooling_bar4->rotateZ(M_PI/2.0);  
-  rotate_cooling_bar4->rotateX(M_PI/2.0);
-  G4ThreeVector move_cooling_bar4(this->cooling_bar_thickness/2.0
-	+ this->cold_finger_end_plate_thickness 
-	+ this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift, 
-	- (this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - (this->germanium_width 
-        - this->cooling_side_block_horizontal_depth
-        - this->structureMat_cold_finger_radius)/2.0), 0);
+  for( i = 0 ; i < 4 ; i++ )
+  {
+    // Add cooling side blocks and cooling bars at the same time. 
+    rotate_piece[2*i] = new G4RotationMatrix ; // cooling side blocks
+    rotate_piece[2*i]->rotateZ( M_PI/2.0 ) ;
+    rotate_piece[2*i]->rotateX( M_PI/2.0 - i*M_PI/2.0 ) ; 
 
-  this->assembly->AddPlacedVolume(cooling_bar_log, move_cooling_bar4, rotate_cooling_bar4);     
-   
+    y = -y01 * cos( i*M_PI/2.0 ) ; 
+    z = -y01 * sin( i*M_PI/2.0 ) ; 
+
+    move_piece[2*i] = G4ThreeVector( x, y, z ) ; 
+
+    rotate_piece[2*i+1] = new G4RotationMatrix ; // cooling bars
+    rotate_piece[2*i+1]->rotateZ( M_PI/2.0 ) ;
+    rotate_piece[2*i+1]->rotateX( M_PI/2.0 - i*M_PI/2.0 ) ; 
+
+    y = -y02 * cos( i*M_PI/2.0 ) ; 
+    z = -y02 * sin( i*M_PI/2.0 ) ; 
+
+    move_piece[2*i+1] = G4ThreeVector( x, y, z ) ; 
+
+    this->assembly->AddPlacedVolume( cooling_side_block_log, move_piece[2*i], rotate_piece[2*i] );      
+    this->assembly->AddPlacedVolume( cooling_bar_log, move_piece[2*i+1], rotate_piece[2*i+1] );  
+  }
+
   // Triangle posts from "Cut A"
   // First, find how far from the centre to place the tips of the triangles
+
   G4double distance_of_the_tip = this->germanium_separation/2.0 
         + (this->germanium_width/2.0 - this->germanium_shift) //centre of the middle hole
 	+ sqrt( pow((this->germanium_outer_radius 
 	+ this->triangle_posts_distance_from_crystals), 2.0)
 	- pow(this->germanium_width/2.0 - this->germanium_shift, 2.0) );
+
   // The distance of the base from the detector centre
-  G4double distance_of_the_base = this->germanium_separation/2.0
-        + this->germanium_width;
+  G4double distance_of_the_base = this->germanium_separation/2.0 + this->germanium_width;
+
   G4double triangle_post_length = this->germanium_length - this->triangle_post_starting_depth
         + this->cold_finger_space;
 
   G4Trd* triangle_post = this->trianglePost();
   triangle_post_log = new G4LogicalVolume(triangle_post, structureMaterial, "triangle_post_log", 0, 0, 0);
-   
-  G4RotationMatrix* rotate_triangle_post1 = new G4RotationMatrix;
-  rotate_triangle_post1->rotateY(0);
-  G4ThreeVector move_triangle_post1(this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift
-	- triangle_post_length/2.0,
-	0, (distance_of_the_base + distance_of_the_tip)/2.0); 
 
-  this->assembly->AddPlacedVolume(triangle_post_log, move_triangle_post1, rotate_triangle_post1);  
-   
-  G4RotationMatrix* rotate_triangle_post2 = new G4RotationMatrix;
-  rotate_triangle_post2->rotateY(0);
-  rotate_triangle_post2->rotateX(-M_PI/2.0);
-  G4ThreeVector move_triangle_post2(this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift
-	- triangle_post_length/2.0,
-	(distance_of_the_base + distance_of_the_tip)/2.0, 0);  
+  x = this->can_face_thickness/2.0 
+  + this->germanium_dist_from_can_face +this->germanium_length 
+  + this->cold_finger_space +this->shift +this->applied_back_shift
+  - triangle_post_length/2.0 ; 
 
-  this->assembly->AddPlacedVolume(triangle_post_log, move_triangle_post2, rotate_triangle_post2);  
-   
-  G4RotationMatrix* rotate_triangle_post3 = new G4RotationMatrix;
-  rotate_triangle_post3->rotateY(0);
-  rotate_triangle_post3->rotateX(-M_PI);
-  G4ThreeVector move_triangle_post3(this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift
-	- triangle_post_length/2.0,
-	0, -(distance_of_the_base + distance_of_the_tip)/2.0); 
+  y0 = (distance_of_the_base + distance_of_the_tip)/2.0 ;
 
-  this->assembly->AddPlacedVolume(triangle_post_log, move_triangle_post3, rotate_triangle_post3);  
-   
-  G4RotationMatrix* rotate_triangle_post4 = new G4RotationMatrix;
-  rotate_triangle_post4->rotateY(0);
-  rotate_triangle_post4->rotateX(M_PI/2.0);
-  G4ThreeVector move_triangle_post4(this->can_face_thickness/2.0 
-	+ this->germanium_dist_from_can_face +this->germanium_length 
-	+ this->cold_finger_space +this->shift +this->applied_back_shift
-	- triangle_post_length/2.0,
-	- (distance_of_the_base + distance_of_the_tip)/2.0, 0); 
+  for( i = 0 ; i < 4 ; i++ )
+  {
+    rotate_piece[i] = new G4RotationMatrix ;
+    rotate_piece[i]->rotateY(0) ; // Initially included...seems a little redundant. 
+    rotate_piece[i]->rotateX( M_PI/2.0 - i*M_PI/2.0 ) ;  // 4, 1, 2, 3
 
-  this->assembly->AddPlacedVolume(triangle_post_log, move_triangle_post4, rotate_triangle_post4);  
-   
+    y = -y0 * cos( i*M_PI/2.0 ) ; 
+    z =  y0 * sin( i*M_PI/2.0 ) ; 
+
+    move_piece[i] = G4ThreeVector( x, y, z ) ; 
+
+    this->assembly->AddPlacedVolume(triangle_post_log, move_piece[i], rotate_piece[i]);  
+  }  
 }//end ::ConstructColdFinger
 
 ///////////////////////////////////////////////////////////////////////
@@ -2236,18 +2142,23 @@ G4UnionSolid* DetectionSystemGriffin::interCrystalelectrodeMatBack()
 
 G4UnionSolid* DetectionSystemGriffin::interCrystalelectrodeMatFront()
 {
+   
+
+
    G4double distance_of_the_triangle_tips = this->germanium_separation/2.0 
         + (this->germanium_width/2.0 - this->germanium_shift) //centre of the middle hole
 	+ sqrt( pow((this->germanium_outer_radius 
 	+ this->triangle_posts_distance_from_crystals), 2.0)
 	- pow(this->germanium_width/2.0 - this->germanium_shift, 2.0) );
+
    G4Trd* electrodeMat_piece1 = new G4Trd("electrodeMat_piece1", distance_of_the_triangle_tips
-        - this->triangle_posts_distance_from_crystals, 
-        this->germanium_width - this->germanium_bent_length
-	*tan(this->bent_end_angle), 
+          - this->triangle_posts_distance_from_crystals, 
+          this->germanium_width - this->germanium_bent_length
+	       *tan(this->bent_end_angle), 
         this->germanium_separation/2.0,
-	this->germanium_separation/2.0, (this->germanium_bent_length
+	        this->germanium_separation/2.0, (this->germanium_bent_length
         - this->electrodeMat_starting_depth)/2.0);
+
    G4Trd* electrodeMat_piece2 = new G4Trd("electrodeMat_piece2", distance_of_the_triangle_tips
         - this->triangle_posts_distance_from_crystals, 
         this->germanium_width - this->germanium_bent_length
