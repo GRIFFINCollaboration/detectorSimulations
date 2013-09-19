@@ -1560,14 +1560,12 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	"shell_for_left_suppressor_log", 0,0,0);
   shell_for_left_suppressor_log->SetVisAttributes(Suppressor_vis_att);
   
-  // G4SubtractionSolid* right_suppressor = this->frontRightSlantSuppressor();
-  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false);
+  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping.
 
   right_suppressor_log = new G4LogicalVolume(right_suppressor, materialBGO, "right_suppressor_log", 0, 0, 0);
   right_suppressor_log->SetVisAttributes(innards_vis_att);
 
-  // G4SubtractionSolid* left_suppressor = this->frontLeftSlantSuppressor();
-  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false);  
+  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false); // Left, non-chopping. 
 
   left_suppressor_log = new G4LogicalVolume(left_suppressor, materialBGO, "left_suppressor_log", 0, 0, 0);
   left_suppressor_log->SetVisAttributes(innards_vis_att);
@@ -1947,11 +1945,8 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontRightSlantSuppressor()
   // cut out cavity  
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0), 0, -(this->suppressor_shell_thickness/2.0) );
   	
-  // G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-  //   side_suppressor_shell, this->choppingFrontRightSlantSuppressor(), 0, move_cut); // Original
-
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->frontSlantSuppressor(false, true), 0, move_cut);
+    side_suppressor_shell, this->frontSlantSuppressor(false, true), 0, move_cut); // right, chopping from frontSlantSuppressor
 
   return side_suppressor_shell_with_cavity;
 
@@ -1993,11 +1988,8 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontLeftSlantSuppressor()
   // cut out cavity  
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0 ), 0, (this->suppressor_shell_thickness/2.0) );
   	
-  // G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-  //   side_suppressor_shell, this->choppingFrontLeftSlantSuppressor(), 0, move_cut); // Original
-
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->frontSlantSuppressor(true, true), 0, move_cut);
+    side_suppressor_shell, this->frontSlantSuppressor(true, true), 0, move_cut); // chopping, left from frontSlantSuppressor. 
 
   return side_suppressor_shell_with_cavity;
 
