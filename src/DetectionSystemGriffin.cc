@@ -1560,12 +1560,14 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	"shell_for_left_suppressor_log", 0,0,0);
   shell_for_left_suppressor_log->SetVisAttributes(Suppressor_vis_att);
   
-  G4SubtractionSolid* right_suppressor = this->frontRightSlantSuppressor();
+  // G4SubtractionSolid* right_suppressor = this->frontRightSlantSuppressor();
+  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false);
 
   right_suppressor_log = new G4LogicalVolume(right_suppressor, materialBGO, "right_suppressor_log", 0, 0, 0);
   right_suppressor_log->SetVisAttributes(innards_vis_att);
 
-  G4SubtractionSolid* left_suppressor = this->frontLeftSlantSuppressor();
+  // G4SubtractionSolid* left_suppressor = this->frontLeftSlantSuppressor();
+  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false);  
 
   left_suppressor_log = new G4LogicalVolume(left_suppressor, materialBGO, "left_suppressor_log", 0, 0, 0);
   left_suppressor_log->SetVisAttributes(innards_vis_att);
@@ -1945,8 +1947,11 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontRightSlantSuppressor()
   // cut out cavity  
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0), 0, -(this->suppressor_shell_thickness/2.0) );
   	
+  // G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
+  //   side_suppressor_shell, this->choppingFrontRightSlantSuppressor(), 0, move_cut); // Original
+
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->choppingFrontRightSlantSuppressor(), 0, move_cut);
+    side_suppressor_shell, this->frontSlantSuppressor(false, true), 0, move_cut);
 
   return side_suppressor_shell_with_cavity;
 
@@ -1988,8 +1993,11 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontLeftSlantSuppressor()
   // cut out cavity  
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0 ), 0, (this->suppressor_shell_thickness/2.0) );
   	
+  // G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
+  //   side_suppressor_shell, this->choppingFrontLeftSlantSuppressor(), 0, move_cut); // Original
+
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->choppingFrontLeftSlantSuppressor(), 0, move_cut);
+    side_suppressor_shell, this->frontSlantSuppressor(true, true), 0, move_cut);
 
   return side_suppressor_shell_with_cavity;
 
@@ -2577,127 +2585,55 @@ G4SubtractionSolid* DetectionSystemGriffin::backSuppressorQuarter()
 }//end ::backSuppressorQuarter
 
 
-G4SubtractionSolid* DetectionSystemGriffin::frontRightSlantSuppressor()
+G4SubtractionSolid* DetectionSystemGriffin::frontSlantSuppressor( G4bool leftSide, G4bool choppingSuppressor )
 {
-  G4double length_z 		= this->side_suppressor_length;
-  G4double length_y 		= this->side_BGO_thickness;
-  G4double length_longer_x 	= this->detector_total_width/2.0 +this->BGO_can_seperation +this->side_BGO_thickness;
-  G4double length_shorter_x 	= length_longer_x -this->side_BGO_thickness;
+  // If leftSide is true, the suppressor will be for the left side. 
+  // If chop is true, it will be a chopping suppressor. 
+
+  G4double length_z     = this->side_suppressor_length;
+  G4double length_y     = this->side_BGO_thickness;
+  G4double length_longer_x  = 0 ; 
+
+  if( choppingSuppressor )
+    length_longer_x  = this->detector_total_width/2.0 + this->BGO_can_seperation + this->side_BGO_thickness + this->extra_cut_length/2.0;
+  else
+    length_longer_x  = this->detector_total_width/2.0 + this->BGO_can_seperation + this->side_BGO_thickness;
+    
+  G4double length_shorter_x   = length_longer_x -this->side_BGO_thickness;
 
   G4Trap* suppressor = new G4Trap("suppressor", length_z, length_y, length_longer_x, length_shorter_x);
   
-  G4double half_length_x	= length_longer_x/2.0 +1.0*cm;
-  G4double half_thickness_y 	= this->side_BGO_thickness/2.0;
-  G4double half_length_z 	= ((this->side_BGO_thickness 
-  				- this->BGO_chopped_tip)/sin(this->bent_end_angle))/2.0;
+  G4double half_length_x  = length_longer_x/2.0 + 1.0*cm;
+  G4double half_thickness_y   = this->side_BGO_thickness / 2.0;
+  G4double half_length_z  = ((this->side_BGO_thickness - this->BGO_chopped_tip) / sin(this->bent_end_angle)) / 2.0;
 
   G4Box* chopping_box = new G4Box("chopping_box", half_length_x, half_thickness_y, half_length_z);
 
   G4RotationMatrix* rotate_chopping_box = new G4RotationMatrix;
-  rotate_chopping_box->rotateX(-this->bent_end_angle);
-  G4ThreeVector move_chopping_box(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip -0.5*sqrt(pow((2.0*half_length_z), 2.0)
-	+ pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle -atan(half_thickness_y/half_length_z)),
-	- length_z/2.0 +0.5*sqrt(pow((2.0*half_length_z), 2.0) +pow((2.0*half_thickness_y), 2.0))*sin(M_PI/2.0 
-	- this->bent_end_angle -atan(half_thickness_y/half_length_z)));
+  G4ThreeVector move_chopping_box ; 
 
-
+  if( leftSide )
+    {
+      rotate_chopping_box->rotateX( this->bent_end_angle );
+      move_chopping_box = G4ThreeVector(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip -0.5*sqrt(pow((2.0*half_length_z), 2.0)
+                          + pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle -atan(half_thickness_y/half_length_z)),
+                          length_z/2.0 - 0.5*sqrt(pow((2.0*half_length_z), 2.0) + pow((2.0*half_thickness_y), 2.0)) * sin(M_PI/2.0
+                          - this->bent_end_angle - atan(half_thickness_y/half_length_z)));
+    }    
+  else
+    {
+      rotate_chopping_box->rotateX( -this->bent_end_angle );
+      move_chopping_box = G4ThreeVector(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip - 0.5 * sqrt(pow((2.0*half_length_z), 2.0)
+                          + pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle - atan(half_thickness_y/half_length_z)),
+                          - length_z/2.0 + 0.5*sqrt(pow((2.0*half_length_z), 2.0) +pow((2.0*half_thickness_y), 2.0)) * sin(M_PI/2.0 
+                          - this->bent_end_angle - atan(half_thickness_y/half_length_z)));
+    }
+    
   G4SubtractionSolid* side_suppressor = new G4SubtractionSolid("side_suppressor", 
-  	suppressor, chopping_box, rotate_chopping_box, move_chopping_box);
+    suppressor, chopping_box, rotate_chopping_box, move_chopping_box);
 
   return side_suppressor;
-
-}//end ::frontRightSlantSuppressor
-
-G4SubtractionSolid* DetectionSystemGriffin::choppingFrontRightSlantSuppressor()
-{
-    G4double length_z 		= this->side_suppressor_length;
-    G4double length_y 		= this->side_BGO_thickness;
-    G4double length_longer_x 	= this->detector_total_width/2.0 +this->BGO_can_seperation +this->side_BGO_thickness + this->extra_cut_length/2.0;
-    G4double length_shorter_x 	= length_longer_x -this->side_BGO_thickness;
-
-    G4Trap* suppressor = new G4Trap("suppressor", length_z, length_y, length_longer_x, length_shorter_x);
-
-    G4double half_length_x	= length_longer_x/2.0 +1.0*cm;
-    G4double half_thickness_y 	= this->side_BGO_thickness/2.0;
-    G4double half_length_z 	= ((this->side_BGO_thickness
-                  - this->BGO_chopped_tip)/sin(this->bent_end_angle))/2.0;
-
-    G4Box* chopping_box = new G4Box("chopping_box", half_length_x, half_thickness_y, half_length_z);
-
-    G4RotationMatrix* rotate_chopping_box = new G4RotationMatrix;
-    rotate_chopping_box->rotateX(-this->bent_end_angle);
-    G4ThreeVector move_chopping_box(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip -0.5*sqrt(pow((2.0*half_length_z), 2.0)
-      + pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle -atan(half_thickness_y/half_length_z)),
-      - length_z/2.0 +0.5*sqrt(pow((2.0*half_length_z), 2.0) +pow((2.0*half_thickness_y), 2.0))*sin(M_PI/2.0
-      - this->bent_end_angle -atan(half_thickness_y/half_length_z)));
-
-
-    G4SubtractionSolid* side_suppressor = new G4SubtractionSolid("side_suppressor",
-      suppressor, chopping_box, rotate_chopping_box, move_chopping_box);
-
-    return side_suppressor;
-
-}//end ::choppingFrontRightSlantSuppressor
-
-
-G4SubtractionSolid* DetectionSystemGriffin::frontLeftSlantSuppressor()
-{
-  G4double length_z 		= this->side_suppressor_length;
-  G4double length_y 		= this->side_BGO_thickness;
-  G4double length_longer_x 	= this->detector_total_width/2.0 +this->BGO_can_seperation +this->side_BGO_thickness;
-  G4double length_shorter_x 	= length_longer_x -this->side_BGO_thickness;
-
-  G4Trap* suppressor = new G4Trap("suppressor", length_z, length_y, length_longer_x, length_shorter_x);
-  
-  G4double half_length_x 	= length_longer_x/2.0 +1.0*cm;
-  G4double half_thickness_y 	= this->side_BGO_thickness/2.0;
-  G4double half_length_z 	= ((this->side_BGO_thickness -this->BGO_chopped_tip)/sin(this->bent_end_angle))/2.0;
-
-  G4Box* chopping_box = new G4Box("chopping_box", half_length_x, half_thickness_y, half_length_z);
-
-  G4RotationMatrix* rotate_chopping_box = new G4RotationMatrix;
-  rotate_chopping_box->rotateX(this->bent_end_angle);
-  G4ThreeVector move_chopping_box(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip -0.5*sqrt(pow((2.0*half_length_z), 2.0)
-	+ pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle -atan(half_thickness_y/half_length_z)),
-	length_z/2.0 -0.5*sqrt(pow((2.0*half_length_z), 2.0) +pow((2.0*half_thickness_y), 2.0))*sin(M_PI/2.0 
-	- this->bent_end_angle -atan(half_thickness_y/half_length_z)));
-
-
-  G4SubtractionSolid* side_suppressor = new G4SubtractionSolid("side_suppressor", 
-  	suppressor, chopping_box, rotate_chopping_box, move_chopping_box);
-  	
-  return side_suppressor;
-}//end ::frontLeftSlantSuppressor
-
-G4SubtractionSolid* DetectionSystemGriffin::choppingFrontLeftSlantSuppressor()
-{
-    G4double length_z 		= this->side_suppressor_length;
-    G4double length_y 		= this->side_BGO_thickness;
-    G4double length_longer_x 	= this->detector_total_width/2.0 +this->BGO_can_seperation +this->side_BGO_thickness + this->extra_cut_length/2.0;
-    G4double length_shorter_x 	= length_longer_x -this->side_BGO_thickness;
-
-    G4Trap* suppressor = new G4Trap("suppressor", length_z, length_y, length_longer_x, length_shorter_x);
-
-    G4double half_length_x 	= length_longer_x/2.0 +1.0*cm;
-    G4double half_thickness_y 	= this->side_BGO_thickness/2.0;
-    G4double half_length_z 	= ((this->side_BGO_thickness -this->BGO_chopped_tip)/sin(this->bent_end_angle))/2.0;
-
-    G4Box* chopping_box = new G4Box("chopping_box", half_length_x, half_thickness_y, half_length_z);
-
-    G4RotationMatrix* rotate_chopping_box = new G4RotationMatrix;
-    rotate_chopping_box->rotateX(this->bent_end_angle);
-    G4ThreeVector move_chopping_box(0, this->side_BGO_thickness/2.0 -this->BGO_chopped_tip -0.5*sqrt(pow((2.0*half_length_z), 2.0)
-      + pow((2.0*half_thickness_y), 2.0))*cos(M_PI/2.0 -this->bent_end_angle -atan(half_thickness_y/half_length_z)),
-      length_z/2.0 -0.5*sqrt(pow((2.0*half_length_z), 2.0) +pow((2.0*half_thickness_y), 2.0))*sin(M_PI/2.0
-      - this->bent_end_angle -atan(half_thickness_y/half_length_z)));
-
-
-    G4SubtractionSolid* side_suppressor = new G4SubtractionSolid("side_suppressor",
-      suppressor, chopping_box, rotate_chopping_box, move_chopping_box);
-
-    return side_suppressor;
-}//end ::choppingFrontLeftSlantSuppressor
-
+}// end ::frontSlantSuppressor
 
 G4SubtractionSolid* DetectionSystemGriffin::rightSuppressorExtension()  // Modified!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 {
