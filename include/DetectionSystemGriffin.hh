@@ -383,15 +383,8 @@ class DetectionSystemGriffin
 
     //internal methods for ConstructNewSuppressorCasing()
     G4SubtractionSolid* backSuppressorQuarter();
-    G4SubtractionSolid* frontRightSlantSuppressor();
-    G4SubtractionSolid* frontLeftSlantSuppressor();
-    G4SubtractionSolid* rightSuppressorExtension();
-    G4SubtractionSolid* leftSuppressorExtension();
-
-    G4SubtractionSolid* choppingFrontRightSlantSuppressor();
-    G4SubtractionSolid* choppingFrontLeftSlantSuppressor();
-    G4SubtractionSolid* choppingRightSuppressorExtension();
-    G4SubtractionSolid* choppingLeftSuppressorExtension();
+    G4SubtractionSolid* frontSlantSuppressor(G4bool leftSide, G4bool choppingSuppressor) ; 
+    G4SubtractionSolid* sideSuppressorExtension(G4bool leftSide, G4bool choppingSuppressor) ;
 
     //internal methods for New SuppressorCasingWithShells
     G4SubtractionSolid* shellForBackSuppressorQuarter();
