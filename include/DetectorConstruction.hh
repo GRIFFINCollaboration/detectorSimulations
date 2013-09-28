@@ -37,8 +37,8 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
+#include "G4ThreeVector.hh"
 
-#include "G4SDManager.hh"
 
 class DetectorMessenger;
 class SensitiveDetector;
@@ -52,6 +52,7 @@ class DetectionSystemSpiceV02;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
 
+class DetectionSystemBox;
 
 class MagneticField;
 
@@ -64,10 +65,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
    ~DetectorConstruction();
 
   private:
-    G4SDManager* SDman;
-    G4LogicalVolume* hallLog;
 
-    MagneticField* expHallMagField;
+    MagneticField* worldMagField;
 
   public:
     void SetWorldMaterial( G4String );
@@ -87,6 +86,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddApparatusSpiceTargetChamber();
     void AddApparatus8piVacuumChamber();
     void AddApparatus8piVacuumChamberAuxMatShell(G4int thickness);
+    
+    G4double GetWorldSizeX()           {return WorldSizeX;};
+    G4double GetWorldSizeY()           {return WorldSizeY;};
+    G4double GetWorldSizeZ()           {return WorldSizeZ;};
+
+    const G4VPhysicalVolume* GetphysiWorld() {return physiWorld;};
+                 
 
   public:
     G4VPhysicalVolume* Construct();
@@ -109,12 +115,32 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemSpiceV02(G4int ndet);
 
   private:
-    G4double hall_x;
-    G4double hall_y;
-    G4double hall_z;
-    G4bool   hall_vis;
+//     G4double hall_x;
+//     G4double hall_y;
+//     G4double hall_z;
+    G4double WorldSizeX;
+    G4double WorldSizeY;
+    G4double WorldSizeZ;
+    G4bool   world_vis;
     G4bool   builtDetectors;
     G4double griffinFwdBackPosition;
+
+
+    G4Box*             solidWorld;    //pointer to the solid World 
+    G4LogicalVolume*   logicWorld;    //pointer to the logical World
+    G4VPhysicalVolume* physiWorld;    //pointer to the physical World
+
+    // Box
+    G4String           box_mat;
+    G4double           box_thickness;
+    G4ThreeVector      box_inner_dimensions;
+    G4ThreeVector      box_colour;
+
+    // Grid
+    G4String           grid_mat;
+    G4double           grid_size;
+    G4ThreeVector      grid_dimensions;
+    G4ThreeVector      grid_colour;
 
     void DefineSuppressedParameters();
     void DefineMaterials();

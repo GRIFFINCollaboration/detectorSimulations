@@ -99,10 +99,7 @@ class DetectionSystemGriffin
 		G4bool dead_layer_include_flag;
 		G4double inner_dead_layer_thickness;
 		G4double outer_dead_layer_thickness;
-	 
-		// Suppressor design flags
-		G4bool suppressor_shells_include_flag;
-	   
+	 	   
 		//Cold Finger
 		G4double cold_finger_outer_shell_radius;
 		G4double cold_finger_shell_thickness;

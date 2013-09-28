@@ -1,5 +1,5 @@
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -18,7 +18,7 @@
 #include "G4AssemblyVolume.hh"
 #include "G4SubtractionSolid.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -61,31 +61,31 @@ DetectionSystem8pi::~DetectionSystem8pi()
   delete auxMat_plug_log;
   delete auxMat_layer_log;
 
-  delete germanium_block_SD;
-  delete inner_BGO_annulus_SD;
-  delete outer_lower_BGO_SD;
-  delete outer_upper_BGO_SD;
+//  delete germanium_block_SD;
+//  delete inner_BGO_annulus_SD;
+//  delete outer_lower_BGO_SD;
+//  delete outer_upper_BGO_SD;
 }
 
-G4int DetectionSystem8pi::Build(G4SDManager* mySDman)
+G4int DetectionSystem8pi::Build()//G4SDManager* mySDman)
 {
 
-  if( !germanium_block_SD ) {
-    germanium_block_SD = new SensitiveDetector("/sd/all8pi0", "Collection8piGermanium");
-    mySDman->AddNewDetector( germanium_block_SD );
-  }
-  if( !inner_BGO_annulus_SD ) {
-    inner_BGO_annulus_SD = new SensitiveDetector("/sd/all8pi1", "Collection8piInnerBGO");
-    mySDman->AddNewDetector( inner_BGO_annulus_SD );
-  }
-  if( !outer_lower_BGO_SD ) {
-    outer_lower_BGO_SD = new SensitiveDetector("/sd/all8pi2", "Collection8piOuterLowerBGO");
-    mySDman->AddNewDetector( outer_lower_BGO_SD );
-  }
-  if( !outer_upper_BGO_SD ) {
-    outer_upper_BGO_SD = new SensitiveDetector("/sd/all8pi3", "Collection8piOuterUpperBGO");
-    mySDman->AddNewDetector( outer_upper_BGO_SD );
-  }
+//  if( !germanium_block_SD ) {
+//    germanium_block_SD = new SensitiveDetector("/sd/all8pi0", "Collection8piGermanium");
+//    mySDman->AddNewDetector( germanium_block_SD );
+//  }
+//  if( !inner_BGO_annulus_SD ) {
+//    inner_BGO_annulus_SD = new SensitiveDetector("/sd/all8pi1", "Collection8piInnerBGO");
+//    mySDman->AddNewDetector( inner_BGO_annulus_SD );
+//  }
+//  if( !outer_lower_BGO_SD ) {
+//    outer_lower_BGO_SD = new SensitiveDetector("/sd/all8pi2", "Collection8piOuterLowerBGO");
+//    mySDman->AddNewDetector( outer_lower_BGO_SD );
+//  }
+//  if( !outer_upper_BGO_SD ) {
+//    outer_upper_BGO_SD = new SensitiveDetector("/sd/all8pi3", "Collection8piOuterUpperBGO");
+//    mySDman->AddNewDetector( outer_upper_BGO_SD );
+//  }
 
   // Build assembly volumes
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -152,10 +152,10 @@ G4int DetectionSystem8pi::Build(G4SDManager* mySDman)
   //Add hevimetal and auxMat plug
 
   // Sensitive Detector
-  germanium_block_log->SetSensitiveDetector( germanium_block_SD );
-  inner_BGO_annulus_log->SetSensitiveDetector( inner_BGO_annulus_SD );
-  outer_lower_BGO_annulus_log->SetSensitiveDetector( outer_lower_BGO_SD );
-  outer_upper_BGO_annulus_log->SetSensitiveDetector( outer_upper_BGO_SD );
+//  germanium_block_log->SetSensitiveDetector( germanium_block_SD );
+//  inner_BGO_annulus_log->SetSensitiveDetector( inner_BGO_annulus_SD );
+//  outer_lower_BGO_annulus_log->SetSensitiveDetector( outer_lower_BGO_SD );
+//  outer_upper_BGO_annulus_log->SetSensitiveDetector( outer_upper_BGO_SD );
 
   return 1;
 }//end ::Build 

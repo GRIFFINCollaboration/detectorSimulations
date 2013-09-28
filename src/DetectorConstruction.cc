@@ -34,7 +34,7 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 #include "G4RunManager.hh"
 
 #include "G4Material.hh"
@@ -52,7 +52,7 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -83,22 +83,46 @@
 #include "Apparatus8piVacuumChamberAuxMatShell.hh"
 #include "ApparatusFieldBox.hh"
 
+#include "DetectionSystemBox.hh" // New file
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction() :
     // Fields
-    expHallMagField(0)
+    expHallMagField( 0 ), 
+    defaultMaterial( 0 ),
+    solidWorld( 0 ), 
+    logicWorld( 0 ), 
+    physiWorld( 0 )
 {
+
+	WorldSizeX  = WorldSizeY = WorldSizeZ = 10.0*m;
+
+  box_mat = "G4_WATER";
+  box_thickness = 0.0*mm;
+  box_inner_dimensions = G4ThreeVector(0.0*mm,0.0*mm,0.0*mm);
+  box_colour = G4ThreeVector(0.0,0.0,1.0);
+
+  grid_mat = "G4_WATER";
+  grid_size = 0.0*mm;
+  grid_dimensions = G4ThreeVector(0.0*mm,0.0*mm,0.0*mm);
+  grid_colour = G4ThreeVector(1.0,0.0,0.0);
+
   // materials
   DefineMaterials();
-  this->builtDetectors = false;
+
+//  this->builtDetectors = false;
+
+  // ensure the global field is initialized
+  (void)GlobalField::GetObject();
+  
   this->matWorldName = "G4_AIR";
 
-  this->hall_x = 10.0*m;
-  this->hall_y = 10.0*m;
-  this->hall_z = 10.0*m;
+//  this->hall_x = 10.0*m;
+//  this->hall_y = 10.0*m;
+//  this->hall_z = 10.0*m; // replaced by world
 
-  this->hall_vis = false;
+//  this->hall_vis = false;
 
   // Generic Target Apparatus
   this->setGenericTargetMaterial   = false;
@@ -112,6 +136,7 @@ DetectorConstruction::DetectorConstruction() :
   this->setFieldBoxMagneticField= false;
 
   // parameters to suppress:
+
   DefineSuppressedParameters();
 
   // create commands for interactive definition
@@ -134,78 +159,117 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
+
+	// Replaced by ConstructDetectionSystems
+	
   // Experimental hall (world volume)
-  
   // search the world material by its name
+  
+  G4GeometryManager::GetInstance()->OpenGeometry();
+  G4PhysicalVolumeStore::GetInstance()->Clean();
+  G4LogicalVolumeStore::GetInstance()->Clean();
+  G4SolidStore::GetInstance()->Clean();
+  
   G4Material* matWorld = G4Material::GetMaterial(matWorldName);
   
-  if( !matWorld ) {
-    G4cout << " ----> Material " << matWorldName << " not found, cannot build the experimental hall! " << G4endl;
+	if( !matWorld ) {
+    G4cout << " ----> Material " << matWorldName << " not found, cannot build world! " << G4endl;
     return 0;
   }
   
-  G4Box*             hallBox  = new G4Box("hallBox", this->hall_x, this->hall_y, this->hall_z);
-  G4LogicalVolume*   hallLog  = new G4LogicalVolume(hallBox, matWorld, "hallLog", 0, 0, 0);
-  G4VPhysicalVolume* hallPhys = new G4PVPlacement(0, G4ThreeVector(), "hallPhys", hallLog, 0, false, 0);
+  solidWorld = new G4Box("World", WorldSizeX/2,WorldSizeY/2,WorldSizeZ/2);
   
-  G4VisAttributes* hallVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
-  hallVisAtt->SetForceWireframe(true);
-  hallVisAtt->SetVisibility(this->hall_vis);
-  hallLog->SetVisAttributes(hallVisAtt);
-  this->hallLog = hallLog;  
+  logicWorld = new G4LogicalVolume(solidWorld,		//its solid
+                                   defaultMaterial,	//its material
+                                   "World");		//its name
+  
+  physiWorld = new G4PVPlacement(   0,                  //no rotation
+                                    G4ThreeVector(),	//at (0,0,0)
+                                    logicWorld,         //its logical volume
+                                    "World",            //its name
+                                    0,                  //its mother  volume
+                                    false,              //no boolean operation
+                                    0);                 //copy number  
+  
+  // Visualization Attributes
+  
+  // This was included in the new code but in order to maintain the options available
+  // in the old code I have replaced it with the following block. 
+//  logicWorld->SetVisAttributes (G4VisAttributes::Invisible); 
+  
+  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+  worldVisAtt->SetForceWireframe(true);
+  worldVisAtt->SetVisibility(this->world_vis);
+  logicWorld->SetVisAttributes(worldVisAtt);
+  this->logicWorld = logicWorld; 
+  
+//  G4VisAttributes* hallVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+//  hallVisAtt->SetForceWireframe(true);
+//  hallVisAtt->SetVisibility(this->hall_vis);
+//  hallLog->SetVisAttributes(hallVisAtt);
+//  this->hallLog = hallLog;  
+  
+  return physiWorld ; 
+  
+//  G4Box*             hallBox  = new G4Box("hallBox", this->hall_x, this->hall_y, this->hall_z);
+//  G4LogicalVolume*   hallLog  = new G4LogicalVolume(hallBox, matWorld, "hallLog", 0, 0, 0);
+//  G4VPhysicalVolume* hallPhys = new G4PVPlacement(0, G4ThreeVector(), "hallPhys", hallLog, 0, false, 0);
+  
+ 
 
-  if(this->builtDetectors) {
-      G4cout << "Already Built Detectors!" << G4endl;
-  }
-  else {
-      // sensitive detector manager
-      G4SDManager* mySDman = G4SDManager::GetSDMpointer();
+//  if(this->builtDetectors) {
+//      G4cout << "Already Built Detectors!" << G4endl;
+//  }
+//  else {
+//      // sensitive detector manager
+//      G4SDManager* mySDman = G4SDManager::GetSDMpointer();
 
-      //  DetectionSystemGammaTracking* pGammaTracking = new DetectionSystemGammaTracking();
-      //  this->myGammaTracking = pGammaTracking;
-      //  this->myGammaTracking->Build(mySDman);
+//      //  DetectionSystemGammaTracking* pGammaTracking = new DetectionSystemGammaTracking();
+//      //  this->myGammaTracking = pGammaTracking;
+//      //  this->myGammaTracking->Build(mySDman);
 
-      DetectionSystemBrillance380V1* pBrillance380V1 = new DetectionSystemBrillance380V1();
-      this->myBrillance380V1 = pBrillance380V1;
-      this->myBrillance380V1->Build(mySDman);
+//      DetectionSystemBrillance380V1* pBrillance380V1 = new DetectionSystemBrillance380V1();
+//      this->myBrillance380V1 = pBrillance380V1;
+//      this->myBrillance380V1->Build(mySDman);
 
-      DetectionSystemSodiumIodide* pSodiumIodide = new DetectionSystemSodiumIodide();
-      this->mySodiumIodide = pSodiumIodide;
-      this->mySodiumIodide->Build(mySDman);
+//      DetectionSystemSodiumIodide* pSodiumIodide = new DetectionSystemSodiumIodide();
+//      this->mySodiumIodide = pSodiumIodide;
+//      this->mySodiumIodide->Build(mySDman);
 
-      DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
-      this->myGriffinForward = pGriffinForward;
-      this->myGriffinForward->Build(mySDman);
+//      DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+//      this->myGriffinForward = pGriffinForward;
+//      this->myGriffinForward->Build(mySDman);
 
-      DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
-      this->myGriffinBack = pGriffinBack;
-      this->myGriffinBack->Build(mySDman);
+//      DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+//      this->myGriffinBack = pGriffinBack;
+//      this->myGriffinBack->Build(mySDman);
 
-      DetectionSystem8pi* p8pi = new DetectionSystem8pi();
-      this->my8pi = p8pi;
-      this->my8pi->Build(mySDman);
+//      DetectionSystem8pi* p8pi = new DetectionSystem8pi();
+//      this->my8pi = p8pi;
+//      this->my8pi->Build(mySDman);
 
-      DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar();
-      this->mySceptar = pSceptar;
-      this->mySceptar->Build(mySDman);
+//      DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar();
+//      this->mySceptar = pSceptar;
+//      this->mySceptar->Build(mySDman);
 
-      DetectionSystemSpice* pSpice = new DetectionSystemSpice();
-      this->mySpice = pSpice;
-      this->mySpice->Build(mySDman);
+//      DetectionSystemSpice* pSpice = new DetectionSystemSpice();
+//      this->mySpice = pSpice;
+//      this->mySpice->Build(mySDman);
 
-      DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02();
-      this->mySpiceV02 = pSpiceV02;
-      this->mySpiceV02->Build(mySDman);
+//      DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02();
+//      this->mySpiceV02 = pSpiceV02;
+//      this->mySpiceV02->Build(mySDman);
 
-      DetectionSystemPaces* pPaces = new DetectionSystemPaces();
-      this->myPaces = pPaces;
-      this->myPaces->Build(mySDman);
+//      DetectionSystemPaces* pPaces = new DetectionSystemPaces();
+//      this->myPaces = pPaces;
+//      this->myPaces->Build(mySDman);
 
-      G4cout << "Built Detectors!" << G4endl;
-  }
+//      G4cout << "Built Detectors!" << G4endl;
+//  }
 
-  this->builtDetectors = true;
-  return hallPhys;
+//  this->builtDetectors = true;
+//  return hallPhys;
+
 }
 
 void DetectorConstruction::SetWorldMaterial( G4String name )
@@ -216,15 +280,18 @@ void DetectorConstruction::SetWorldMaterial( G4String name )
 
 void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 {
-  this->hall_x = vec.x();
-  this->hall_y = vec.y();
-  this->hall_z = vec.z();
+//  this->hall_x = vec.x();
+//  this->hall_y = vec.y();
+//  this->hall_z = vec.z();
+	this->WorldSizeX = vec.x ;
+	this->WorldSizeY = vec.y ; // Redundant this-> ? 
+	this->WorldSizeZ = vec.z ;
   UpdateGeometry(); // auto update
 }
 
 void DetectorConstruction::SetWorldVis( G4bool vis )
 {
-  this->hall_vis = vis;
+  this->world_vis = vis;
   UpdateGeometry(); // auto update
 }
 
@@ -259,11 +326,14 @@ void DetectorConstruction::SetGenericTargetPosition( G4ThreeVector vec )
   SetGenericTarget();
 }
 
-void DetectorConstruction::SetGenericTarget( )
+void DetectorConstruction::SetGenericTarget()
 {
-  if(this->setGenericTargetMaterial) {
-    if(this->setGenericTargetDimensions) {
-      if(this->setGenericTargetPosition) {
+  if( this->setGenericTargetMaterial ) 
+  {
+    if( this->setGenericTargetDimensions ) 
+    {
+      if( this->setGenericTargetPosition ) 
+      {
         G4String name = this->genericTargetMaterial;
         G4double vec_x = this->genericTargetDimensions.x()/mm;
         G4double vec_y = this->genericTargetDimensions.y()/mm;
@@ -271,18 +341,11 @@ void DetectorConstruction::SetGenericTarget( )
         ApparatusGenericTarget* pApparatusGenericTarget = new ApparatusGenericTarget();
         pApparatusGenericTarget->Build(name, vec_x, vec_y, vec_z);
         G4RotationMatrix* rotate = new G4RotationMatrix;
-        pApparatusGenericTarget->PlaceApparatus(this->hallLog, this->genericTargetPosition, rotate);
+        pApparatusGenericTarget->PlaceApparatus(logicWorld, this->genericTargetPosition, rotate);
       }
-      else {
-      }
-    }
-    else {
-    }
-  }
-  else {
-  }
+ 		}
+	}
 }
-
 void DetectorConstruction::SetFieldBoxMaterial( G4String name )
 {
   this->setFieldBoxMaterial = true;
@@ -313,52 +376,70 @@ void DetectorConstruction::SetFieldBoxMagneticField( G4ThreeVector vec )
 
 void DetectorConstruction::SetFieldBox( )
 {
-  if(this->setFieldBoxMagneticField) {
-    if(this->setFieldBoxMaterial) {
-      if(this->setFieldBoxDimensions) {
-        if(this->setFieldBoxPosition) {
-          G4String name = this->fieldBoxMaterial;
-          G4double vec_x = this->fieldBoxDimensions.x()/mm;
-          G4double vec_y = this->fieldBoxDimensions.y()/mm;
-          G4double vec_z = this->fieldBoxDimensions.z()/mm;
-          ApparatusFieldBox* pApparatusFieldBox = new ApparatusFieldBox();
-          pApparatusFieldBox->Build(name, vec_x, vec_y, vec_z, this->fieldBoxMagneticField);
-          G4RotationMatrix* rotate = new G4RotationMatrix;
-          pApparatusFieldBox->PlaceApparatus(this->hallLog, this->fieldBoxPosition, rotate);
-        }
-        else {
-        }
-      }
-      else {
-      }
-    }
-    else {
-    }
-  }
-  else {
-  }
+  if( this->setFieldBoxMagneticField && this->setFieldBoxMaterial && 
+  		this->setFieldBoxDimensions 	 && this->setFieldBoxPosition   ) 
+		{
+			G4String name = this->fieldBoxMaterial;
+			G4double vec_x = this->fieldBoxDimensions.x()/mm;
+			G4double vec_y = this->fieldBoxDimensions.y()/mm;
+			G4double vec_z = this->fieldBoxDimensions.z()/mm;
+			ApparatusFieldBox* pApparatusFieldBox = new ApparatusFieldBox();
+			pApparatusFieldBox->Build(name, vec_x, vec_y, vec_z, this->fieldBoxMagneticField);
+			G4RotationMatrix* rotate = new G4RotationMatrix;
+			pApparatusFieldBox->PlaceApparatus(logicWorld, this->fieldBoxPosition, rotate);
+		}
 }
 
+void DetectorConstruction::AddBox()
+{
+    if(box_thickness != 0.0*mm) 
+    {
+    	DetectionSystemBox* pBox = new DetectionSystemBox(	box_inner_dimensions.x(),
+        																									box_inner_dimensions.y(), 
+        																									box_inner_dimensions.z(), 
+        																									box_thickness, 
+        																									box_mat, 
+        																									box_colour ) ;
+        pBox->Build() ;
+        pBox->PlaceDetector( logicWorld ) ;
+    }
+}
+
+void DetectorConstruction::AddGrid()
+{
+    if(grid_size != 0.0*mm) 
+    {
+    	DetectionSystemGrid* pGrid = new DetectionSystemGrid(	grid_dimensions.x(),
+        																										grid_dimensions.y(), 
+        																										grid_dimensions.z(), 
+        																										grid_size, 
+        																										grid_mat, 
+        																										grid_colour ) ;
+        pGrid->Build();
+        pGrid->PlaceDetector( logicWorld );
+    }
+}
 
 void DetectorConstruction::AddApparatusSpiceTargetChamber()
 {
    //Create Target Chamber
    ApparatusSpiceTargetChamber* myApparatusSpiceTargetChamber = new ApparatusSpiceTargetChamber();
-   myApparatusSpiceTargetChamber->Build(this->hallLog); 
+   myApparatusSpiceTargetChamber->Build( logicWorld );
+    
 }
 
 void DetectorConstruction::AddApparatus8piVacuumChamber()
 {
    //Create Vacuum Chamber
    Apparatus8piVacuumChamber* myApparatus8piVacuumChamber = new Apparatus8piVacuumChamber();
-   myApparatus8piVacuumChamber->Build(this->hallLog);
+   myApparatus8piVacuumChamber->Build( logicWorld );
 }
 
 void DetectorConstruction::AddApparatus8piVacuumChamberAuxMatShell(G4int thickness)
 {
    //Create Shell Around Vacuum Chamber
    Apparatus8piVacuumChamberAuxMatShell* myApparatus8piVacuumChamberAuxMatShell = new Apparatus8piVacuumChamberAuxMatShell();
-   myApparatus8piVacuumChamberAuxMatShell->Build(this->hallLog, thickness);
+   myApparatus8piVacuumChamberAuxMatShell->Build( logicWorld, thickness );
 }
 
 void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
@@ -372,12 +453,16 @@ void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
   rotate->rotateZ(0.0);
 
   G4int detector_number = 0;
-
-  this->myGammaTracking->PlaceDetector(this->hallLog, move, rotate, detector_number);
+	
+	DetectionSystemGammaTracking* pGammaTracking = new DetectionSystemGammaTracking() ;
+	pGammaTracking->Build() ;	
+	
+  pGammaTracking->PlaceDetector( logicWorld, move, rotate, detector_number );
 }
 
 void DetectorConstruction::AddDetectionSystemBrillance380V1(G4int ndet)
 {
+	// AddLaBr in the new simulation code. 
   // Describe Placement
   G4double detectorAngles[8][2] = {0};
   G4double theta,phi,position;
@@ -400,21 +485,24 @@ void DetectorConstruction::AddDetectionSystemBrillance380V1(G4int ndet)
   detectorAngles[6][1] 	= 90.0;  
   detectorAngles[7][1] 	= 90.0;
 
+	DetectionSystemBrillance380V1* pDetectionSystemBrillance380V1 = new DetectionSystemBrillance380V1();
+  pDetectionSystemBrillance380V1->Build();
+
   for(G4int detector_number = 0; detector_number < ndet; detector_number++)
   {
     phi = detectorAngles[detector_number][0]*deg; // Creates a ring in phi plane
     theta = detectorAngles[detector_number][1]*deg;     
 
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = 11.0*cm + (this->myBrillance380V1->GetDetectorLengthOfUnitsCM()/2.0);
+    position = 11.0*cm + (this->pDetectionSystemBrillance380V1->GetDetectorLengthOfUnitsCM() / 2.0 ) ;
     move = position * direction;
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
     rotate->rotateX(theta);
     rotate->rotateY(0);
-    rotate->rotateZ(phi+0.5*M_PI); 
+    rotate->rotateZ(phi+0.5*M_PI); // + 0.5 or - 0.5?
       
-    this->myBrillance380V1->PlaceDetector(this->hallLog, move, rotate, detector_number);
+    pDetectionSystemBrillance380V1->PlaceDetector(logicWorld, move, rotate, detector_number);
   }
 }
 
@@ -442,13 +530,16 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
   detectorAngles[6][1] 	= 90.0;
   detectorAngles[7][1] 	= 90.0;
 
+  DetectionSystemSodiumIodide* pSodiumIodide = new DetectionSystemSodiumIodide() ;
+  pSodiumIodide->Build() ;
+
   for(G4int detector_number = 0; detector_number < ndet; detector_number++)
   {
     phi = detectorAngles[detector_number][0]*deg; // Creates a ring in phi plane
     theta = detectorAngles[detector_number][1]*deg;
 
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = 25.0*cm + (this->mySodiumIodide->GetDetectorLengthOfUnitsCM()/2.0);
+    position = 25.0*cm + (this->pSodiumIodide->GetDetectorLengthOfUnitsCM()/2.0);
     move = position * direction;
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
@@ -456,7 +547,7 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
     rotate->rotateY(0);
     rotate->rotateZ(phi+0.5*M_PI);
 
-    this->mySodiumIodide->PlaceDetector(this->hallLog, move, rotate, detector_number);
+    pSodiumIodide->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
   }
 }
 
@@ -465,7 +556,10 @@ void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+  pGriffinForward->Build();
+
+  for( G4int detector_number = 0; detector_number < ndet; detector_number++ )
   {
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
     position = this->griffinFwdBackPosition;
@@ -473,7 +567,7 @@ void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-    this->myGriffinForward->PlaceDetector(this->hallLog, move, rotate, detector_number);
+    pGriffinForward->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
   }
 }
 
@@ -482,13 +576,16 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+  pGriffinForward->Build();
+
   direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
   position = this->griffinFwdBackPosition;
   move = position * direction;
 
   G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-  this->myGriffinForward->PlaceDetector(this->hallLog, move, rotate, ndet);
+  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
@@ -496,16 +593,18 @@ void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+  pGriffinBack->Build();
+
   for(G4int detector_number = 0; detector_number < ndet; detector_number++)
   {
-
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
     position = this->griffinFwdBackPosition;
     move = position * direction;
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-    this->myGriffinBack->PlaceDetector(this->hallLog, move, rotate, detector_number);
+    pGriffinBack->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
   }
 }
 
@@ -514,32 +613,46 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+  pGriffinBack->Build();
+
   direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
   position = this->griffinFwdBackPosition;
   move = position * direction;
 
   G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-  this->myGriffinBack->PlaceDetector(this->hallLog, move, rotate, ndet);
+  pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 {
-  this->mySceptar->PlaceDetector(this->hallLog, ndet);
+
+	DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar() ;
+	pSceptar->Build() ; 
+	
+  this->mySceptar->PlaceDetector( logicWorld, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemSpice(G4int ndet)
 {
-  this->mySpice->PlaceDetector(this->hallLog, ndet);
+	DetectionSystemSpice* pSpice = new DetectionSystemSpice() ;
+	pSpice->Build() ; 
+	
+  mySpice->PlaceDetector( logicWorld, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemSpiceV02(G4int ndet)
-{
+{  
+
+	DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02() ;
+	pSpiceV02->Build() ;
+	
   // Place in world !
   G4double phi = 0.0*deg;
   G4double theta = 0.0*deg;
 
-  G4ThreeVector direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+  G4ThreeVector direction = G4ThreeVector( sin(theta)*cos(phi) , sin(theta)*sin(phi) , cos(theta) ) ;
   G4double position = 0.0*mm;
   G4ThreeVector move = position * direction;
 
@@ -548,11 +661,14 @@ void DetectorConstruction::AddDetectionSystemSpiceV02(G4int ndet)
   rotate->rotateY(0);
   rotate->rotateZ(0);
 
-  this->mySpiceV02->PlaceDetector(this->hallLog, move, rotate, ndet);
+  mySpiceV02->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 
 }
 
 void DetectorConstruction::AddDetectionSystemPaces(G4int ndet)
 {
-  this->myPaces->PlaceDetector(this->hallLog, ndet);
+	DetectionSystemPaces* pPaces = new DetectionSystemPaces() ; 
+	pPaces->Build() ;
+	
+	pPaces->PlaceDetector( logicWorld, ndet ) ;
 }

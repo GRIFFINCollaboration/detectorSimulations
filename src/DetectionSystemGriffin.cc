@@ -2,7 +2,7 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh" // Not included in new system
 
 #include "G4Material.hh"
 
@@ -29,7 +29,7 @@
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -46,12 +46,14 @@
 
 DetectionSystemGriffin::~DetectionSystemGriffin()
 {
-  delete germanium_block_SD;
-  delete left_casing_SD;
-  delete right_casing_SD;
-  delete left_extension_SD;
-  delete right_extension_SD;
-  delete back_plug_SD;
+
+// Not included in new system
+//  delete germanium_block_SD;
+//  delete left_casing_SD;
+//  delete right_casing_SD;
+//  delete left_extension_SD;
+//  delete right_extension_SD;
+//  delete back_plug_SD;
 
   // LogicalVolumes in ConstructNewHeavyMet
   delete hevimet_log;
@@ -124,52 +126,52 @@ DetectionSystemGriffin::~DetectionSystemGriffin()
 // ConstructDetectionSystemGriffin builds the DetectionSystemGriffin 
 // at the origin
 ///////////////////////////////////////////////////////////////////////
-void DetectionSystemGriffin::Build(G4SDManager* mySDman)
+void DetectionSystemGriffin::Build()//G4SDManager* mySDman)
 { 
 //  this->exp_hall_log = exp_hall_log;  
-
-  if( !germanium_block_SD ) {
-    germanium_block_SD = new SensitiveDetector(sdName0, colNameGe);
-    mySDman->AddNewDetector( germanium_block_SD );
-  }
-  if (this->BGO_selector == 1)
-  {
-    if( !left_casing_SD && include_side_suppressors) {
-      left_casing_SD = new SensitiveDetector(sdName1, colNameLeftCasing);
-      mySDman->AddNewDetector( left_casing_SD );
-    }
-    if( !right_casing_SD && include_side_suppressors) {
-      right_casing_SD = new SensitiveDetector(sdName2, colNameRightCasing);
-      mySDman->AddNewDetector( right_casing_SD );
-    }
-    if( !left_extension_SD && include_extension_suppressors ) {
-      left_extension_SD = new SensitiveDetector(sdName3, colNameLeftExtension);
-      mySDman->AddNewDetector( left_extension_SD );
-    }
-    if( !right_extension_SD && include_extension_suppressors) {
-      right_extension_SD = new SensitiveDetector(sdName4, colNameRightExtension);
-      mySDman->AddNewDetector( right_extension_SD );
-    }
-    if( !back_plug_SD && include_back_suppressors) {
-      back_plug_SD = new SensitiveDetector(sdName5, colNameBackPlug);
-      mySDman->AddNewDetector( back_plug_SD );
-    }
-  }
+// Not included in new system
+//  if( !germanium_block_SD ) {
+//    germanium_block_SD = new SensitiveDetector(sdName0, colNameGe);
+//    mySDman->AddNewDetector( germanium_block_SD );
+//  }
+//  if (this->BGO_selector == 1)
+//  {
+//    if( !left_casing_SD && include_side_suppressors) {
+//      left_casing_SD = new SensitiveDetector(sdName1, colNameLeftCasing);
+//      mySDman->AddNewDetector( left_casing_SD );
+//    }
+//    if( !right_casing_SD && include_side_suppressors) {
+//      right_casing_SD = new SensitiveDetector(sdName2, colNameRightCasing);
+//      mySDman->AddNewDetector( right_casing_SD );
+//    }
+//    if( !left_extension_SD && include_extension_suppressors ) {
+//      left_extension_SD = new SensitiveDetector(sdName3, colNameLeftExtension);
+//      mySDman->AddNewDetector( left_extension_SD );
+//    }
+//    if( !right_extension_SD && include_extension_suppressors) {
+//      right_extension_SD = new SensitiveDetector(sdName4, colNameRightExtension);
+//      mySDman->AddNewDetector( right_extension_SD );
+//    }
+//    if( !back_plug_SD && include_back_suppressors) {
+//      back_plug_SD = new SensitiveDetector(sdName5, colNameBackPlug);
+//      mySDman->AddNewDetector( back_plug_SD );
+//    }
+//  }
   
   BuildOneDetector();
 
-  germanium_block1_log->SetSensitiveDetector( germanium_block_SD );
-  if(include_side_suppressors) {
-      left_suppressor_log->SetSensitiveDetector( left_casing_SD );
-      right_suppressor_log->SetSensitiveDetector( right_casing_SD );
-  }
-  if(include_extension_suppressors) {
-    left_suppressor_extension_log->SetSensitiveDetector( left_extension_SD );
-    right_suppressor_extension_log->SetSensitiveDetector( right_extension_SD );
-  }
-  if(include_back_suppressors) {
-    back_quarter_suppressor_log->SetSensitiveDetector( back_plug_SD );
-  }
+//  germanium_block1_log->SetSensitiveDetector( germanium_block_SD );
+//  if(include_side_suppressors) {
+//      left_suppressor_log->SetSensitiveDetector( left_casing_SD );
+//      right_suppressor_log->SetSensitiveDetector( right_casing_SD );
+//  }
+//  if(include_extension_suppressors) {
+//    left_suppressor_extension_log->SetSensitiveDetector( left_extension_SD );
+//    right_suppressor_extension_log->SetSensitiveDetector( right_extension_SD );
+//  }
+//  if(include_back_suppressors) {
+//    back_quarter_suppressor_log->SetSensitiveDetector( back_plug_SD );
+//  }
 
 }//end ::Build
 
@@ -537,9 +539,8 @@ void DetectionSystemGriffin::BuildOneDetector()
   
   // Include BGOs?
   if (this->BGO_selector == 1) {
-    if (this->suppressor_shells_include_flag == true) {
-      ConstructNewSuppressorCasingWithShells();  
-    }
+    ConstructNewSuppressorCasingWithShells();  
+    
   }
   else if (this->BGO_selector == 0) {
     G4cout << "Not building BGO " << G4endl;
@@ -713,6 +714,9 @@ void DetectionSystemGriffin::ConstructComplexDetectorBlockWithDeadLayer()
 ///////////////////////////////////////////////////////////////////////
 void DetectionSystemGriffin::BuildelectrodeMatElectrodes()
 {
+
+	// This function is defined as BuildCopperElectrodes in the new system , this seems
+	// more general though so I am not going to change it. TB: Sept 2013.
   G4Material* electrodeMaterial = G4Material::GetMaterial(this->electrodeMaterial);
   if( !electrodeMaterial ) {
     G4cout << " ----> Material " << this->crystal_material << " not found, cannot build the detector shell! " << G4endl;
@@ -1560,12 +1564,12 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	"shell_for_left_suppressor_log", 0,0,0);
   shell_for_left_suppressor_log->SetVisAttributes(Suppressor_vis_att);
   
-  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping.
+  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping. // CALLED
 
   right_suppressor_log = new G4LogicalVolume(right_suppressor, materialBGO, "right_suppressor_log", 0, 0, 0);
   right_suppressor_log->SetVisAttributes(innards_vis_att);
 
-  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false); // Left, non-chopping. 
+  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false); // Left, non-chopping. // CALLED
 
   left_suppressor_log = new G4LogicalVolume(left_suppressor, materialBGO, "left_suppressor_log", 0, 0, 0);
   left_suppressor_log->SetVisAttributes(innards_vis_att);
@@ -1710,8 +1714,8 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	materialBGO, "shell_for_right_suppressor_extension_log", 0, 0, 0);
   shell_for_right_suppressor_extension_log->SetVisAttributes(Suppressor_vis_att);
   
-  G4SubtractionSolid* right_suppressor_extension = this->sideSuppressorExtension( false, false ); // Right, non-chopping
-  
+  G4SubtractionSolid* right_suppressor_extension = this->sideSuppressorExtension( false, false ); // Right, non-chopping // CALLED
+
   right_suppressor_extension_log = new G4LogicalVolume(right_suppressor_extension, materialBGO, 
 	"right_suppressor_extension_log", 0, 0, 0);
   right_suppressor_extension_log->SetVisAttributes(innards_vis_att);
@@ -1723,7 +1727,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	materialBGO, "shell_for_left_suppressor_extension_log", 0, 0, 0);
   shell_for_left_suppressor_extension_log->SetVisAttributes(Suppressor_vis_att);
   
-  G4SubtractionSolid* left_suppressor_extension = this->sideSuppressorExtension( true, false ); // Left, Non-chopping
+  G4SubtractionSolid* left_suppressor_extension = this->sideSuppressorExtension( true, false ); // Left, Non-chopping // CALLED
 
   left_suppressor_extension_log = new G4LogicalVolume(left_suppressor_extension, materialBGO, 
 	"left_suppressor_extension_log", 0, 0, 0);
@@ -1946,7 +1950,7 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontRightSlantSuppressor()
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0), 0, -(this->suppressor_shell_thickness/2.0) );
   	
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->frontSlantSuppressor(false, true), 0, move_cut); // right, chopping from frontSlantSuppressor
+    side_suppressor_shell, this->frontSlantSuppressor(false, true), 0, move_cut); // right, chopping from frontSlantSuppressor // CALLED
 
   return side_suppressor_shell_with_cavity;
 
@@ -1989,7 +1993,7 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForFrontLeftSlantSuppressor()
   G4ThreeVector move_cut(-(this->suppressor_shell_thickness + ( this->extra_cut_length/2.0 - this->suppressor_shell_thickness)/2.0 ), 0, (this->suppressor_shell_thickness/2.0) );
   	
   G4SubtractionSolid* side_suppressor_shell_with_cavity = new G4SubtractionSolid("side_suppressor_shell_with_cavity", 
-    side_suppressor_shell, this->frontSlantSuppressor(true, true), 0, move_cut); // chopping, left from frontSlantSuppressor. 
+    side_suppressor_shell, this->frontSlantSuppressor(true, true), 0, move_cut); // chopping, left from frontSlantSuppressor. // CALLED
 
   return side_suppressor_shell_with_cavity;
 
@@ -2044,8 +2048,10 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForRightSuppressorExtension()
 //    G4ThreeVector move_cut(-(this->suppressor_shell_thickness + extraCutLength/2.0), this->suppressor_shell_thickness/2.0, -this->suppressor_shell_thickness/4.0);
     G4ThreeVector move_cut(this->suppressorExtRightX , this->suppressorExtRightY, this->suppressorExtRightZ);
 
+
     G4SubtractionSolid* extension_suppressor_shell_with_cavity = new G4SubtractionSolid("extension_suppressor_shell_with_cavity",
-       right_extension_shell, this->sideSuppressorExtension( false, true ), 0, move_cut); // Right, Chopping sideSuppressorExtension
+       right_extension_shell, this->sideSuppressorExtension( false, true ), 0, move_cut); // Right, Chopping sideSuppressorExtension // CALLED
+
 
     return extension_suppressor_shell_with_cavity;
 }//end ::shellForRightSuppressorExtension
@@ -2099,7 +2105,7 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForLeftSuppressorExtension()
     G4ThreeVector move_cut(this->suppressorExtLeftX, this->suppressorExtLeftY, this->suppressorExtLeftZ);
 
     G4SubtractionSolid* extension_suppressor_shell_with_cavity = new G4SubtractionSolid("extension_suppressor_shell_with_cavity",
-      right_extension_shell, this->sideSuppressorExtension( true, true ), 0, move_cut); // Left, Chopping sideSuppressorExtension
+      right_extension_shell, this->sideSuppressorExtension( true, true ), 0, move_cut); // Left, Chopping sideSuppressorExtension // CALLED
 
     return extension_suppressor_shell_with_cavity;
 }//end ::shellForLeftSuppressorExtension

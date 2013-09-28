@@ -1,6 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -15,7 +15,7 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -37,12 +37,12 @@ DetectionSystemGammaTracking::~DetectionSystemGammaTracking()
 // ConstructDetectionSystemGammaTracking builds the DetectionSystemGammaTracking 
 // at the origin
 ///////////////////////////////////////////////////////////////////////
-G4int DetectionSystemGammaTracking::Build(G4SDManager* mySDman)
+G4int DetectionSystemGammaTracking::Build()//G4SDManager* mySDman)
 { 
-  if( !shell_SD ) {
-    shell_SD = new SensitiveDetector("/sd/allGammaTracking", "CollectionGammaTracking");
-    mySDman->AddNewDetector( shell_SD );
-  }
+//  if( !shell_SD ) {
+//    shell_SD = new SensitiveDetector("/sd/allGammaTracking", "CollectionGammaTracking");
+//    mySDman->AddNewDetector( shell_SD );
+//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -88,7 +88,7 @@ G4int DetectionSystemGammaTracking::Build(G4SDManager* mySDman)
   logicShell->SetVisAttributes( pVA );
   
   // Sensitive Detector
-  logicShell->SetSensitiveDetector( shell_SD );  
+//  logicShell->SetSensitiveDetector( shell_SD );  
 
   // Describe Orientation
   G4ThreeVector direction = G4ThreeVector(0,0,1);

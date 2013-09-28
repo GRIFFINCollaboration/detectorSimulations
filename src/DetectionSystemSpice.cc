@@ -1,6 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -20,7 +20,7 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -129,18 +129,18 @@ DetectionSystemSpice::~DetectionSystemSpice()
   delete casing_log;
   delete crystal_block_log;
 
-  delete crystal_block_SD;
+//  delete crystal_block_SD;
 
 }// end ::~DetectionSystemSpice
 
 
 
-G4int DetectionSystemSpice::Build(G4SDManager* mySDman)
+G4int DetectionSystemSpice::Build()//G4SDManager* mySDman)
 { 
-  if( !crystal_block_SD ) {
-    crystal_block_SD = new SensitiveDetector("/sd/allSpice", "CollectionSpice");
-    mySDman->AddNewDetector( crystal_block_SD );
-  }
+//  if( !crystal_block_SD ) {
+//    crystal_block_SD = new SensitiveDetector("/sd/allSpice", "CollectionSpice");
+//    mySDman->AddNewDetector( crystal_block_SD );
+//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -157,7 +157,7 @@ G4int DetectionSystemSpice::Build(G4SDManager* mySDman)
 //   finalPlace.setX(0); finalPlace.setY(0); finalPlace.setZ(this->detector2target);
   
   // Sensitive Detector
-  crystal_block_log->SetSensitiveDetector( crystal_block_SD );  
+//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );  
 
   return 1;
 }
