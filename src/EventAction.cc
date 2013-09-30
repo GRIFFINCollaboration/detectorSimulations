@@ -136,11 +136,11 @@ void EventAction::ClearVariables()
       
       
       SceptarCrystEnergyDet[i]					= 0 ;
-      SceptarCrystTrackdet[i] 					= 0 ;
+      SceptarCrystTrackDet[i] 					= 0 ;
       EightPiCrystEnergyDet[i]					= 0 ; 
       EightPiCrystTrackDet[i]						= 0 ;
       SpiceCrystEnergyDet[i]						= 0 ;
-      SpiceCrysttrackDet[i]							= 0 ;
+      SpiceCrystTrackDet[i]							= 0 ;
       PacesCrystEnergyDet[i]						= 0 ;
       PacesCrystTrackDet[i]							= 0 ;
       

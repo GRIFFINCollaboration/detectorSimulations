@@ -45,6 +45,7 @@
 #include "G4Sphere.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4PVReplica.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -57,14 +58,11 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
-//#include "G4FieldManager.hh"
-//#include "G4UniformMagField.hh"
-//#include "MagneticField.hh"
-//#include "G4TransportationManager.hh"
-//#include "Field.hh"
-//#include "GlobalField.hh"
-
+#include "G4FieldManager.hh"
 #include "G4UniformMagField.hh"
+//#include "MagneticField.hh"
+//#include "Field.hh"
+#include "GlobalField.hh"
 #include "G4TransportationManager.hh"
 
 #include "DetectionSystemGammaTracking.hh"
@@ -84,13 +82,13 @@
 #include "ApparatusFieldBox.hh"
 
 #include "DetectionSystemBox.hh" // New file
-
+#include "DetectionSystemGrid.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction() :
     // Fields
-    expHallMagField( 0 ), 
-    defaultMaterial( 0 ),
+//    expHallMagField( 0 ), 
+//    defaultMaterial( 0 ),
     solidWorld( 0 ), 
     logicWorld( 0 ), 
     physiWorld( 0 )
@@ -114,7 +112,7 @@ DetectorConstruction::DetectorConstruction() :
 //  this->builtDetectors = false;
 
   // ensure the global field is initialized
-  (void)GlobalField::GetObject();
+  (void)GlobalField::getObject();
   
   this->matWorldName = "G4_AIR";
 
@@ -180,7 +178,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   solidWorld = new G4Box("World", WorldSizeX/2,WorldSizeY/2,WorldSizeZ/2);
   
   logicWorld = new G4LogicalVolume(solidWorld,		//its solid
-                                   defaultMaterial,	//its material
+                                   matWorld,	//its material
                                    "World");		//its name
   
   physiWorld = new G4PVPlacement(   0,                  //no rotation
@@ -283,9 +281,9 @@ void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 //  this->hall_x = vec.x();
 //  this->hall_y = vec.y();
 //  this->hall_z = vec.z();
-	this->WorldSizeX = vec.x ;
-	this->WorldSizeY = vec.y ; // Redundant this-> ? 
-	this->WorldSizeZ = vec.z ;
+	WorldSizeX = vec.x() ;
+	WorldSizeY = vec.y() ; // Redundant this-> ? 
+	WorldSizeZ = vec.z() ;
   UpdateGeometry(); // auto update
 }
 
@@ -423,23 +421,23 @@ void DetectorConstruction::AddGrid()
 void DetectorConstruction::AddApparatusSpiceTargetChamber()
 {
    //Create Target Chamber
-   ApparatusSpiceTargetChamber* myApparatusSpiceTargetChamber = new ApparatusSpiceTargetChamber();
-   myApparatusSpiceTargetChamber->Build( logicWorld );
+   ApparatusSpiceTargetChamber* pApparatusSpiceTargetChamber = new ApparatusSpiceTargetChamber();
+   pApparatusSpiceTargetChamber->Build( logicWorld );
     
 }
 
 void DetectorConstruction::AddApparatus8piVacuumChamber()
 {
    //Create Vacuum Chamber
-   Apparatus8piVacuumChamber* myApparatus8piVacuumChamber = new Apparatus8piVacuumChamber();
-   myApparatus8piVacuumChamber->Build( logicWorld );
+   Apparatus8piVacuumChamber* pApparatus8piVacuumChamber = new Apparatus8piVacuumChamber();
+   pApparatus8piVacuumChamber->Build( logicWorld );
 }
 
 void DetectorConstruction::AddApparatus8piVacuumChamberAuxMatShell(G4int thickness)
 {
    //Create Shell Around Vacuum Chamber
-   Apparatus8piVacuumChamberAuxMatShell* myApparatus8piVacuumChamberAuxMatShell = new Apparatus8piVacuumChamberAuxMatShell();
-   myApparatus8piVacuumChamberAuxMatShell->Build( logicWorld, thickness );
+   Apparatus8piVacuumChamberAuxMatShell* pApparatus8piVacuumChamberAuxMatShell = new Apparatus8piVacuumChamberAuxMatShell();
+   pApparatus8piVacuumChamberAuxMatShell->Build( logicWorld, thickness );
 }
 
 void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
@@ -494,7 +492,7 @@ void DetectorConstruction::AddDetectionSystemBrillance380V1(G4int ndet)
     theta = detectorAngles[detector_number][1]*deg;     
 
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = 11.0*cm + (this->pDetectionSystemBrillance380V1->GetDetectorLengthOfUnitsCM() / 2.0 ) ;
+    position = 11.0*cm + (pDetectionSystemBrillance380V1->GetDetectorLengthOfUnitsCM() / 2.0 ) ;
     move = position * direction;
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
@@ -539,7 +537,7 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
     theta = detectorAngles[detector_number][1]*deg;
 
     direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = 25.0*cm + (this->pSodiumIodide->GetDetectorLengthOfUnitsCM()/2.0);
+    position = 25.0*cm + (pSodiumIodide->GetDetectorLengthOfUnitsCM()/2.0);
     move = position * direction;
 
     G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
@@ -631,7 +629,7 @@ void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 	DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar() ;
 	pSceptar->Build() ; 
 	
-  this->mySceptar->PlaceDetector( logicWorld, ndet ) ;
+  pSceptar->PlaceDetector( logicWorld, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemSpice(G4int ndet)
@@ -639,7 +637,7 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int ndet)
 	DetectionSystemSpice* pSpice = new DetectionSystemSpice() ;
 	pSpice->Build() ; 
 	
-  mySpice->PlaceDetector( logicWorld, ndet ) ;
+  pSpice->PlaceDetector( logicWorld, ndet ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemSpiceV02(G4int ndet)
@@ -661,7 +659,7 @@ void DetectorConstruction::AddDetectionSystemSpiceV02(G4int ndet)
   rotate->rotateY(0);
   rotate->rotateZ(0);
 
-  mySpiceV02->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+  pSpiceV02->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 
 }
 

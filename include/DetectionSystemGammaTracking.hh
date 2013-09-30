@@ -44,6 +44,9 @@ class DetectionSystemGammaTracking
     DetectionSystemGammaTracking();
     ~DetectionSystemGammaTracking();
 
+    G4int Build() ;//G4SDManager* mySDman); 
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+
   private:
     // Logical volumes        
     G4LogicalVolume* logicShell;    
@@ -51,23 +54,16 @@ class DetectionSystemGammaTracking
     // Assembly volumes
     G4AssemblyVolume* assembly; 
 
-    SensitiveDetector* shell_SD;
+//    SensitiveDetector* shell_SD;
 
-  private:
-    G4double shellRmin;
+	  G4double shellRmin;
     G4double shellThick;
   
-  private:
     G4double phi_in;
     G4double d_phi;
     G4double th_in;
     G4double d_th;
     
-  public: 
-    G4int Build(G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
-
-  private: 
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
 };
 

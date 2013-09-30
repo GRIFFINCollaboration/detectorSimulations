@@ -94,6 +94,9 @@ DetectionSystemGammaTracking.cc			:
 DetectionSystemSodiumIodide.cc			:
 - Removed SensitiveDetector Dependence
 
+PrimaryGeneratorAction							:
+- Introduced isoRadOnBox
+
 
 
 

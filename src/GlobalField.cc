@@ -204,7 +204,36 @@ void GlobalField::GetFieldValue(const G4double* point, G4double* field) const
   // Using the simple array fp[] instead of fields[] 
   // directly sped it up
 
-  field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
+	// TB: Not sure I understand the point of all these if statements. In every case all of the field[] 
+	// arrays will be set to zero. 
+
+  G4double x_length = 0.15*m;
+  G4double y_length = 0.3*m;
+  G4double z_length = 0.01*m;
+
+  if((point[0] < (x_length/2.0)) && (point[0] > (-1.0*x_length/2.0))) 
+  {
+  	if((point[1] < (y_length/2.0)) && (point[1] > (-1.0*y_length/2.0))) 
+  	{
+ 			if((point[2] < (z_length/2.0)) && (point[2] > (-1.0*z_length/2.0))) 
+			{
+      	field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
+			}
+  		else 
+			{
+	  	  field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
+			}
+  	}
+  	else 
+  	{
+    	field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
+  	}
+  }
+  else 
+  {
+    field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
+  }
+//  field[0] = field[1] = field[2] = field[3] = field[4] = field[5] = 0.0;
 
   // protect against Geant4 bug that calls us with point[] NaN.
   if(point[0] != point[0]) return;
@@ -219,11 +248,11 @@ void GlobalField::GetFieldValue(const G4double* point, G4double* field) const
       }
   }
 
-  G4double rad_unitless = point[0]*point[1]/(point[2]*point[2]+1.0);
+//  G4double rad_unitless = point[0]*point[1]/(point[2]*point[2]+1.0);
 
-  field[0] = 0.0*tesla;
-  field[1] = 0.0*tesla;
-  field[2] = 0.025*tesla*rad_unitless;
+//  field[0] = 0.0*tesla;
+//  field[1] = 0.0*tesla;
+//  field[2] = 0.025*tesla*rad_unitless;
 
 }
 

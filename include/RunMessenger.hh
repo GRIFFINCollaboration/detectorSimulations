@@ -32,35 +32,35 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef RunMessenger_h
-#define RunMessenger_h 1
+//#ifndef RunMessenger_h
+//#define RunMessenger_h 1
 
-#include "G4UImessenger.hh"
+//#include "G4UImessenger.hh"
 
-class G4UIdirectory;
-class G4UIcmdWithABool;
-class G4UIcmdWithAnInteger;
-class G4UIcmdWithAString;
+//class G4UIdirectory;
+//class G4UIcmdWithABool;
+//class G4UIcmdWithAnInteger;
+//class G4UIcmdWithAString;
 
-class RunAction;
+//class RunAction;
 
-class RunActionMessenger: public G4UImessenger
-{
-  public:
-    RunActionMessenger(RunAction*);
-   ~RunActionMessenger();
-    
-    void SetNewValue(G4UIcommand*, G4String);
-    
-  private:
-    RunAction*              myTarget;
-    G4UIdirectory*          myDirectory;
-    G4UIcmdWithABool*       EnableWriteCmd;
-    G4UIcmdWithABool*       DisableWriteCmd;
-    G4UIcmdWithABool*       EnableWriteHexCmd;
-    G4UIcmdWithABool*       DisableWriteHexCmd;
-    G4UIcmdWithAnInteger*   RunNumberCmd;
-    G4UIcmdWithAString*     outputTimeUnit;
+//class RunActionMessenger: public G4UImessenger
+//{
+//  public:
+//    RunActionMessenger(RunAction*);
+//   ~RunActionMessenger();
+//    
+//    void SetNewValue(G4UIcommand*, G4String);
+//    
+//  private:
+//    RunAction*              myTarget;
+//    G4UIdirectory*          myDirectory;
+//    G4UIcmdWithABool*       EnableWriteCmd;
+//    G4UIcmdWithABool*       DisableWriteCmd;
+//    G4UIcmdWithABool*       EnableWriteHexCmd;
+//    G4UIcmdWithABool*       DisableWriteHexCmd;
+//    G4UIcmdWithAnInteger*   RunNumberCmd;
+//    G4UIcmdWithAString*     outputTimeUnit;
 
-};
-#endif
+//};
+//#endif

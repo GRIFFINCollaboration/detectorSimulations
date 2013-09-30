@@ -38,8 +38,8 @@
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
-//#include "SteppingAction.hh" // Included in new system
-//#include "HistoManager.hh" // Included in new system
+#include "SteppingAction.hh" // Included in new system
+#include "HistoManager.hh" // Included in new system
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -55,7 +55,7 @@ int main(int argc,char** argv)
 {
   // Choose the Random engine
   //
-//  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine); // Not included in new system
+  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine); // Used in PrimaryGeneratorAction 
   
   // Construct the default run manager
   //
@@ -69,32 +69,32 @@ int main(int argc,char** argv)
   PhysicsList* physics = new PhysicsList;
   runManager->SetUserInitialization(physics);
     
-//  HistoManager*  histo = new HistoManager(); // Included in new system
+  HistoManager*  histo = new HistoManager(); // Included in new system
     
   // Set user action classes
   //
-  PrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction();
-  runManager->SetUserAction(gen_action);
-  //
-  RunAction* run_action = new RunAction();  
-  runManager->SetUserAction(run_action);
-  //
-  EventAction* event_action = new EventAction();
-  runManager->SetUserAction(event_action);
+//  PrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction();
+//  runManager->SetUserAction(gen_action);
+//  //
+//  RunAction* run_action = new RunAction();  
+//  runManager->SetUserAction(run_action);
+//  //
+//  EventAction* event_action = new EventAction();
+//  runManager->SetUserAction(event_action);
   //
   
 // Replacement for user action classes
-//  PrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction(detector);
-//  runManager->SetUserAction(gen_action);
-//  //
-//  RunAction* run_action = new RunAction(histo);  
-//  runManager->SetUserAction(run_action);
-//  //
-//  EventAction* event_action = new EventAction(run_action,histo);
-//  runManager->SetUserAction(event_action);
-//  //
-//  SteppingAction* stepping_action = new SteppingAction(detector, event_action);
-//  runManager->SetUserAction(stepping_action);
+  PrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction(detector);
+  runManager->SetUserAction(gen_action);
+  //
+  RunAction* run_action = new RunAction(histo);  
+  runManager->SetUserAction(run_action);
+  //
+  EventAction* event_action = new EventAction(run_action,histo);
+  runManager->SetUserAction(event_action);
+  //
+  SteppingAction* stepping_action = new SteppingAction(detector, event_action);
+  runManager->SetUserAction(stepping_action);
   
   
   // Initialize G4 kernel
