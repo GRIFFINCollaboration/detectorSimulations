@@ -190,22 +190,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                     0);                 //copy number  
   
   // Visualization Attributes
+
+  logicWorld->SetVisAttributes (G4VisAttributes::Invisible); // The following block of code works too. 
   
-  // This was included in the new code but in order to maintain the options available
-  // in the old code I have replaced it with the following block. 
-//  logicWorld->SetVisAttributes (G4VisAttributes::Invisible); 
-  
-  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
-  worldVisAtt->SetForceWireframe(true);
-  worldVisAtt->SetVisibility(this->world_vis);
-  logicWorld->SetVisAttributes(worldVisAtt);
-  this->logicWorld = logicWorld; 
-  
-//  G4VisAttributes* hallVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
-//  hallVisAtt->SetForceWireframe(true);
-//  hallVisAtt->SetVisibility(this->hall_vis);
-//  hallLog->SetVisAttributes(hallVisAtt);
-//  this->hallLog = hallLog;  
+//  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+//  worldVisAtt->SetForceWireframe(true);
+//  worldVisAtt->SetVisibility(this->world_vis);
+//  logicWorld->SetVisAttributes(worldVisAtt);
+//  this->logicWorld = logicWorld; 
   
   return physiWorld ; 
   
@@ -282,7 +274,7 @@ void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 //  this->hall_y = vec.y();
 //  this->hall_z = vec.z();
 	WorldSizeX = vec.x() ;
-	WorldSizeY = vec.y() ; // Redundant this-> ? 
+	WorldSizeY = vec.y() ; 
 	WorldSizeZ = vec.z() ;
   UpdateGeometry(); // auto update
 }

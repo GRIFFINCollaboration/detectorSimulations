@@ -97,8 +97,11 @@ DetectionSystemSodiumIodide.cc			:
 PrimaryGeneratorAction							:
 - Introduced isoRadOnBox
 
+I have likely missed a few files on here as I didnt always update this immediately, but the big changes include:
 
-
+- No more HEX file output, root file output instead. 
+- No more sensitive detectors
+- Two added objects: Grid and Box. 
 
 
 
