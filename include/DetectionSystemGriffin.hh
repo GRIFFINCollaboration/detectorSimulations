@@ -281,11 +281,11 @@ class DetectionSystemGriffin
     G4LogicalVolume* BGO_casing_log;
 
     //Logical Volumes used in ConstructNewSuppressorCasing:
-    G4LogicalVolume* shell_for_back_quarter_suppressor_log;
-    G4LogicalVolume* shell_for_right_suppressor_log;
-    G4LogicalVolume* shell_for_left_suppressor_log;
-    G4LogicalVolume* shell_for_right_suppressor_extension_log;
-    G4LogicalVolume* shell_for_left_suppressor_extension_log;
+    G4LogicalVolume* back_quarter_suppressor_shell_log;
+    G4LogicalVolume* right_suppressor_shell_log;
+    G4LogicalVolume* left_suppressor_shell_log;
+    G4LogicalVolume* right_suppressor_shell_extension_log;
+    G4LogicalVolume* left_suppressor_shell_extension_log;
 
     G4LogicalVolume* cap_for_right_suppressor_log;
 

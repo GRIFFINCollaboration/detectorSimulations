@@ -65,11 +65,11 @@ DetectionSystemGriffin::~DetectionSystemGriffin()
   delete right_suppressor_log;
   delete back_quarter_suppressor_log;
 
-  delete shell_for_back_quarter_suppressor_log;
-  delete shell_for_right_suppressor_log;
-  delete shell_for_left_suppressor_log;
-  delete shell_for_right_suppressor_extension_log;
-  delete shell_for_left_suppressor_extension_log;
+  delete back_quarter_suppressor_shell_log;
+  delete right_suppressor_shell_log;
+  delete left_suppressor_shell_log;
+  delete right_suppressor_shell_extension_log;
+  delete left_suppressor_shell_extension_log;
   // LogicalVolumes in ConstructBGOCasing
 
   delete BGO_casing_log;
@@ -1486,16 +1486,16 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 
   G4SubtractionSolid* back_quarter_suppressor = this->backSuppressorQuarter();
    
-  G4SubtractionSolid* shell_for_back_quarter_suppressor = this->shellForBackSuppressorQuarter();
+  G4SubtractionSolid* back_quarter_suppressor_shell = this->shellForBackSuppressorQuarter();
 
   // Insert the structureMat shell first.  The shells must be given numbers, rather than
   // the suppressor pieces themselves.  As an error checking method, the suppressor
   // pieces are given a copy number value far out of range of any useful copy number.
   if(include_back_suppressors) {
-  shell_for_back_quarter_suppressor_log = new G4LogicalVolume(
-  	shell_for_back_quarter_suppressor, structureMaterial, 
+  back_quarter_suppressor_shell_log = new G4LogicalVolume(
+    back_quarter_suppressor_shell, structureMaterial,
         "back_quarter_suppressor_log", 0, 0, 0);
-   shell_for_back_quarter_suppressor_log->SetVisAttributes(Suppressor_vis_att);
+   back_quarter_suppressor_shell_log->SetVisAttributes(Suppressor_vis_att);
    
   G4Material* back_material = G4Material::GetMaterial(this->back_suppressor_material);
   if( !back_material ) {
@@ -1517,7 +1517,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
     + this->applied_back_shift, -this->detector_total_width/4.0,
         - (this->detector_total_width/4.0) );
     
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_back_quarter_suppressor_log, move_back_quarter_suppressor1, rotate_back_quarter_suppressor1);
+  this->suppressorShellAssembly->AddPlacedVolume(back_quarter_suppressor_shell_log, move_back_quarter_suppressor1, rotate_back_quarter_suppressor1);
 
   G4RotationMatrix* rotate_back_quarter_suppressor2 = new G4RotationMatrix;
   rotate_back_quarter_suppressor2->rotateX(M_PI);
@@ -1527,7 +1527,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
         + this->applied_back_shift, -this->detector_total_width/4.0,
         (this->detector_total_width/4.0) );
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_back_quarter_suppressor_log, move_back_quarter_suppressor2, rotate_back_quarter_suppressor2);
+  this->suppressorShellAssembly->AddPlacedVolume(back_quarter_suppressor_shell_log, move_back_quarter_suppressor2, rotate_back_quarter_suppressor2);
 
   G4RotationMatrix* rotate_back_quarter_suppressor3 = new G4RotationMatrix;
   rotate_back_quarter_suppressor3->rotateX(M_PI/2.0);
@@ -1537,7 +1537,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
         + this->applied_back_shift, this->detector_total_width/4.0 ,
         (this->detector_total_width/4.0 ) );
         
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_back_quarter_suppressor_log, move_back_quarter_suppressor3, rotate_back_quarter_suppressor3);
+  this->suppressorShellAssembly->AddPlacedVolume(back_quarter_suppressor_shell_log, move_back_quarter_suppressor3, rotate_back_quarter_suppressor3);
 
   G4ThreeVector move_back_quarter_suppressor4((this->back_BGO_thickness
     - this->can_face_thickness)/2.0 + this->suppressor_shell_thickness
@@ -1546,23 +1546,23 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
     + this->applied_back_shift, this->detector_total_width/4.0,
     - (this->detector_total_width/4.0) );
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_back_quarter_suppressor_log, move_back_quarter_suppressor4, this->rotate_null);
+  this->suppressorShellAssembly->AddPlacedVolume(back_quarter_suppressor_shell_log, move_back_quarter_suppressor4, this->rotate_null);
   }
 
   // now we add the side pieces of suppressor that taper off towards the front of the can
 
   // Define the structureMat shell logical volume
-  G4SubtractionSolid* shell_for_right_suppressor = this->shellForFrontRightSlantSuppressor();
+  G4SubtractionSolid* right_suppressor_shell = this->shellForFrontRightSlantSuppressor();
 
-  shell_for_right_suppressor_log = new G4LogicalVolume(shell_for_right_suppressor, structureMaterial,
-	"shell_for_right_suppressor_log", 0,0,0);
-  shell_for_right_suppressor_log->SetVisAttributes(Suppressor_vis_att);
+  right_suppressor_shell_log = new G4LogicalVolume(right_suppressor_shell, structureMaterial,
+    "right_suppressor_shell_log", 0,0,0);
+  right_suppressor_shell_log->SetVisAttributes(Suppressor_vis_att);
 
-  G4SubtractionSolid* shell_for_left_suppressor = this->shellForFrontLeftSlantSuppressor();
+  G4SubtractionSolid* left_suppressor_shell = this->shellForFrontLeftSlantSuppressor();
 
-  shell_for_left_suppressor_log = new G4LogicalVolume(shell_for_left_suppressor, structureMaterial,
-	"shell_for_left_suppressor_log", 0,0,0);
-  shell_for_left_suppressor_log->SetVisAttributes(Suppressor_vis_att);
+  left_suppressor_shell_log = new G4LogicalVolume(left_suppressor_shell, structureMaterial,
+    "left_suppressor_shell_log", 0,0,0);
+  left_suppressor_shell_log->SetVisAttributes(Suppressor_vis_att);
   
   G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping. // CALLED
 
@@ -1598,7 +1598,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	- (this->detector_total_width/2.0 +this->BGO_can_seperation 
 	+ this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness)/2.0);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_log, move_suppressor1, rotate_suppressor1);
+  this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_log, move_suppressor1, rotate_suppressor1);
   
   G4RotationMatrix* rotate_suppressor2 = new G4RotationMatrix;
   rotate_suppressor2->rotateY(-M_PI/2.0);
@@ -1612,7 +1612,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	- (this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness
 	+ this->detector_total_width/2.0 +this->BGO_can_seperation));
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_log, move_suppressor2, rotate_suppressor2);
+  this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_log, move_suppressor2, rotate_suppressor2);
     
   G4RotationMatrix* rotate_suppressor3 = new G4RotationMatrix;
   rotate_suppressor3->rotateZ(M_PI/2.0);
@@ -1627,7 +1627,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness
 	+ this->detector_total_width/2.0 +this->BGO_can_seperation);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_log, move_suppressor3, rotate_suppressor3);
+  this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_log, move_suppressor3, rotate_suppressor3);
 
   G4RotationMatrix* rotate_suppressor4 = new G4RotationMatrix;
   rotate_suppressor4->rotateY(-M_PI/2.0);
@@ -1641,7 +1641,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	(this->detector_total_width/2.0 +this->BGO_can_seperation 
 	+ this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness)/2.0);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_log, move_suppressor4, rotate_suppressor4);
+  this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_log, move_suppressor4, rotate_suppressor4);
 
   G4RotationMatrix* rotate_suppressor5 = new G4RotationMatrix;
   rotate_suppressor5->rotateZ(M_PI/2.0);
@@ -1657,7 +1657,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	(this->detector_total_width/2.0 +this->BGO_can_seperation 
 	+ this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness)/2.0);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_log, move_suppressor5, rotate_suppressor5);
+  this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_log, move_suppressor5, rotate_suppressor5);
   
   G4RotationMatrix* rotate_suppressor6 = new G4RotationMatrix;
   rotate_suppressor6->rotateY(-M_PI/2.0);
@@ -1671,7 +1671,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness
 	+ this->detector_total_width/2.0 +this->BGO_can_seperation);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_log, move_suppressor6, rotate_suppressor6);
+  this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_log, move_suppressor6, rotate_suppressor6);
 
   G4RotationMatrix* rotate_suppressor7 = new G4RotationMatrix;
   rotate_suppressor7->rotateZ(M_PI/2.0);
@@ -1688,7 +1688,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
         + this->detector_total_width/2.0
 	+ this->BGO_can_seperation));
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_log, move_suppressor7, rotate_suppressor7);
+  this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_log, move_suppressor7, rotate_suppressor7);
     
   G4RotationMatrix* rotate_suppressor8 = new G4RotationMatrix;
   rotate_suppressor8->rotateY(-M_PI/2.0);
@@ -1703,16 +1703,16 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 	- (this->detector_total_width/2.0 +this->BGO_can_seperation 
 	+ this->side_BGO_thickness/2.0 + this->suppressor_shell_thickness)/2.0);
 
-  this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_log, move_suppressor8, rotate_suppressor8);
+  this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_log, move_suppressor8, rotate_suppressor8);
 
   // now we add the side pieces of suppressor that extend out in front of the can when it's in the back position
 
   // Define the shell right logical volume
-  G4SubtractionSolid* shell_for_right_suppressor_extension = this->shellForRightSuppressorExtension();
+  G4SubtractionSolid* right_suppressor_shell_extension = this->shellForRightSuppressorExtension();
   
-  shell_for_right_suppressor_extension_log = new G4LogicalVolume(shell_for_right_suppressor_extension, 
-	materialBGO, "shell_for_right_suppressor_extension_log", 0, 0, 0);
-  shell_for_right_suppressor_extension_log->SetVisAttributes(Suppressor_vis_att);
+  right_suppressor_shell_extension_log = new G4LogicalVolume(right_suppressor_shell_extension,
+    materialBGO, "right_suppressor_shell_extension_log", 0, 0, 0);
+  right_suppressor_shell_extension_log->SetVisAttributes(Suppressor_vis_att);
   
   G4SubtractionSolid* right_suppressor_extension = this->sideSuppressorExtension( false, false ); // Right, non-chopping // CALLED
 
@@ -1721,11 +1721,11 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
   right_suppressor_extension_log->SetVisAttributes(innards_vis_att);
 
   // Define the left shell logical volume
-  G4SubtractionSolid* shell_for_left_suppressor_extension = this->shellForLeftSuppressorExtension();
+  G4SubtractionSolid* left_suppressor_shell_extension = this->shellForLeftSuppressorExtension();
   
-  shell_for_left_suppressor_extension_log = new G4LogicalVolume(shell_for_left_suppressor_extension,
-	materialBGO, "shell_for_left_suppressor_extension_log", 0, 0, 0);
-  shell_for_left_suppressor_extension_log->SetVisAttributes(Suppressor_vis_att);
+  left_suppressor_shell_extension_log = new G4LogicalVolume(left_suppressor_shell_extension,
+    materialBGO, "left_suppressor_shell_extension_log", 0, 0, 0);
+  left_suppressor_shell_extension_log->SetVisAttributes(Suppressor_vis_att);
   
   G4SubtractionSolid* left_suppressor_extension = this->sideSuppressorExtension( true, false ); // Left, Non-chopping // CALLED
 
@@ -1791,7 +1791,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 
       moveExtension[i*2] = G4ThreeVector(x, y, z);
 
-      this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_extension_log, moveExtension[i*2], rotateExtension[i*2]);
+      this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_extension_log, moveExtension[i*2], rotateExtension[i*2]);
 
       rotateExtension[i*2+1] = new G4RotationMatrix;
       rotateExtension[i*2+1]->rotateY(M_PI/2.0);
@@ -1804,7 +1804,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 
       moveExtension[i*2+1] = G4ThreeVector(x, y, z);
 
-      this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_extension_log, moveExtension[i*2+1], rotateExtension[i*2+1]);
+      this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_extension_log, moveExtension[i*2+1], rotateExtension[i*2+1]);
     }
          
   }//end if(detectors forward) statement
@@ -1852,7 +1852,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 
       moveExtension[i*2] = G4ThreeVector(x, y, z);
 
-      this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_extension_log, moveExtension[2*i], rotateExtension[2*i]);
+      this->suppressorShellAssembly->AddPlacedVolume(right_suppressor_shell_extension_log, moveExtension[2*i], rotateExtension[2*i]);
     
       rotateExtension[2*i+1] = new G4RotationMatrix;
       rotateExtension[2*i+1]->rotateY(M_PI/2.0);
@@ -1865,7 +1865,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
 
       moveExtension[i*2+1] = G4ThreeVector(x, y, z);
 
-      this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_extension_log, moveExtension[2*i+1], rotateExtension[2*i+1]);
+      this->suppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_extension_log, moveExtension[2*i+1], rotateExtension[2*i+1]);
     }
 
   }//end if(detectors back) statement
