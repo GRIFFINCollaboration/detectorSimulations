@@ -56,18 +56,18 @@ const G4int NUMPARTICLETYPES    = 20;
 
 // ekin histo properties    ///////////////////////
 const G4int     EKINNBINS  = 5000;
-const G4double  EKINXMIN   = 0.0*keV;
-const G4double  EKINXMAX   = 5000.0*keV;
+const G4double  EKINXMIN   = 0.5*keV;
+const G4double  EKINXMAX   = 5000.5*keV;
 
 // edep histo properties    ///////////////////////
 const G4int     EDEPNBINS  = 5000;
-const G4double  EDEPXMIN   = 0.0*keV;
-const G4double  EDEPXMAX   = 5000.0*keV;
+const G4double  EDEPXMIN   = 0.5*keV;
+const G4double  EDEPXMAX   = 5000.5*keV;
 
 // trackl histo properties  ///////////////////////
 const G4int     TRACKLNBINS = 5000;
-const G4double  TRACKLXMIN  = 0.0*cm;
-const G4double  TRACKLXMAX  = 50.0*cm;
+const G4double  TRACKLXMIN  = 0.5*mm;
+const G4double  TRACKLXMAX  = 5000.5*mm;
 
 ///////////////////////////////////////////////////
 
