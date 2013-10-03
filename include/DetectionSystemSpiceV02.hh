@@ -45,6 +45,20 @@ class DetectionSystemSpiceV02
   public:
     DetectionSystemSpiceV02();
     ~DetectionSystemSpiceV02();
+    
+    G4int Build() ; //G4SDManager* mySDman);
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number);
+    //G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;};
+
+    //-----------------------------//
+    // parameters for the square   //
+    // planar detector crystal     //
+    //-----------------------------//
+    G4double squareDetCrystalLength;
+    G4double squareDet90DegCrystalRadius;
+    G4double squareDet45DegCrystalRadius;
+    G4double squareDetCrystalThickness;
+    G4double detector_face_target_distance;
 
     //------------------------------------------------//
     // logical and physical volumes
@@ -52,14 +66,8 @@ class DetectionSystemSpiceV02
   private:
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* assemblySi;
-    SensitiveDetector* crystal_block_SD;
+//    SensitiveDetector* crystal_block_SD;
 
-  public:
-    G4int Build(G4SDManager* mySDman);
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number);
-    //G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;};
-
-  private:
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
 
     G4LogicalVolume* detector_casing_side_log;
@@ -71,26 +79,15 @@ class DetectionSystemSpiceV02
     // SPICE physical properties
     // OBS: crystal properties are public, others are private
     //--------------------------------------------------------//
-  private:
+
     G4String casing_material;
     G4String wafer_material;
 
     //-----------------------------//
     // parameters for the square   //
-    // planar detector crystal     //
-    //-----------------------------//
-  public:
-    G4double squareDetCrystalLength;
-    G4double squareDet90DegCrystalRadius;
-    G4double squareDet45DegCrystalRadius;
-    G4double squareDetCrystalThickness;
-    G4double detector_face_target_distance;
-
-    //-----------------------------//
-    // parameters for the square   //
     // planar detector casing      //
     //-----------------------------//
-  private:
+
     G4double squareDetCasingLength;
     G4double squareDetCasingThickness;
 
@@ -101,7 +98,7 @@ class DetectionSystemSpiceV02
     //------------------------------------------------//
     // internal methods in Build()
     //------------------------------------------------//
-  private:
+
     G4int BuildSiliconWafer();
     G4int BuildAluminiumCasingSide();
     G4int BuildAluminiumCasingBack();

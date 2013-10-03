@@ -1,6 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -18,7 +18,7 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -43,27 +43,49 @@
 ///////////////////////////////////////////////////////////////////////
 ApparatusSpiceTargetChamber::ApparatusSpiceTargetChamber() :
    // LogicalVolumes
-   target_chamber_cylinder_log(0), target_chamber_sphere_log(0), transport_chamber_al_plate_log(0), transport_chamber_wide_cylinder_log(0),
-   transport_chamber_narrow_cylinder_log(0), photon_shield_log(0), transport_magnet_log(0), inner_transport_magnet_log(0), collector_magnet_log(0),
-
-   det_cham_end_plate_log(0), det_cham_plate_log(0), det_cham_tube_log(0),
-
-   target_chamber_vacuum_log(0), target_chamber_sph_vacuum_log(0), transport_wide_vacuum_log(0), transport_narrow_vacuum_log(0), al_plate_vacuum_log(0),
-   det_cham_plate_vacuum_log(0), det_cham_tube_vacuum_log(0), inner_transport_magnet_cover_log(0),
-
-
+   target_chamber_cylinder_log(0), 
+   target_chamber_sphere_log(0), 
+   transport_chamber_al_plate_log(0), 
+   transport_chamber_wide_cylinder_log(0),
+   transport_chamber_narrow_cylinder_log(0),
+   photon_shield_log(0), 
+   transport_magnet_log(0), 
+   inner_transport_magnet_log(0), 
+   collector_magnet_log(0),
+   det_cham_end_plate_log(0), 
+   det_cham_plate_log(0),
+   det_cham_tube_log(0),
+   target_chamber_vacuum_log(0), 
+   target_chamber_sph_vacuum_log(0), 
+   transport_wide_vacuum_log(0), 
+   transport_narrow_vacuum_log(0), 
+   al_plate_vacuum_log(0),
+   det_cham_plate_vacuum_log(0), 
+   det_cham_tube_vacuum_log(0), 
+   inner_transport_magnet_cover_log(0),
 
    // PhysicalVolumes
-   target_chamber_cylinder_phys(0), target_chamber_sphere_phys(0), transport_chamber_al_plate_phys(0), transport_chamber_wide_cylinder_phys(0),
-   transport_chamber_narrow_cylinder_phys(0), photon_shield_phys(0), transport_magnet_phys(0), inner_transport_magnet_phys(0), collector_magnet_phys(0), 
+   target_chamber_cylinder_phys(0),
+   target_chamber_sphere_phys(0), 
+   transport_chamber_al_plate_phys(0), 
+   transport_chamber_wide_cylinder_phys(0),
+   transport_chamber_narrow_cylinder_phys(0), 
+   photon_shield_phys(0), 
+   transport_magnet_phys(0),
+   inner_transport_magnet_phys(0),
+   collector_magnet_phys(0), 
+   det_cham_end_plate_phys(0),
+   det_cham_plate_phys(0), 
+   det_cham_tube_phys(0), 
+   inner_transport_magnet_cover_phys(0),
+   target_chamber_vacuum_phys(0),
+   target_chamber_sph_vacuum_phys(0), 
+   transport_wide_vacuum_phys(0), 
+   transport_narrow_vacuum_phys(0), 
+   al_plate_vacuum_phys(0),
+   det_cham_plate_vacuum_phys(0), 
+   det_cham_tube_vacuum_phys(0)//,
 
-   det_cham_end_plate_phys(0), det_cham_plate_phys(0), det_cham_tube_phys(0), inner_transport_magnet_cover_phys(0),
-
-
-   target_chamber_vacuum_phys(0), target_chamber_sph_vacuum_phys(0), transport_wide_vacuum_phys(0), transport_narrow_vacuum_phys(0), al_plate_vacuum_phys(0),
-   det_cham_plate_vacuum_phys(0), det_cham_tube_vacuum_phys(0)//,
-
-  
    // Fields
 //   solMagField(0)
 
@@ -77,7 +99,7 @@ ApparatusSpiceTargetChamber::ApparatusSpiceTargetChamber() :
 
   this->vacuum_material                                 = "Vacuum";
 
-  this->target_chamber_cylinder_material 	       	= "Delrin";
+  this->target_chamber_cylinder_material 	       				= "Delrin";
   this->target_chamber_sphere_material 	                = "Delrin";
   this->transport_chamber_al_plate_material             = "Aluminum";
   this->transport_chamber_wide_cylinder_material        = "Delrin";
@@ -236,11 +258,8 @@ void ApparatusSpiceTargetChamber::Build(G4LogicalVolume* exp_hall_log)
   // PlaceInnerTransportMagnets();           //As per new lens design
   // PlaceInnerTransportMagnetsCover();      //As per new lens design
 
-   for (G4int copyID = 0; copyID < 4; copyID++)
-   {  
-     PlaceCollectorMagnet(copyID);
-   }
-
+		for (G4int copyID = 0; copyID < 4; copyID++)
+   		PlaceCollectorMagnet( copyID ) ;
 
 }//end ::Build
 
@@ -573,7 +592,6 @@ void ApparatusSpiceTargetChamber::BuildDetectorChamberAlPlate()
    G4double startPhi = 0;
    G4double endPhi = this->target_chamber_cross_section;
 
-
    G4double inner_radius = this->det_cham_plate_inner_radius;
    G4double outer_radius = this->det_cham_plate_outer_radius;
 
@@ -604,7 +622,6 @@ void ApparatusSpiceTargetChamber::BuildDetectorChamberAlTube()
    G4double startPhi = 0;
    G4double endPhi = this->target_chamber_cross_section;
 
-
    G4double inner_radius = this->det_cham_tube_inner_radius;
    G4double outer_radius = this->det_cham_tube_outer_radius;
 
@@ -632,9 +649,7 @@ void ApparatusSpiceTargetChamber::BuildDetectorChamberAlTube()
 void ApparatusSpiceTargetChamber::PlaceApparatusSpiceTargetChamberCylinder()
 {
 
-   G4double z_position;
-
-   z_position = this->target_chamber_start_position + this->target_chamber_cylinder_length/2.;
+   G4double z_position = this->target_chamber_start_position + this->target_chamber_cylinder_length/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -650,9 +665,7 @@ void ApparatusSpiceTargetChamber::PlaceApparatusSpiceTargetChamberCylinder()
 void ApparatusSpiceTargetChamber::PlaceApparatusSpiceTargetChamberSphere()
 {
 
-   G4double z_position;
-
-   z_position = 0.0;
+   G4double z_position = 0.0 ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -670,9 +683,7 @@ void ApparatusSpiceTargetChamber::PlaceApparatusSpiceTargetChamberSphere()
 void ApparatusSpiceTargetChamber::PlaceTransportChamberAlPlate()
 {
 
-   G4double z_position;
-
-   z_position = this->al_plate_position - this->Al_plate_thickness/2.;
+   G4double z_position = this->al_plate_position - this->Al_plate_thickness/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -690,9 +701,7 @@ void ApparatusSpiceTargetChamber::PlaceTransportChamberAlPlate()
 void ApparatusSpiceTargetChamber::PlaceTransportChamberWideCylinder()
 {
 
-   G4double z_position;
-
-   z_position = this->trans_chamber_wide_cylinder_position - this->trans_chamber_wide_cylinder_length/2.;
+   G4double z_position = this->trans_chamber_wide_cylinder_position - this->trans_chamber_wide_cylinder_length/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -707,9 +716,7 @@ void ApparatusSpiceTargetChamber::PlaceTransportChamberWideCylinder()
 void ApparatusSpiceTargetChamber::PlaceTransportChamberNarrowCylinder()
 {
 
-   G4double z_position;
-
-   z_position = this->trans_chamber_narrow_cylinder_position - this->trans_chamber_narrow_cylinder_length/2.;
+   G4double z_position = this->trans_chamber_narrow_cylinder_position - this->trans_chamber_narrow_cylinder_length/2.;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -723,12 +730,10 @@ void ApparatusSpiceTargetChamber::PlaceTransportChamberNarrowCylinder()
 
 void ApparatusSpiceTargetChamber::PlacePhotonShield()
 {
-   G4double z_position;
-
-   z_position = this->photon_shield_position - this->photon_shield_length/2.;
+   G4double z_position = this->photon_shield_position - this->photon_shield_length/2. ;
 
    G4ThreeVector move(0, 0, z_position);
-    
+ 
    // Establish physical volumes
    photon_shield_phys = new G4PVPlacement(0, move, photon_shield_log, "photon_shield_phys",expHallLog, false, 0);
 
@@ -737,13 +742,9 @@ void ApparatusSpiceTargetChamber::PlacePhotonShield()
 
 void ApparatusSpiceTargetChamber::PlaceTransportMagnets()
 {
-   G4double x_position;
-   G4double y_position;
-   G4double z_position;
-
-   x_position = 0.0;
-   y_position = 0.0;
-   z_position = this->transport_magnet_position - this->transport_magnet_length/2.;
+   G4double x_position = 0.0 ;
+   G4double y_position = 0.0 ;
+   G4double z_position = this->transport_magnet_position - this->transport_magnet_length/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -784,14 +785,13 @@ void ApparatusSpiceTargetChamber::PlaceInnerTransportMagnetsCover()
 
 void ApparatusSpiceTargetChamber::PlaceCollectorMagnet(G4int copyID)
 {
-   G4double z_position;
-
+   G4double z_position = this->collector_magnet_position_z - this->collector_magnet_length_z/2. ;
+ 
    G4RotationMatrix* rotation;
 
    rotation = RotateMagnets(copyID);
 
    G4double radial_position = this->collector_magnet_position_y + this->collector_magnet_length_x/2.; //Convert to Cylindricals      
-   z_position = this->collector_magnet_position_z - this->collector_magnet_length_z/2.;
 
    G4ThreeVector move = TranslateMagnets(copyID, radial_position, z_position);
       
@@ -804,9 +804,7 @@ void ApparatusSpiceTargetChamber::PlaceCollectorMagnet(G4int copyID)
 void ApparatusSpiceTargetChamber::PlaceDetectorChamberAlEndPlate()
 {
 
-   G4double z_position;
-
-   z_position = this->det_cham_end_plate_position - this->det_cham_end_plate_thickness/2.;
+   G4double z_position = this->det_cham_end_plate_position - this->det_cham_end_plate_thickness/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -820,9 +818,7 @@ void ApparatusSpiceTargetChamber::PlaceDetectorChamberAlEndPlate()
 void ApparatusSpiceTargetChamber::PlaceDetectorChamberAlPlate()
 {
 
-   G4double z_position;
-
-   z_position = this->det_cham_plate_position - this->det_cham_plate_thickness/2.;
+   G4double z_position = this->det_cham_plate_position - this->det_cham_plate_thickness/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       
@@ -838,9 +834,7 @@ void ApparatusSpiceTargetChamber::PlaceDetectorChamberAlPlate()
 void ApparatusSpiceTargetChamber::PlaceDetectorChamberAlTube()
 {
 
-   G4double z_position;
-
-   z_position = this->det_cham_tube_position - this->det_cham_tube_thickness/2.;
+   G4double z_position = this->det_cham_tube_position - this->det_cham_tube_thickness/2. ;
 
    G4ThreeVector move(0, 0, z_position);
       

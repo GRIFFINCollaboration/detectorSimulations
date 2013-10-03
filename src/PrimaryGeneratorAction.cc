@@ -55,7 +55,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction()
+PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
+:Detector(DC)
 {
   srand48(time(NULL));
   directionSpecified         = false;
@@ -87,6 +88,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   this->xray_input_lShell  = false;
   this->xray_input_mShell  = false;
 
+  // Messenger options
+  isoRadOnBox               = false;
+
   // default particle position
   position = G4ThreeVector(0.0*mm, 0.0*mm, 0.0*mm);
 
@@ -113,6 +117,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   G4double randomClock = 0.0, lamda = 0.0;
   G4double deltaTimeInSeconds = 0.0;
+  G4double posx, posy, posz ;
   G4int theBetaBranch, numberOfParticles, numberOfXRays;    
 
   //G4cout << "GeneratePrimaries" << G4endl;
@@ -132,7 +137,20 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     
     energy = selectedEnergy;
 
-    if(!directionSpecified)
+		if( isoRadOnBox )
+		{
+      posx = position.x();
+      posy = position.y();
+      posz = position.z();
+
+      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
+      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
+      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
+      
+      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
+	  }		
+
+    else if(!directionSpecified)
     {
       // random direction
       G4double costheta = 2.*UniformRand48()-1.0;
@@ -203,16 +221,30 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //================================================================//
 
   }
-  else {
-    if(!directionSpecified)
+  else 
+  {
+    
+    if( isoRadOnBox )
+		{
+      posx = position.x();
+      posy = position.y();
+      posz = position.z();
+
+      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
+      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
+      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
+      
+      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
+	  }	
+    else if(!directionSpecified)
     {
       // random direction
       //G4double costheta = 2.*UniformRand48()-1.0;
-      G4double costheta = 2.*(CLHEP::RandFlat::shoot())-1.0;
+      G4double costheta = 2. * ( CLHEP::RandFlat::shoot() ) - 1.0 ;
       G4double sintheta = sqrt( 1. - costheta*costheta );
       //G4double phi      = (360.*deg)*UniformRand48();
-      G4double phi      = (360.*deg)*(CLHEP::RandFlat::shoot());
-      direction = G4ThreeVector(sintheta*cos(phi), sintheta*sin(phi), costheta);
+      G4double phi      = (360.*deg) * ( CLHEP::RandFlat::shoot() ) ;
+      direction = G4ThreeVector( sintheta * cos(phi) , sintheta * sin(phi) , costheta);
     }
 
     particleGun->SetParticleDefinition(this->particle);
@@ -281,6 +313,29 @@ void PrimaryGeneratorAction::SetIonType( G4int Z, G4int A, G4double E )
   G4cout << " --> Particle type has been set to an ion with Z=" << Z << " and A=" << A << " and an excitation energy of " << E << " keV." << G4endl;
 }
 
+void PrimaryGeneratorAction::DefineIsotropicRadOnBox( G4ThreeVector boxSize )
+{
+    G4double maxLength;
+
+    isoRadOnBox = true;
+
+    totalLengthOfBox_x = boxSize.x();
+    totalLengthOfBox_y = boxSize.y();
+    totalLengthOfBox_z = boxSize.z();
+
+    if(totalLengthOfBox_x > totalLengthOfBox_y) {
+        maxLength = totalLengthOfBox_x;
+    }
+    else {
+        maxLength = totalLengthOfBox_y;
+    }
+    if(maxLength < totalLengthOfBox_z) {
+        maxLength = totalLengthOfBox_z;
+    }
+
+    sourceShellRadius =  maxLength;
+}
+
 void PrimaryGeneratorAction::SetDirection( G4ThreeVector value )
 {
   G4ThreeVector null = G4ThreeVector(0.0*mm,0.0*mm,0.0*mm);
@@ -297,8 +352,20 @@ void PrimaryGeneratorAction::SetDirection( G4ThreeVector value )
 
 void PrimaryGeneratorAction::SetPosition( G4ThreeVector value )
 {
-    position = value;
-    G4cout << " --> Particle position has been set to (" << value.x()/mm << ", " << value.y()/mm << ", " << value.z()/mm << ") in mm" << G4endl;
+
+  if(isoRadOnBox) 
+		{
+	    // random position on "shell" source
+	    G4double costheta = 2. * UniformRand48() - 1.0;
+	    G4double sintheta = sqrt( 1. - costheta * costheta );
+	    G4double phi      = (360.*deg) * UniformRand48();
+	    position = G4ThreeVector( sourceShellRadius*sintheta*cos(phi), sourceShellRadius*sintheta*sin(phi), sourceShellRadius*costheta);
+		}
+	else
+  	position = value;
+  
+  G4cout << " --> Particle position has been set to (" << value.x()/mm << ", " << value.y()/mm << ", " << value.z()/mm << ") in mm" << G4endl;
+
 }
 
 G4String PrimaryGeneratorAction::PrepareLine()

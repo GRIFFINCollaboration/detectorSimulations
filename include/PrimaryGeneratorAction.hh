@@ -50,27 +50,26 @@ class G4ParticleDefinition;
 class BeamRequestBetaParticle;
 class BeamRequestGammaAndIC;
 class BeamRequestXRay;
-
+class DetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    PrimaryGeneratorAction();    
+    PrimaryGeneratorAction( DetectorConstruction* );    
     virtual ~PrimaryGeneratorAction();
 
-  public:
-    void GeneratePrimaries(G4Event*);
+    void GeneratePrimaries( G4Event* ) ;
 
     inline G4double GetParticleEnergy() {return energy;};
   
-  public:
     void SetEnergy( G4double );
     void SetParticleType( G4String );
     void SetIonType( G4int Z, G4int A, G4double E );
     void SetDirection( G4ThreeVector );
     void SetPosition( G4ThreeVector );
+    void DefineIsotropicRadOnBox( G4ThreeVector );
     
     void SetBetaPlusEmission( G4String );
     void SetBetaMinusEmission( G4String );
@@ -83,60 +82,65 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetRadioactiveDecayHalflife( G4double );
     void SetNumberOfRadioactiveNuclei( G4int );
 
-
-
     void ReadEnergyDistribution( G4String );
 
-  public:
      G4String PrepareLine(); 
   
   private:
     G4double UniformRand48();
   
-  private:
-    G4ParticleDefinition* particle;
-    G4ParticleTable* particleTable;
+    G4ParticleDefinition* 		particle;
+    G4ParticleTable* 					particleTable;
+    DetectorConstruction* 		Detector ;
 
-    BeamRequestBetaParticle* myBetaParticle;
-    BeamRequestGammaAndIC* myGammaAndICParticle;
-    BeamRequestXRay* myXRay;
+    BeamRequestBetaParticle* 	myBetaParticle;
+    BeamRequestGammaAndIC* 		myGammaAndICParticle;
+    BeamRequestXRay* 					myXRay;
 
-    G4double      energy;
-    G4double      halflife;
-    G4double      polarization;
-    G4int         numberOfNuclei;
-    G4bool        emit_beta_flag;
-    G4bool        emit_gamma_ic_flag;
-    G4bool        emit_xray_flag;
-    G4bool        xray_input_kShell;
-    G4bool        xray_input_lShell;
-    G4bool        xray_input_mShell;
-    G4int         Z;
+    G4double      						energy;
+    G4double      						halflife;
+    G4double      						polarization;
+    G4int         						numberOfNuclei;
+    G4bool        						emit_beta_flag;
+    G4bool        						emit_gamma_ic_flag;
+    G4bool        						emit_xray_flag;
+    G4bool        						xray_input_kShell;
+    G4bool        						xray_input_lShell;
+    G4bool        						xray_input_mShell;
+    G4int         						Z;
+    
+    // isotropicRadOnBox
+    G4bool 										isoRadOnBox;
+    G4double 									totalLengthOfBox_x;
+    G4double 									totalLengthOfBox_y;
+    G4double 									totalLengthOfBox_z;
+    G4double 									randBox_x;
+    G4double 									randBox_y;
+    G4double 									randBox_z;    
+    G4double 									sourceShellRadius;
 
-    G4double outputTimeInSeconds;
-    G4double previousTimeInSeconds;
+    G4double 									outputTimeInSeconds;
+    G4double 									previousTimeInSeconds;
 
-    G4String      particleType;
-    G4String      simulationDir;
+    G4String      						particleType;
+    G4String      						simulationDir;
 
-    G4ThreeVector position;
-    G4ThreeVector direction;
-    G4bool        directionSpecified;
-    G4bool        newParticleType;
-    G4bool        emissionSimulation;
-    G4bool        radioactiveDecaySimulation;
-    G4int         eventID;  
-    G4int         numberOfEvents;  
-    G4int         eventSum;
+    G4ThreeVector 						position;
+    G4ThreeVector 						direction;
+    G4bool        						directionSpecified;
+    G4bool        						newParticleType;
+    G4bool        						emissionSimulation;
+    G4bool        						radioactiveDecaySimulation;
+    G4int         						eventID;  
+    G4int         						numberOfEvents;  
+    G4int         						eventSum;
 
-    std::vector <double> energyDist;
-    std::vector <double> weightDist;
-    std::vector <double> monteCarlo;
+    std::vector <double> 			energyDist;
+    std::vector <double> 			weightDist;
+    std::vector <double> 			monteCarlo;
 
-  private:
     G4ParticleGun*           particleGun;	 //pointer a to G4  class
     
-  private:
     PrimaryGeneratorMessenger* gunMessenger;   //messenger of this class
 };
 

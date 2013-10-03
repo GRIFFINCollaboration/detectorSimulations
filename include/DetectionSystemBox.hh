@@ -32,39 +32,59 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef DetectionSystemGammaTracking_h
-#define DetectionSystemGammaTracking_h 1
+#ifndef DetectionSystemBox_h
+#define DetectionSystemBox_h 1
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
-class DetectionSystemGammaTracking
+class G4AssemblyVolume;
+
+class DetectionSystemBox
 {
   public:
-    DetectionSystemGammaTracking();
-    ~DetectionSystemGammaTracking();
-
-    G4int Build() ;//G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+    DetectionSystemBox(G4double x_length_in, G4double y_length_in, G4double z_length_in, G4double thickness_in, G4String box_mat, G4ThreeVector box_colour);
+    ~DetectionSystemBox();
 
   private:
     // Logical volumes        
-    G4LogicalVolume* logicShell;    
+    G4LogicalVolume* cell_log;
+    G4LogicalVolume* side_norm_x_log;
+    G4LogicalVolume* side_norm_y_log;
+    G4LogicalVolume* side_norm_z_log;
+
 
     // Assembly volumes
-    G4AssemblyVolume* assembly; 
+    G4AssemblyVolume* assembly;
 
-//    SensitiveDetector* shell_SD;
+//    SensitiveDetector* crystal_block_SD;
 
-	  G4double shellRmin;
-    G4double shellThick;
-  
-    G4double phi_in;
-    G4double d_phi;
-    G4double th_in;
-    G4double d_th;
-    
-    G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
+  private: 
+    G4int copy_number;
+
+    G4double x_length;
+    G4double y_length;
+    G4double z_length;
+    G4double thickness;
+
+    G4String cell_material;
+
+    G4ThreeVector cell_colour;
+
+  public: 
+//    G4int Build(G4SDManager* mySDman);
+    G4int Build();
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log);
+
+  private: 
+
+    G4Box* BuildXNormalSide();
+    G4Box* BuildYNormalSide();
+    G4Box* BuildZNormalSide();
+
+    G4int BuildXNormalVolumes();
+    G4int BuildYNormalVolumes();
+    G4int BuildZNormalVolumes();
 };
 
 #endif

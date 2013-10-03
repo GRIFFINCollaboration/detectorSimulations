@@ -67,15 +67,13 @@ FieldMessenger::FieldMessenger(GlobalField* pEMfield)
   fDeltaChordCMD->SetDefaultUnit("mm");
   fDeltaChordCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  fDeltaOneStepCMD = 
-                 new G4UIcmdWithADoubleAndUnit("/field/setDeltaOneStep",this);
+  fDeltaOneStepCMD = new G4UIcmdWithADoubleAndUnit("/field/setDeltaOneStep",this);
   fDeltaOneStepCMD->SetGuidance("Define delta one step");
   fDeltaOneStepCMD->SetParameterName("delta one step",false,false);
   fDeltaOneStepCMD->SetDefaultUnit("mm");
   fDeltaOneStepCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  fDeltaIntersectionCMD = 
-            new G4UIcmdWithADoubleAndUnit("/field/setDeltaIntersection",this);
+  fDeltaIntersectionCMD = new G4UIcmdWithADoubleAndUnit("/field/setDeltaIntersection",this);
   fDeltaIntersectionCMD->SetGuidance("Define delta intersection");
   fDeltaIntersectionCMD->SetParameterName("delta intersection",false,false);
   fDeltaIntersectionCMD->SetDefaultUnit("mm");
@@ -128,13 +126,11 @@ void FieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
   }
   if( command == fDeltaOneStepCMD )
   {
-    fGlobalField->
-                SetDeltaOneStep(fDeltaOneStepCMD->GetNewDoubleValue(newValue));
+    fGlobalField->SetDeltaOneStep(fDeltaOneStepCMD->GetNewDoubleValue(newValue));
   }
   if( command == fDeltaIntersectionCMD )
   {
-    fGlobalField-> 
-      SetDeltaIntersection(fDeltaIntersectionCMD->GetNewDoubleValue(newValue));
+    fGlobalField->SetDeltaIntersection(fDeltaIntersectionCMD->GetNewDoubleValue(newValue));
   }
   if( command == fEpsMinCMD )
   {
