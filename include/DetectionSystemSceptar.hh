@@ -44,6 +44,9 @@ class DetectionSystemSceptar
     DetectionSystemSceptar();
     ~DetectionSystemSceptar();
 
+		G4int Build() ; //G4SDManager* mySDman); 
+		G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detectorNumber); 
+
   private:
     // Assembly volumes
     G4AssemblyVolume* assembly;
@@ -52,8 +55,8 @@ class DetectionSystemSceptar
     G4AssemblyVolume* assemblySquareSD;
     G4AssemblyVolume* assemblyAngledSD;
 
-    SensitiveDetector* square_scint_SD;
-    SensitiveDetector* angled_scint_SD;
+//    SensitiveDetector* square_scint_SD;
+//    SensitiveDetector* angled_scint_SD;
 
     G4double convert;
     G4double square_scintillator_length;
@@ -81,11 +84,6 @@ class DetectionSystemSceptar
     G4double Delrin_hole_radius;
     G4double separate_hemispheres;
     
-  public: 
-    G4int Build(G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detectorNumber); 
-
-  private:
     //##################################################################
     //### methods to construct all of the components of the detector ###
     //##################################################################
@@ -93,7 +91,6 @@ class DetectionSystemSceptar
     G4int ConstructDelrinShell();
     G4int Construct2ndDelrinShell();
     G4int ConstructHevimetShell();
-    
 
     //Logical Volumes  
     //
@@ -104,8 +101,6 @@ class DetectionSystemSceptar
     G4LogicalVolume* Delrin_shell_log;
     G4LogicalVolume* Delrin_shell2_log;
     G4LogicalVolume* Hevimet_shell_log;
-
-  private:
 
     G4Trd* squareMylar();
     G4SubtractionSolid* squareMylarWithCut();

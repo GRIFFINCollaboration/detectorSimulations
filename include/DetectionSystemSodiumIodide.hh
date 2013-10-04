@@ -47,6 +47,10 @@ class DetectionSystemSodiumIodide
   public:
     DetectionSystemSodiumIodide();
     ~DetectionSystemSodiumIodide();
+    
+    G4int Build() ; //G4SDManager* mySDman);
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+    G4double const GetDetectorLengthOfUnitsCM() {return this->detector_length_z;};
 
   private:
     // Logical volumes        
@@ -66,9 +70,8 @@ class DetectionSystemSodiumIodide
     // Assembly volumes
     G4AssemblyVolume* assembly;
 
-    SensitiveDetector* crystal_block_SD;
+//    SensitiveDetector* crystal_block_SD;
 
-  private: 
     G4int copy_number;
     G4int number_of_detectors;
     G4int number_of_segments;
@@ -105,13 +108,6 @@ class DetectionSystemSodiumIodide
 
     G4double detector_length_z;
 
-  public: 
-    G4int Build(G4SDManager* mySDman);
-    //G4int Build();
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
-    G4double const GetDetectorLengthOfUnitsCM() {return this->detector_length_z;};
-
-  private: 
     G4Tubs* BuildCrystal();
     G4Tubs* BuildAluminumCan();
     G4Tubs* BuildAluminumCanFrontLid();
@@ -121,15 +117,13 @@ class DetectionSystemSodiumIodide
     G4Tubs* BuildDiscFrontLid();
     G4Tubs* BuildSealFrontLid();
     
-  private: 
     G4int BuildSealVolume();
     G4int BuildDiscVolume();
     G4int BuildPackingVolume();
     G4int BuildAluminumCanVolume();           
     G4int BuildCrystalVolume();
-    G4int BuildOneDetector();  
-        
-  private:
+    G4int BuildOneDetector();    
+
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
 };
 

@@ -44,6 +44,11 @@ class DetectionSystem8pi
     DetectionSystem8pi();
     ~DetectionSystem8pi();
 
+    G4int Build() ;//G4SDManager* mySDman); 
+    G4int BuildOneDetector();
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+//    G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;}; 
+
     // Assembly volumes
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* assemblyGe;
@@ -51,47 +56,6 @@ class DetectionSystem8pi
     G4AssemblyVolume* assemblyOuterLowerBGO;
     G4AssemblyVolume* assemblyOuterUpperBGO;
 
-  private:
-    // Logical volumes
-    //
-    G4LogicalVolume* exp_hall_log;
-    G4LogicalVolume* germanium_block_log;
-    G4LogicalVolume* germanium_dead_layer_log;
-    G4LogicalVolume* germanium_vacuum_core_log;
-    G4LogicalVolume* lower_electrodeMat_electrode_log;
-    G4LogicalVolume* upper_electrodeMat_electrode_log;
-    G4LogicalVolume* inner_cage_1_log;
-    G4LogicalVolume* inner_cage_2_log;
-    G4LogicalVolume* inner_cage_3_log;
-    G4LogicalVolume* inner_cage_4_log;
-    G4LogicalVolume* inner_cage_bottom_log;
-    G4LogicalVolume* inner_cage_lid_log;
-    G4LogicalVolume* structureMat_cooling_rod_log;
-    G4LogicalVolume* electrodeMat_cooling_rod_log;
-    G4LogicalVolume* cooling_rod_cover_log;
-    G4LogicalVolume* cooling_rod_cover_lid_log;
-    G4LogicalVolume* outer_can_side_log;
-    G4LogicalVolume* outer_can_lid_log;
-    G4LogicalVolume* outer_can_bottom_log;
-    G4LogicalVolume* beryllium_window_log;
-    G4LogicalVolume* inner_BGO_annulus_log;
-    G4LogicalVolume* structureMat_sheath_log;
-    G4LogicalVolume* outer_lower_BGO_annulus_log;
-    G4LogicalVolume* outer_upper_BGO_annulus_log;
-    G4LogicalVolume* liquid_N2_log;
-    G4LogicalVolume* liquid_N2_side_log;
-    G4LogicalVolume* liquid_N2_lid_log;
-    G4LogicalVolume* liquid_N2_bottom_log;
-    G4LogicalVolume* hevimetal_log;
-    G4LogicalVolume* auxMat_plug_log;
-    G4LogicalVolume* auxMat_layer_log;
-
-    SensitiveDetector* germanium_block_SD;
-    SensitiveDetector* inner_BGO_annulus_SD;
-    SensitiveDetector* outer_lower_BGO_SD;
-    SensitiveDetector* outer_upper_BGO_SD;
-
-  public:
     G4double cut_clearance;
 
     G4double detail_view_end_angle;
@@ -174,13 +138,46 @@ class DetectionSystem8pi
     G4String structureMat;
     G4String auxMat;
 
-  public: 
-    G4int Build(G4SDManager* mySDman); 
-    G4int BuildOneDetector();
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
-//    G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;}; 
-
   private:
+    // Logical volumes
+    //
+    G4LogicalVolume* exp_hall_log;
+    G4LogicalVolume* germanium_block_log;
+    G4LogicalVolume* germanium_dead_layer_log;
+    G4LogicalVolume* germanium_vacuum_core_log;
+    G4LogicalVolume* lower_electrodeMat_electrode_log;
+    G4LogicalVolume* upper_electrodeMat_electrode_log;
+    G4LogicalVolume* inner_cage_1_log;
+    G4LogicalVolume* inner_cage_2_log;
+    G4LogicalVolume* inner_cage_3_log;
+    G4LogicalVolume* inner_cage_4_log;
+    G4LogicalVolume* inner_cage_bottom_log;
+    G4LogicalVolume* inner_cage_lid_log;
+    G4LogicalVolume* structureMat_cooling_rod_log;
+    G4LogicalVolume* electrodeMat_cooling_rod_log;
+    G4LogicalVolume* cooling_rod_cover_log;
+    G4LogicalVolume* cooling_rod_cover_lid_log;
+    G4LogicalVolume* outer_can_side_log;
+    G4LogicalVolume* outer_can_lid_log;
+    G4LogicalVolume* outer_can_bottom_log;
+    G4LogicalVolume* beryllium_window_log;
+    G4LogicalVolume* inner_BGO_annulus_log;
+    G4LogicalVolume* structureMat_sheath_log;
+    G4LogicalVolume* outer_lower_BGO_annulus_log;
+    G4LogicalVolume* outer_upper_BGO_annulus_log;
+    G4LogicalVolume* liquid_N2_log;
+    G4LogicalVolume* liquid_N2_side_log;
+    G4LogicalVolume* liquid_N2_lid_log;
+    G4LogicalVolume* liquid_N2_bottom_log;
+    G4LogicalVolume* hevimetal_log;
+    G4LogicalVolume* auxMat_plug_log;
+    G4LogicalVolume* auxMat_layer_log;
+
+//    SensitiveDetector* germanium_block_SD;
+//    SensitiveDetector* inner_BGO_annulus_SD;
+//    SensitiveDetector* outer_lower_BGO_SD;
+//    SensitiveDetector* outer_upper_BGO_SD;
+
     G4ThreeVector GetDirectionXYZ(G4double, G4double);
 
     G4int AddGermanium();

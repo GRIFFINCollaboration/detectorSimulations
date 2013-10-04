@@ -37,11 +37,16 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
+#include "G4ThreeVector.hh"
 
-#include "G4SDManager.hh"
+
+class G4Box;
+class G4LogicalVolume;
+class G4VPhysicalVolume;
+class G4Material;
 
 class DetectorMessenger;
-class SensitiveDetector;
+//class SensitiveDetector;
 class DetectionSystemBrillance380V1;
 class DetectionSystemGammaTracking;
 class DetectionSystemGriffin;
@@ -52,6 +57,7 @@ class DetectionSystemSpiceV02;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
 
+class DetectionSystemBox;
 
 class MagneticField;
 
@@ -63,13 +69,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     DetectorConstruction();
    ~DetectorConstruction();
 
-  private:
-    G4SDManager* SDman;
-    G4LogicalVolume* hallLog;
-
-    MagneticField* expHallMagField;
-
-  public:
     void SetWorldMaterial( G4String );
     void SetWorldDimensions( G4ThreeVector );
     void SetWorldVis( G4bool );
@@ -84,14 +83,31 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetFieldBoxPosition( G4ThreeVector );
     void SetFieldBoxMagneticField( G4ThreeVector );
     void SetFieldBox( );
+		    
+    void SetBoxMat( G4String input )                   {box_mat = input;};
+		void SetBoxThickness( G4double input )             {box_thickness = input;};
+		void SetBoxInnerDimensions( G4ThreeVector input )  {box_inner_dimensions = input;};
+		void SetBoxColour( G4ThreeVector input )           {box_colour = input;};
+		void AddBox();
+		// Grid Functions
+		void SetGridMat( G4String input )                  {grid_mat = input;};
+		void SetGridSize( G4double input )                 {grid_size = input;};
+		void SetGridDimensions( G4ThreeVector input )      {grid_dimensions = input;};
+		void SetGridColour( G4ThreeVector input )          {grid_colour = input;};
+		void AddGrid();  
+
     void AddApparatusSpiceTargetChamber();
     void AddApparatus8piVacuumChamber();
     void AddApparatus8piVacuumChamberAuxMatShell(G4int thickness);
 
-  public:
+    G4double GetWorldSizeX()           {return WorldSizeX;};
+    G4double GetWorldSizeY()           {return WorldSizeY;};
+    G4double GetWorldSizeZ()           {return WorldSizeZ;};
+
+    const G4VPhysicalVolume* GetphysiWorld() {return physiWorld;};
+
     G4VPhysicalVolume* Construct();
 
-  public:
     void UpdateGeometry();
 
     void AddDetectionSystemGammaTracking(G4int ndet);
@@ -109,12 +125,31 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemSpiceV02(G4int ndet);
 
   private:
-    G4double hall_x;
-    G4double hall_y;
-    G4double hall_z;
-    G4bool   hall_vis;
+  
+  	MagneticField* worldMagField;
+
+    G4double WorldSizeX;
+    G4double WorldSizeY;
+    G4double WorldSizeZ;
+    G4bool   world_vis;
     G4bool   builtDetectors;
     G4double griffinFwdBackPosition;
+
+    // Box
+    G4String           box_mat;
+    G4double           box_thickness;
+    G4ThreeVector      box_inner_dimensions;
+    G4ThreeVector      box_colour;
+
+    G4Box*             solidWorld;    //pointer to the solid World 
+    G4LogicalVolume*   logicWorld;    //pointer to the logical World
+    G4VPhysicalVolume* physiWorld;    //pointer to the physical World
+
+    // Grid
+    G4String           grid_mat;
+    G4double           grid_size;
+    G4ThreeVector      grid_dimensions;
+    G4ThreeVector      grid_colour;
 
     void DefineSuppressedParameters();
     void DefineMaterials();
@@ -136,22 +171,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4ThreeVector fieldBoxPosition;
     G4ThreeVector fieldBoxMagneticField;
 
-
-  private:
     G4String matWorldName;
                  
-  private:
     DetectorMessenger* detectorMessenger;
-    DetectionSystemBrillance380V1* myBrillance380V1;
-    DetectionSystemGammaTracking* myGammaTracking;
-    DetectionSystemGriffin* myGriffinForward;
-    DetectionSystemGriffin* myGriffinBack;
-    DetectionSystem8pi* my8pi;
-    DetectionSystemSceptar* mySceptar;
-    DetectionSystemSpice* mySpice;
-    DetectionSystemSpiceV02* mySpiceV02;
-    DetectionSystemPaces* myPaces;
-    DetectionSystemSodiumIodide* mySodiumIodide;
+//    DetectionSystemBrillance380V1* myBrillance380V1;
+//    DetectionSystemGammaTracking* myGammaTracking;
+//    DetectionSystemGriffin* myGriffinForward;
+//    DetectionSystemGriffin* myGriffinBack;
+//    DetectionSystem8pi* my8pi;
+//    DetectionSystemSceptar* mySceptar;
+//    DetectionSystemSpice* mySpice;
+//    DetectionSystemSpiceV02* mySpiceV02;
+//    DetectionSystemPaces* myPaces;
+//    DetectionSystemSodiumIodide* mySodiumIodide;
 
 };
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

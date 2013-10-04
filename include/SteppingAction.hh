@@ -24,48 +24,44 @@
 // ********************************************************************
 //
 //
-// $Id: DetectorConstruction.hh,v 1.1 2010-10-18 15:56:17 maire Exp $
-// GEANT4 tag $Name: geant4-09-04-patch-02 $
+// $Id: SteppingAction.hh,v 1.1 2010-11-08 10:38:44 maire Exp $
+// GEANT4 tag $Name: not supported by cvs2svn $
 //
 // 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef DetectionSystemGammaTracking_h
-#define DetectionSystemGammaTracking_h 1
+#ifndef SteppingAction_h
+#define SteppingAction_h 1
 
-#include "G4VUserDetectorConstruction.hh"
+#include "G4UserSteppingAction.hh"
 #include "globals.hh"
 
-class DetectionSystemGammaTracking
+class DetectorConstruction;
+class EventAction;
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+class SteppingAction : public G4UserSteppingAction
 {
-  public:
-    DetectionSystemGammaTracking();
-    ~DetectionSystemGammaTracking();
+public:
+  SteppingAction(DetectorConstruction*, EventAction*);
+  virtual ~SteppingAction();
 
-    G4int Build() ;//G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
-
-  private:
-    // Logical volumes        
-    G4LogicalVolume* logicShell;    
-
-    // Assembly volumes
-    G4AssemblyVolume* assembly; 
-
-//    SensitiveDetector* shell_SD;
-
-	  G4double shellRmin;
-    G4double shellThick;
-  
-    G4double phi_in;
-    G4double d_phi;
-    G4double th_in;
-    G4double d_th;
+  void UserSteppingAction(const G4Step*);
     
-    G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
+private:
+  DetectorConstruction* detector;
+  EventAction*          eventaction;  
+
+  void SetDetAndCryNumberForGriffinDetector( G4String );
+  void SetDetNumberForGenericDetector( G4String );
+
+  G4int det;
+  G4int cry;
 };
 
-#endif
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#endif

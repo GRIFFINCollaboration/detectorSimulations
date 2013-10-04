@@ -1,5 +1,5 @@
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
+//#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -16,7 +16,7 @@
 #include "G4SubtractionSolid.hh"
 #include "G4UnionSolid.hh"
 
-#include "G4SDManager.hh"
+//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -146,16 +146,16 @@ DetectionSystemPaces::~DetectionSystemPaces()
   delete teflon_annulus_bot_log;
   delete delrin_hemisphere_log;
   // sensitive detectors
-  delete silicon_block_SD;
+//  delete silicon_block_SD;
 }
 
-G4int DetectionSystemPaces::Build(G4SDManager* mySDman)
+G4int DetectionSystemPaces::Build()// G4SDManager* mySDman)
 {
   // Add sensitive detectors
-  if( !silicon_block_SD ) {
-    silicon_block_SD = new SensitiveDetector("/sd/allPaces", "CollectionPacesSilicon");
-    mySDman->AddNewDetector( silicon_block_SD );
-  }
+//  if( !silicon_block_SD ) {
+//    silicon_block_SD = new SensitiveDetector("/sd/allPaces", "CollectionPacesSilicon");
+//    mySDman->AddNewDetector( silicon_block_SD );
+//  }
   
   // Build assembly volumes
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -185,7 +185,7 @@ G4int DetectionSystemPaces::Build(G4SDManager* mySDman)
   CombineAssemblyDetector();
   CombineAssembly();
   
-  silicon_block_log->SetSensitiveDetector( silicon_block_SD );
+//  silicon_block_log->SetSensitiveDetector( silicon_block_SD );
   
   return 1;
 }//end ::Build

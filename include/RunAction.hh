@@ -35,71 +35,67 @@
 #ifndef RunAction_h
 #define RunAction_h 1
 
-#include <fstream>
-#include "G4ThreeVector.hh"
-
+//#include <fstream>
+//#include "G4ThreeVector.hh"
+#include "globals.hh"
 #include "G4UserRunAction.hh"
 
-using namespace std;
+//using namespace std;
 
 class G4Run;
-class RunActionMessenger;
+class HistoManager ;
+//class RunActionMessenger;
 
 class RunAction : public G4UserRunAction
 {
   public:
-    RunAction();
-   ~RunAction();
+    RunAction( HistoManager* );
+    virtual ~RunAction();
 
-  public:
     void BeginOfRunAction (const G4Run*);
     void EndOfRunAction   (const G4Run*);
 
-  public:
-    void EnableWrite      ( G4bool );
-    void EnableWriteHex   ( G4bool );
-     
-  public:
-    void SetRunNumber     ( G4int );
+//    void EnableWrite      ( G4bool );
+//    void EnableWriteHex   ( G4bool );
 
-  public:
-    inline void  LMwrite(const G4String &theString) { outFileLMD << theString;   };
-    inline void  LMwrite(const char     *theChars)  { outFileLMD << theChars;    };
-    void  HEXwrite(G4int ndet, G4double ener, G4double time, G4ThreeVector pos1, G4int nseg, G4String process, G4String collection);
+//    void SetRunNumber     ( G4int );
 
-    void  HEXwriteStartFlag();
-    void  HEXwriteEndFlag();
+//    inline void  LMwrite(const G4String &theString) { outFileLMD << theString;   };
+//    inline void  LMwrite(const char     *theChars)  { outFileLMD << theChars;    };
+//    void  HEXwrite(G4int ndet, G4double ener, G4double time, G4ThreeVector pos1, G4int nseg, G4String process, G4String collection);
 
-    void  TimeFlagStart();
-    void  TimeFlagEnd();
-    void  TimeEntry(G4double time_value);
+//    void  HEXwriteStartFlag();
+//    void  HEXwriteEndFlag();
 
-    void  ParticleInfoFlagStart();
-    void  ParticleInfoFlagEnd();
-    void  ParticleInfoEntry(G4double time_value);
+//    void  TimeFlagStart();
+//    void  TimeFlagEnd();
+//    void  TimeEntry(G4double time_value);
 
-    void  SetTimeUnit(G4String newTimeUnit);
-  public:
-    inline G4bool DoWriteLMD()                         { return writeLMD;           };
-    inline G4bool DoWriteHEX()                         { return writeHEX;           };
-    inline G4int  GetRunNumber()                       { return runNumber;          };
+//    void  ParticleInfoFlagStart();
+//    void  ParticleInfoFlagEnd();
+//    void  ParticleInfoEntry(G4double time_value);
+
+//    void  SetTimeUnit(G4String newTimeUnit);
+
+//    inline G4bool DoWriteLMD()                         { return writeLMD;           };
+//    inline G4bool DoWriteHEX()                         { return writeHEX;           };
+//    inline G4int  GetRunNumber()                       { return runNumber;          };
     
   private:
-    void  WriteHeader ();
-    G4int OpenLMFile  ();  
+  
+  	HistoManager* histoManager ;
+//    void  WriteHeader ();
+//    G4int OpenLMFile  ();  
     
-  private:
-    std::ofstream outFileLMD;
+//    std::ofstream outFileLMD;
     
-  private:
-    G4int    runNumber;
-    G4bool   writeLMD;
-    G4bool   writeHEX;
-    G4String outFileName;
-    G4String timeUnit;
-    
-  private:
-    RunActionMessenger* myMessenger;
+//    G4int    runNumber;
+//    G4bool   writeLMD;
+//    G4bool   writeHEX;
+//    G4String outFileName;
+//    G4String timeUnit;
+
+//    RunActionMessenger* myMessenger;
 };
 
 #endif

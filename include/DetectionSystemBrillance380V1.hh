@@ -43,6 +43,10 @@ class DetectionSystemBrillance380V1
   public:
     DetectionSystemBrillance380V1();
     ~DetectionSystemBrillance380V1();
+    
+    G4int Build();//G4SDManager* mySDman); 
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+    G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;}; 
 
   private:
     // Logical volumes        
@@ -58,9 +62,8 @@ class DetectionSystemBrillance380V1
     // Assembly volumes
     G4AssemblyVolume* assembly;
 
-    SensitiveDetector* crystal_block_SD;
+//    SensitiveDetector* crystal_block_SD;
 
-  private: 
     G4int copy_number;
     G4int number_of_detectors;
     G4int number_of_segments;
@@ -87,12 +90,6 @@ class DetectionSystemBrillance380V1
     G4double detectorAngles[8][2];
     G4double inner_radius;
 
-  public: 
-    G4int Build(G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
-    G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;}; 
-
-  private: 
     G4Tubs* BuildCrystal();
     G4Tubs* BuildAluminumCan();
     G4Tubs* BuildAluminumCanFrontLid();
@@ -101,13 +98,11 @@ class DetectionSystemBrillance380V1
     G4Tubs* BuildCanVacuumFrontLid();
     G4Tubs* BuildCanVacuumBackLid();
     
-  private: 
     G4int BuildAluminumCanVolume();           
     G4int BuildCanVacuumVolume();
     G4int BuildCrystalVolume();
     G4int BuildOneDetector();  
         
-  private:
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
 };
 

@@ -1,0 +1,104 @@
+
+
+This goes through the files in the source directory of newDetectorSimulations and compares them to the current files. Differences as well as new files will be noted here. 
+
+DetectionSystemBox.cc 							-- NEW
+DetectionSystemBrilliance380V1.cc 	-- Modified (Sens. Detec)
+DetectionSystemGrid.cc							-- NEW
+DetectionSystemGriffin.cc 					-- Modified
+DetectionSystemSodiumIodide.cc 			-- Modified (Sens. Detec)
+DetectorConstruction.cc 						-- Modified 
+DetectorMessenger.cc 								-- Modified
+ElementField.cc											-- Modified
+EventAction.cc											-- Modified
+FieldMessenger.cc										-- Modified
+GlobalField.cc											-- Modified
+HistoManager.cc											-- NEW
+PhysicsList.cc											-- No change
+PhysicsListMessenger.cc							-- Modified 
+PhysListEmLowEnergy.cc							-- No change
+PhysListHadron.cc 									-- No change
+PhysListParticles.cc 								-- No change
+PrimaryGeneratorAction.cc						-- Modified
+PrimaryGeneratorMessenger.cc 				-- Modified - Seem similar.
+RunAction.cc												-- Modified
+SteppingAction.cc										-- NEW
+
+
+Changes:
+
+DetectionSystemBrilliance380V1.cc		:
+- Removed Sensitive detector header files
+- Modified Build() function to remove dependence on sensitive detector
+
+DetectionSystemGriffin.cc						:
+- Removed dependence on sensitive detector
+
+DetectionSystemSpiceV02.cc					:
+- Removed dependence on sensitive detector
+
+DetectionSystemSpice.cc							:
+- Removed dependence on sensitive detector
+
+DetectionSystemPaces.cc							:
+- Removed dependence on sensitive detector
+
+EventAction.cc											:
+- No longer writes data to HEX files. Instead, it will create a histogram using HistoManager.cc
+- Each detector has its own function for creating a histogram, and these are called in EndOfEventAction(event). 
+- ClearVariables function introduced to initialize all of the data arrays for each detector. 
+
+RunAction.cc												:
+- This file has been shortened significantly. It now just waits until the run is complete, 
+Then writes the file to disk. It no longer prepares any hex flags since there are no more hex files. 
+If this is a major problem then it can be reinstated, but for the time being I will leave it 
+to just write root files. 
+
+DetectorMessenger.cc								:
+- Added commands for grid and box
+
+DetectorConstruction.cc							:
+- No longer builds all detectors before any are actually called. 'Experimental Hall' has been replaced with 'World'. 
+- Added 'Box' and 'Grid' detection systems. 
+- 
+
+HistoManager.cc											:
+- Added outputs for Sceptar, 8pi, spice, and paces. 
+- Writes output in a seemingly inefficient manner. All files need a seperate name so there are many 
+statements that have very similar functions. There should be a clever way to put this into a loop. 
+
+HistoManager.hh											:
+- Added output file names to the HISTONAME list for the detectors added in HistoManager.cc. 
+
+ApparatusFieldBox.cc								:
+- Removed inclusion of SencitiveDetector.hh and G4SDManager.hh
+
+ApparatusGenericTarget.cc						:
+- Removed inclusion of SensitiveDetector.hh and G4SDManager.hh
+
+Apparatus8piVacuumChamber.cc				:
+- Removed inclusion of SensitiveDetector.hh and G4SDManager.hh
+
+Apparatus8piCavuumChamberAuxMatShell.cc :
+- Removed inclusion of SensitiveDetector.hh and G4SDManager.hh
+
+ApparatusSpicetargetChamber.cc			:
+- Removed inclusion of SensitiveDetector.hh and G4SDManager.hh
+
+DetectionSystem8pi.cc								:
+- Removed SensitiveDetector Dependence
+
+DetectionSystemGammaTracking.cc			:
+- Removed SensitiveDetector Dependence
+
+DetectionSystemSodiumIodide.cc			:
+- Removed SensitiveDetector Dependence
+
+PrimaryGeneratorAction							:
+- Introduced isoRadOnBox
+
+I have likely missed a few files on here as I didnt always update this immediately, but the big changes include:
+
+- No more HEX file output, root file output instead. 
+- No more sensitive detectors
+- Two added objects: Grid and Box. 
