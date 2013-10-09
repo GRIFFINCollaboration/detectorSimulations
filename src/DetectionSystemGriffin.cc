@@ -2,7 +2,6 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-//#include "SensitiveDetector.hh" // Not included in new system
 
 #include "G4Material.hh"
 
@@ -29,8 +28,6 @@
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
 
-//#include "G4SDManager.hh"
-
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
@@ -42,19 +39,10 @@
 // in our local files as it contains NDA-protected info), and the
 // ::~DetectionSystemGriffin destructor deletes them from the stack 
 // when they go out of scope
-///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 DetectionSystemGriffin::~DetectionSystemGriffin()
 {
-
-// Not included in new system
-//  delete germanium_block_SD;
-//  delete left_casing_SD;
-//  delete right_casing_SD;
-//  delete left_extension_SD;
-//  delete right_extension_SD;
-//  delete back_plug_SD;
-
   // LogicalVolumes in ConstructNewHeavyMet
   delete hevimet_log;
 
@@ -127,52 +115,8 @@ DetectionSystemGriffin::~DetectionSystemGriffin()
 // at the origin
 ///////////////////////////////////////////////////////////////////////
 void DetectionSystemGriffin::Build()//G4SDManager* mySDman)
-{ 
-//  this->exp_hall_log = exp_hall_log;  
-// Not included in new system
-//  if( !germanium_block_SD ) {
-//    germanium_block_SD = new SensitiveDetector(sdName0, colNameGe);
-//    mySDman->AddNewDetector( germanium_block_SD );
-//  }
-//  if (this->BGO_selector == 1)
-//  {
-//    if( !left_casing_SD && include_side_suppressors) {
-//      left_casing_SD = new SensitiveDetector(sdName1, colNameLeftCasing);
-//      mySDman->AddNewDetector( left_casing_SD );
-//    }
-//    if( !right_casing_SD && include_side_suppressors) {
-//      right_casing_SD = new SensitiveDetector(sdName2, colNameRightCasing);
-//      mySDman->AddNewDetector( right_casing_SD );
-//    }
-//    if( !left_extension_SD && include_extension_suppressors ) {
-//      left_extension_SD = new SensitiveDetector(sdName3, colNameLeftExtension);
-//      mySDman->AddNewDetector( left_extension_SD );
-//    }
-//    if( !right_extension_SD && include_extension_suppressors) {
-//      right_extension_SD = new SensitiveDetector(sdName4, colNameRightExtension);
-//      mySDman->AddNewDetector( right_extension_SD );
-//    }
-//    if( !back_plug_SD && include_back_suppressors) {
-//      back_plug_SD = new SensitiveDetector(sdName5, colNameBackPlug);
-//      mySDman->AddNewDetector( back_plug_SD );
-//    }
-//  }
-  
+{
   BuildOneDetector();
-
-//  germanium_block1_log->SetSensitiveDetector( germanium_block_SD );
-//  if(include_side_suppressors) {
-//      left_suppressor_log->SetSensitiveDetector( left_casing_SD );
-//      right_suppressor_log->SetSensitiveDetector( right_casing_SD );
-//  }
-//  if(include_extension_suppressors) {
-//    left_suppressor_extension_log->SetSensitiveDetector( left_extension_SD );
-//    right_suppressor_extension_log->SetSensitiveDetector( right_extension_SD );
-//  }
-//  if(include_back_suppressors) {
-//    back_quarter_suppressor_log->SetSensitiveDetector( back_plug_SD );
-//  }
-
 }//end ::Build
 
 G4double DetectionSystemGriffin::transX(G4double x, G4double y, G4double z, G4double theta, G4double phi){
@@ -300,12 +244,12 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   // Replacement for this->suppressor_extension_length
   G4double shell_suppressor_extension_length = this->suppressor_extension_length
-        + (this->suppressor_shell_thickness*2.0)*(1.0/tan(this->bent_end_angle)
-    - tan(this->bent_end_angle));
+            + (this->suppressor_shell_thickness*2.0)*(1.0/tan(this->bent_end_angle)
+            - tan(this->bent_end_angle));
 
   // Replacement for this->suppressor_extension_angle: must totally recalculate
   G4double shell_suppressor_extension_angle = atan(((this->back_inner_radius
-    + this->bent_end_length +(this->BGO_can_seperation
+        + this->bent_end_length +(this->BGO_can_seperation
         + this->side_BGO_thickness + this->suppressor_shell_thickness*2.0)
         / tan(this->bent_end_angle)
         - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
@@ -315,14 +259,14 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   // these two parameters are for shifting the extensions back and out when in their BACK position
   G4double extension_back_shift = this->air_box_front_length
-    - (this->hevimet_tip_thickness +shell_suppressor_extension_length
-    + (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-    * tan(this->bent_end_angle))
-    * cos(this->bent_end_angle);
+        - (this->hevimet_tip_thickness +shell_suppressor_extension_length
+        + (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle))
+        * cos(this->bent_end_angle);
 
   G4double extension_radial_shift = extension_back_shift*tan(this->bent_end_angle);
 
-  if(include_side_suppressors) {
+  if( include_side_suppressors ) {
      
     G4RotationMatrix* rotateSideSuppressor[8];
     G4ThreeVector moveInnerSuppressor[8];
@@ -441,7 +385,7 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-  else if(this->applied_back_shift == this->back_inner_radius - this->forward_inner_radius && include_extension_suppressors)
+  else if( this->applied_back_shift == ( this->back_inner_radius - this->forward_inner_radius && include_extension_suppressors ) )
   {
 
     x0 = - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
@@ -472,7 +416,8 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   - this->forward_inner_radius
   - this->suppressor_shell_thickness/2.0 + dist_from_origin;
 
-    for(i=0; i<4; i++){
+    for( i = 0 ; i < 4 ; i++ ) 
+    {
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
       rotateExtension[2*i]->rotateY(this->bent_end_angle);
@@ -563,12 +508,12 @@ void DetectionSystemGriffin::BuildOneDetector()
 ///////////////////////////////////////////////////////////////////////
 void DetectionSystemGriffin::ConstructComplexDetectorBlock()
 {
-  G4Material* materialGe = G4Material::GetMaterial("G4_Ge");
+  G4Material* materialGe = G4Material::GetMaterial( "G4_Ge" );
   if( !materialGe ) {
     G4cout << " ----> Material " << this->crystal_material << " not found, cannot build the detector shell! " << G4endl;
     exit(1);
   }
-  G4Material* materialVacuum = G4Material::GetMaterial("Vacuum");
+  G4Material* materialVacuum = G4Material::GetMaterial( "Vacuum" );
   if( !materialVacuum ) {
     G4cout << " ----> Material " << this->crystal_material << " not found, cannot build the detector shell! " << G4endl;
     exit(1);
@@ -1334,29 +1279,33 @@ G4Trd* DetectionSystemGriffin::trianglePost()
 {
   // Calculations that are also done in ConstructColdFinger for positioning
   // First, find how far from the centre to place the tips of the triangles
-  G4double distance_of_the_tip = this->germanium_separation/2.0 
-	+ (this->germanium_width/2.0 - this->germanium_shift) //centre of the middle hole
-	+ sqrt( pow((this->germanium_outer_radius 
-	+ this->triangle_posts_distance_from_crystals), 2.0)
-	- pow(this->germanium_width/2.0 - this->germanium_shift, 2.0) );
+  G4double distance_of_the_tip  = this->germanium_separation/2.0 
+	                                + (this->germanium_width/2.0 - this->germanium_shift) //centre of the middle hole
+	                                + sqrt( pow((this->germanium_outer_radius 
+                                  + this->triangle_posts_distance_from_crystals), 2.0)
+                                  - pow(this->germanium_width/2.0 - this->germanium_shift, 2.0) );
+
   // The distance of the base from the detector centre
   G4double distance_of_the_base = this->germanium_separation/2.0
-        + this->germanium_width;
+                                  + this->germanium_width;
+
   // The distance away from the boundary between crystals of the side points
   G4double distance_of_the_side_points = sqrt( pow((this->germanium_outer_radius 
-	+ this->triangle_posts_distance_from_crystals), 2.0)
-	- pow(this->germanium_width/2.0 +/*notice*/ this->germanium_shift, 2.0) );
+	                                       + this->triangle_posts_distance_from_crystals), 2.0)
+	                                       - pow(this->germanium_width/2.0 +/*notice*/ this->germanium_shift, 2.0) );
 
   // Measurements to make the posts with
   G4double length = this->germanium_length - this->triangle_post_starting_depth
-        + this->cold_finger_space;
-  G4double base_to_tip_height = (distance_of_the_base-distance_of_the_tip);
+                    + this->cold_finger_space;
+
+  G4double base_to_tip_height = (distance_of_the_base - distance_of_the_tip);
+
   G4double half_width_of_base = distance_of_the_side_points;
 
   G4double half_width_of_top = this->trianglePostDim; //the easiest way to make a triangle
   //G4Trd( const G4String& pName,G4double  dx1, G4double dx2, G4double  dy1, G4double dy2,G4double  dz )
   G4Trd* triangle_post = new G4Trd("triangle_post", length/2.0, length/2.0, 
-        half_width_of_top, half_width_of_base, base_to_tip_height/2.0);
+                                    half_width_of_top, half_width_of_base, base_to_tip_height/2.0);
 	
   return triangle_post;
 }//end ::trianglePost
