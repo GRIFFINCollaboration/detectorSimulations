@@ -122,6 +122,9 @@ DetectorConstruction::DetectorConstruction() :
 
 //  this->hall_vis = false;
 
+  this->detectorShieldSelect = 1 ; // Include suppressors by default. 
+  this->detectorRadialDistance = 11.0*cm ;
+
   // Generic Target Apparatus
   this->setGenericTargetMaterial   = false;
   this->setGenericTargetDimensions = false;
@@ -546,7 +549,7 @@ void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, this->detectorShieldSelect, 11.0*cm); // Select Forward (0) or Back (1)
   pGriffinForward->Build();
 
   for( G4int detector_number = 0; detector_number < ndet; detector_number++ )
@@ -566,7 +569,7 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, this->detectorShieldSelect, 11.0*cm); // Select Forward (0) or Back (1)
   pGriffinForward->Build();
 
   direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
@@ -583,7 +586,7 @@ void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1, this->detectorShieldSelect, 11.0*cm); // Select Forward (0) or Back (1)
   pGriffinBack->Build();
 
   for(G4int detector_number = 0; detector_number < ndet; detector_number++)
@@ -603,7 +606,7 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1, this->detectorShieldSelect, 11.0*cm); // Select Forward (0) or Back (1)
   pGriffinBack->Build();
 
   direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
@@ -615,6 +618,33 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
   pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 }
 
+// Temporary Function for testing purposes
+void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet )
+{
+  G4double theta,phi,position;
+  G4ThreeVector move,direction;
+
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+  pGriffinForward->Build();
+
+  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+  position = this->griffinFwdBackPosition;
+  move = position * direction;
+
+  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
+
+  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect )
+{
+  this->detectorShieldSelect = ShieldSelect ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist )
+{
+  this->detectorRadialDistance = detectorDist ; 
+}
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 {
 
