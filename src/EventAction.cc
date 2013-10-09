@@ -244,7 +244,7 @@ void EventAction::FillGriffinCryst()
                 if(!SuppressorBackFired[i] && !SuppressorExtensionFired[i] && !SuppressorSideFired[i]) { // Suppressor fired?
                     if(WRITEEDEPHISTOS) histoManager->FillHisto((griffin_crystal_sup_edep_det0_cry0+(MAXNUMDETGRIFFIN*j))+i, GriffinCrystEnergyDet[i][j]);
                 }
-                energySumDet = GriffinCrystEnergyDet[i][j];
+                energySumDet += GriffinCrystEnergyDet[i][j];
             }
         }
         if(energySumDet > MINENERGYTHRES) {
