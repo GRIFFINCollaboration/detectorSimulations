@@ -188,6 +188,9 @@ void HistoManager::book()
     filename  = "griffin_crystal_sup_edep";
     MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
 
+    filename  = "griffin_crystal_sup_edep_cry";
+    MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
+
     filename  = "griffin_crystal_sup_edep_sum";
     MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
     
@@ -208,8 +211,11 @@ void HistoManager::book()
       }
     }
   
- 		// Griffin Crystal Unsuppressed (I think)
+    // Griffin Crystal Unsuppressed
     filename  = "griffin_crystal_unsup_edep";
+    MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
+
+    filename  = "griffin_crystal_unsup_edep_cry";
     MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
 
     filename  = "griffin_crystal_unsup_edep_sum";
