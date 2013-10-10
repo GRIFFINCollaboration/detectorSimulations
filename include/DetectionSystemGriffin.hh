@@ -409,6 +409,8 @@ class DetectionSystemGriffin
     G4double can_length_z;
     G4double crystal_dist_from_origin;
         
+    G4double griffinDeadLayers[16][4];
+
     // internal methods
     void BuildOneDetector();  
 //    void PlaceDetector(G4int detector_number);
