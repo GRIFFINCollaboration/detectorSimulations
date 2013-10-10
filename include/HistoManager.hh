@@ -55,14 +55,14 @@ const G4int MAXNUMCRYGRIFFIN    = 4;
 const G4int NUMPARTICLETYPES    = 20;
 
 // ekin histo properties    ///////////////////////
-const G4int     EKINNBINS  = 5000;
+const G4int     EKINNBINS  = 10000;
 const G4double  EKINXMIN   = 0.5*keV;
-const G4double  EKINXMAX   = 5000.5*keV;
+const G4double  EKINXMAX   = 10000.5*keV;
 
 // edep histo properties    ///////////////////////
-const G4int     EDEPNBINS  = 5000;
+const G4int     EDEPNBINS  = 10000;
 const G4double  EDEPXMIN   = 0.5*keV;
-const G4double  EDEPXMAX   = 5000.5*keV;
+const G4double  EDEPXMAX   = 10000.5*keV;
 
 // trackl histo properties  ///////////////////////
 const G4int     TRACKLNBINS = 5000;
@@ -159,6 +159,7 @@ enum HISTONAME
     gridcell_gamma_trackl_det18,
     gridcell_gamma_trackl_det19,
     griffin_crystal_sup_edep,
+    griffin_crystal_sup_edep_cry,
     griffin_crystal_sup_edep_sum,
     griffin_crystal_sup_edep_det0,
     griffin_crystal_sup_edep_det1,
@@ -241,6 +242,7 @@ enum HISTONAME
     griffin_crystal_sup_edep_det14_cry3,
     griffin_crystal_sup_edep_det15_cry3,
     griffin_crystal_unsup_edep,
+    griffin_crystal_unsup_edep_cry,
     griffin_crystal_unsup_edep_sum,
     griffin_crystal_unsup_edep_det0,
     griffin_crystal_unsup_edep_det1,
