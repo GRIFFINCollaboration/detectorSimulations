@@ -559,13 +559,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
   for(i=0; i<4; i++){
     rotate_germanium[i] = new G4RotationMatrix;
     rotate_germanium[i]->rotateY(-M_PI/2.0);
-    rotate_germanium[i]->rotateX(-M_PI/2.0*i);
+    rotate_germanium[i]->rotateX(M_PI/2.0-M_PI/2.0*i);
     rotate_germanium[i]->rotateX(alpha);
     rotate_germanium[i]->rotateY(beta);
     rotate_germanium[i]->rotateZ(gamma);
 
-    x = x0*pow(-1, floor(i/2) );
-    y = y0*pow(-1, floor((i+1)/2) );
+    x = -x0*pow(-1, floor((i+1)/2) );
+    y = -y0*pow(-1, floor((i+2)/2) );
     z = z0;
 
     move_germanium[i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi), DetectionSystemGriffin::transY(x,y,z,theta,phi), DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -590,13 +590,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
 
     for(i=0; i<4; i++){
       rotate_back_quarter_suppressor[i] = new G4RotationMatrix;
-      rotate_back_quarter_suppressor[i]->rotateX(-M_PI/2.0*i);
+      rotate_back_quarter_suppressor[i]->rotateX(M_PI/2.0-M_PI/2.0*i);
       rotate_back_quarter_suppressor[i]->rotateX(alpha);
       rotate_back_quarter_suppressor[i]->rotateY(beta);
       rotate_back_quarter_suppressor[i]->rotateZ(gamma);
 
-      x = x0*pow(-1, floor(i/2) );
-      y = y0*pow(-1, floor((i+1)/2) );
+      x = -x0*pow(-1, floor((i+1)/2) );
+      y = -y0*pow(-1, floor((i+2)/2) );
       z = z0;
 
       move_back_quarter_suppressor[i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -659,13 +659,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
       rotateSideSuppressor[2*i] = new G4RotationMatrix;
       rotateSideSuppressor[2*i]->rotateZ(M_PI/2.0);
       rotateSideSuppressor[2*i]->rotateY(M_PI/2.0);
-      rotateSideSuppressor[2*i]->rotateX(-M_PI/2.0*i);
+      rotateSideSuppressor[2*i]->rotateX(M_PI/2.0-M_PI/2.0*i);
       rotateSideSuppressor[2*i]->rotateX(alpha);
       rotateSideSuppressor[2*i]->rotateY(beta);
       rotateSideSuppressor[2*i]->rotateZ(gamma);
 
-      x = x0*cos(i*M_PI/2.0) + y0*sin(i*M_PI/2);
-      y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      x = x0*cos((i-1)*M_PI/2.0) + y0*sin((i-1)*M_PI/2);
+      y = -x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
       z = z0;
 
       moveInnerSuppressor[i*2] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -675,13 +675,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
 
       rotateSideSuppressor[2*i+1] = new G4RotationMatrix;
       rotateSideSuppressor[2*i+1]->rotateY(-M_PI/2.0);
-      rotateSideSuppressor[2*i+1]->rotateX(-M_PI/2.0*(i+2));
+      rotateSideSuppressor[2*i+1]->rotateX(M_PI/2.0-M_PI/2.0*(i+2));
       rotateSideSuppressor[2*i+1]->rotateX(alpha);
       rotateSideSuppressor[2*i+1]->rotateY(beta);
       rotateSideSuppressor[2*i+1]->rotateZ(gamma);
 
-      x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
-      y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
+      x = x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
+      y = x0*cos((i-1)*M_PI/2.0) - y0*sin((i-1)*M_PI/2);
       z = z0;
 
       moveInnerSuppressor[i*2+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -732,13 +732,14 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
       rotateExtension[2*i]->rotateY(this->bent_end_angle);
-      rotateExtension[2*i]->rotateX(-M_PI/2.0*i);
+      //rotateExtension[2*i]->rotateX(-M_PI/2.0*i);
+      rotateExtension[2*i]->rotateX(M_PI/2.0 - M_PI/2.0*i);
       rotateExtension[2*i]->rotateX(alpha);
       rotateExtension[2*i]->rotateY(beta);
       rotateExtension[2*i]->rotateZ(gamma);
 
-      x = x0*cos(i*M_PI/2.0) + y0*sin(i*M_PI/2);
-      y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      x = x0*cos((i-1)*M_PI/2.0) + y0*sin((i-1)*M_PI/2);
+      y = -x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
       z = z0;
 
       moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -747,13 +748,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
       rotateExtension[2*i+1] = new G4RotationMatrix;
       rotateExtension[2*i+1]->rotateY(M_PI/2.0);
       rotateExtension[2*i+1]->rotateZ(M_PI/2.0 + this->bent_end_angle);
-      rotateExtension[2*i+1]->rotateX(-M_PI/2.0*i);
+      rotateExtension[2*i+1]->rotateX(M_PI/2.0 - M_PI/2.0*i);
       rotateExtension[2*i+1]->rotateX(alpha);
       rotateExtension[2*i+1]->rotateY(beta);
       rotateExtension[2*i+1]->rotateZ(gamma);
 
-      x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
-      y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
+      x = x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
+      y = x0*cos((i-1)*M_PI/2.0) - y0*sin((i-1)*M_PI/2);
       z = z0;
 
       moveInnerExtension[2*i+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -798,13 +799,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
       rotateExtension[2*i]->rotateY(this->bent_end_angle);
-      rotateExtension[2*i]->rotateX(-M_PI/2.0*i);
+      rotateExtension[2*i]->rotateX(M_PI/2.0-M_PI/2.0*i);
       rotateExtension[2*i]->rotateX(alpha);
       rotateExtension[2*i]->rotateY(beta);
       rotateExtension[2*i]->rotateZ(gamma);
 
-      x = x0*cos(i*M_PI/2.0) + y0*sin(i*M_PI/2);
-      y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
+      x = x0*cos((i-1)*M_PI/2.0) + y0*sin((i-1)*M_PI/2);
+      y = -x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
       z = z0;
 
       moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
@@ -813,13 +814,13 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
       rotateExtension[2*i+1] = new G4RotationMatrix;
       rotateExtension[2*i+1]->rotateY(M_PI/2.0);
       rotateExtension[2*i+1]->rotateZ(M_PI/2.0 + this->bent_end_angle);
-      rotateExtension[2*i+1]->rotateX(-M_PI/2.0*i);
+      rotateExtension[2*i+1]->rotateX(M_PI/2.0-M_PI/2.0*i);
       rotateExtension[2*i+1]->rotateX(alpha);
       rotateExtension[2*i+1]->rotateY(beta);
       rotateExtension[2*i+1]->rotateZ(gamma);
 
-      x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
-      y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
+      x = x0*sin((i-1)*M_PI/2.0) + y0*cos((i-1)*M_PI/2);
+      y = x0*cos((i-1)*M_PI/2.0) - y0*sin((i-1)*M_PI/2);
       z = z0;
 
       moveInnerExtension[2*i+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
