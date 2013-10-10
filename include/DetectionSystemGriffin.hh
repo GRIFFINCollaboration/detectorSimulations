@@ -248,13 +248,6 @@ class DetectionSystemGriffin
     G4String electrodeMaterial;
     G4String structureMaterial;
 
-//    SensitiveDetector* germanium_block_SD;
-//    SensitiveDetector* left_casing_SD;
-//    SensitiveDetector* right_casing_SD;
-//    SensitiveDetector* left_extension_SD;
-//    SensitiveDetector* right_extension_SD;
-//    SensitiveDetector* back_plug_SD;
-
     // Assembly volumes
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* germaniumAssembly;
@@ -264,6 +257,12 @@ class DetectionSystemGriffin
     G4AssemblyVolume* rightSuppressorExtensionAssembly;
     G4AssemblyVolume* suppressorBackAssembly;
     G4AssemblyVolume* suppressorShellAssembly;
+    G4AssemblyVolume* backAndSideSuppressorShellAssembly ; 
+    G4AssemblyVolume* extensionSuppressorShellAssembly ; 
+//    G4AssemblyVolume* extensionSuppressorAssembly ; 
+//    G4AssemblyVolume* backAndSideSuppressorAssembly ;
+//    G4AssemblyVolume* detectionSystemAssembly ;          
+    
       
     // Logical volumes
     G4LogicalVolume* air_box_log;
