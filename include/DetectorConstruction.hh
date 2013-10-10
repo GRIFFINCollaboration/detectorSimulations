@@ -119,6 +119,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGriffinForwardDetector(G4int ndet);
     void AddDetectionSystemGriffinBack(G4int ndet);
     void AddDetectionSystemGriffinBackDetector(G4int ndet);
+    void AddDetectionSystemGriffinPositionConfig(G4ThreeVector input);
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
     void AddDetectionSystemSpice(G4int ndet);
