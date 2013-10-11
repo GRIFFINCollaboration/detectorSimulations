@@ -173,6 +173,13 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   z = dist_from_origin ; // This isolates the motion of the extension suppressors from the rest of the suppressors. 
 
+  // Feel free to delete this output. TB
+  G4cout  << "Placing Extension Suppressor Shells" 
+          << "\nx = "       << x
+          << "\ny = "       << y
+          << "\nz = "       << z
+          << G4endl ;  
+
   move = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi), DetectionSystemGriffin::transY(x,y,z,theta,phi), DetectionSystemGriffin::transZ(x,y,z,theta,phi));
   
   this->extensionSuppressorShellAssembly->MakeImprint(exp_hall_log, move, rotate, 0);
@@ -417,6 +424,15 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
       y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
       z = z0;
 
+      // Feel free to delete this output. TB
+      G4cout  << "Placing Right Suppressor Extensions (Back Position) >> "
+        << "Iteration: "  << i 
+        << "\nx = "       << x
+        << "\ny = "       << y
+        << "\nz = "       << z
+        << G4endl ;  
+
+
       moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
       this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, moveInnerExtension[2*i], rotateExtension[2*i], copy_number++);
 
@@ -431,6 +447,15 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
       x = x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
       y = x0*cos(i*M_PI/2.0) - y0*sin(i*M_PI/2);
       z = z0;   
+
+      // Feel free to delete this output. TB
+      G4cout  << "Placing Left Suppressor Extensions (Back Position) >> "
+              << "Iteration: "  << i 
+              << "\nx = "       << x
+              << "\ny = "       << y
+              << "\nz = "       << z
+              << G4endl ;  
+
 
       moveInnerExtension[2*i+1] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
       this->leftSuppressorExtensionAssembly->MakeImprint(exp_hall_log, moveInnerExtension[2*i+1], rotateExtension[2*i+1], copy_number_two++);
@@ -1834,9 +1859,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
  if( this->suppressor_position_selector == 0 )
   {
 
-    G4cout << "Suppressors Forward. Applied Back Shift = " << this->applied_back_shift << " Suppressor_Position_Selector = " << this->suppressor_position_selector << G4endl ; 
-  
-  	// NOTE: There is a variable called suppressor_position_selector in the suppressed
+    // NOTE: There is a variable called suppressor_position_selector in the suppressed
   	// file that would probably be better for selecting which position to calculate for.  
   
 
@@ -1912,6 +1935,14 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
       y = y0*cos(i*M_PI/2) + z0*sin(i*M_PI/2);
       z = z0*cos(i*M_PI/2) - y0*sin(i*M_PI/2);
 
+      // Feel free to delete this output. TB
+      G4cout  << "Constructing Back Suppressor Extension Shells >> "
+              << "Iteration: "  << i 
+              << "\nx = "       << x
+              << "\ny = "       << y
+              << "\nz = "       << z
+              << G4endl ;  
+
       moveExtension[i*2] = G4ThreeVector(x, y, z);
 
       // this->suppressorShellAssembly->AddPlacedVolume(shell_for_right_suppressor_extension_log, moveExtension[i*2], rotateExtension[i*2]);
@@ -1926,6 +1957,16 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
       y = -z0*cos(i*M_PI/2) -y0*sin(i*M_PI/2);
       z = -y0*cos(i*M_PI/2) +z0*sin(i*M_PI/2);
 
+
+      // Feel free to delete this output. TB
+      G4cout  << "Constructing Back Suppressor Extension Shells >> "
+              << "Iteration: "  << i 
+              << "\nx = "       << x
+              << "\ny = "       << y
+              << "\nz = "       << z
+              << G4endl ;  
+
+
       moveExtension[i*2+1] = G4ThreeVector(x, y, z);
 
       // this->suppressorShellAssembly->AddPlacedVolume(shell_for_left_suppressor_extension_log, moveExtension[i*2+1], rotateExtension[i*2+1]);
@@ -1939,7 +1980,7 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
    else if( this->suppressor_position_selector == 1 )
   {
 
-    G4cout << "Suppressors Back. Applied Back Shift = " << this->applied_back_shift << " Suppressor_Position_Selector = " << this->suppressor_position_selector << G4endl ; 
+    
     
   //   // the placement of the extensions matches the placement of the side_suppressor pieces
   //   x0 = -this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
