@@ -544,6 +544,31 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
   }
 }
 
+// Temporary Function for testing purposes
+void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet ){
+  G4double theta,phi,position;
+  G4ThreeVector move,direction;
+
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+  pGriffinForward->Build();
+
+  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+  position = this->griffinFwdBackPosition;
+  move = position * direction;
+
+  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
+
+  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ){
+  this->detectorShieldSelect = ShieldSelect ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ){
+  this->detectorRadialDistance = detectorDist ; 
+}
+
 void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
 {
   G4double theta,phi,position;
@@ -618,33 +643,6 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
   pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 }
 
-// Temporary Function for testing purposes
-void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet )
-{
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
-
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
-  pGriffinForward->Build();
-
-  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-  position = this->griffinFwdBackPosition;
-  move = position * direction;
-
-  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
-
-  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
-}
-
-void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect )
-{
-  this->detectorShieldSelect = ShieldSelect ; 
-}
-
-void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist )
-{
-  this->detectorRadialDistance = detectorDist ; 
-}
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 {
 
