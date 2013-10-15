@@ -566,7 +566,6 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   return 1;
 }
 
-
 G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number)
 {
   G4double theta  = this->coords[position_number][0]*deg;
@@ -603,7 +602,7 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
 
   x0 = (this->germanium_width + this->germanium_separation)/2.0;
   y0 = (this->germanium_width + this->germanium_separation)/2.0;
-  z0 = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin;
+  z0 = this->germanium_length/2.0 + this->can_face_thickness/2.0 + this->germanium_dist_from_can_face + this->shift + this->applied_back_shift + dist_from_origin;
 
   /////////////////////////////////////////////////////////////////////
   // now we place all 4 of the 1/4 detectors using the LogicalVolume

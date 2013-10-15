@@ -34,7 +34,6 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-//#include "SensitiveDetector.hh"
 #include "G4RunManager.hh"
 
 #include "G4Material.hh"
@@ -52,8 +51,6 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
-
-//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -649,7 +646,7 @@ void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector
     G4int pos_num = (G4int)input.y();
     G4int config  = (G4int)input.z();
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
   pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
   pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
 }
