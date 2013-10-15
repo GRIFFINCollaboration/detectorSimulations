@@ -11,9 +11,9 @@
 #/DetSys/det/addGriffinBackDetector 5
 #/DetSys/det/addSceptar 1
 
-/DetSys/det/ShieldsPresent 1
-/DetSys/det/SetRadialDistance 11.0 cm
-/DetSys/det/addGriffinCustom 10
+/DetSys/det/ShieldsPresent 0
+/DetSys/det/SetRadialDistance 28.0 cm
+/DetSys/det/addGriffinCustom 1
 
 #/DetSys/det/ShieldsPresent 0
 #/DetSys/det/SetRadialDistance 25.0 cm
