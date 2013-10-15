@@ -643,6 +643,18 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
   pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 }
 
+void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
+{
+    G4int det_num = (G4int)input.x();
+    G4int pos_num = (G4int)input.y();
+    G4int config  = (G4int)input.z();
+
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+  pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
+  pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
+}
+
+
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 {
 

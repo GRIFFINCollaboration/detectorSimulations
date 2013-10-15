@@ -47,7 +47,10 @@ class DetectionSystemGriffin
 		DetectionSystemGriffin(G4int sel, G4int suppSwitch, G4double detRad);
 		~DetectionSystemGriffin();
 
-		void Build() ; //G4SDManager* mySDman);  
+        void Build() ; //G4SDManager* mySDman);
+        // For detector specific dead layers
+        void BuildDeadLayerSpecificDetector(G4int det);
+
 		G4double GetCrystalDistanceFromOrigin() {return crystal_dist_from_origin;}        
 
     G4double transX(G4double x, G4double y, G4double z, G4double theta, G4double phi);
@@ -55,6 +58,8 @@ class DetectionSystemGriffin
     G4double transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi);
 
     G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector moveBAH, G4RotationMatrix* rotateBAH, G4int detector_number); 
+    // For detector specific dead layers
+    G4int PlaceDeadLayerSpecificDetector(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number);
 
 	private:    
     G4String sdName0;
@@ -251,6 +256,8 @@ class DetectionSystemGriffin
     // Assembly volumes
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* germaniumAssembly;
+    // For detector specific dead layers
+    G4AssemblyVolume* germaniumAssemblyCry[4];
     G4AssemblyVolume* leftSuppressorCasingAssembly;
     G4AssemblyVolume* rightSuppressorCasingAssembly;
     G4AssemblyVolume* leftSuppressorExtensionAssembly;
@@ -271,6 +278,8 @@ class DetectionSystemGriffin
     void ConstructNewSuppressorCasingWithShells();
     void BuildelectrodeMatElectrodes();
     void ConstructComplexDetectorBlockWithDeadLayer();
+    // For detector specific dead layers
+    void ConstructComplexDetectorBlockWithDetectorSpecificDeadLayer(G4int det, G4int cry);
     void ConstructDetector();
     void ConstructComplexDetectorBlock();
     void ConstructColdFinger();
@@ -365,6 +374,8 @@ class DetectionSystemGriffin
 
     //internal methods for ConstructComplexDetectorBlock()
     G4SubtractionSolid* quarterDetector(); 
+    // For detector specific dead layers
+    G4SubtractionSolid* quarterSpecificDeadLayerDetector(G4int det, G4int cry);
 
     //internal methods for ConstructComplexDetectorBlockWithPlastic()
     G4UnionSolid* interCrystalelectrodeMatBack();
@@ -421,9 +432,14 @@ class DetectionSystemGriffin
     G4double crystal_dist_from_can_back;
     G4double can_length_z;
     G4double crystal_dist_from_origin;
-        
+
+    // For detector specific dead layers
+    G4double griffinDeadLayers[16][4];
+    G4Colour griffinCrystalColours[4];
+    G4Colour griffinDeadLayerColours[4];
+
     // internal methods
-    void BuildOneDetector();  
+    void BuildOneDetector();
 //    void PlaceDetector(G4int detector_number);
 
  

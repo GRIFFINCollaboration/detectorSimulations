@@ -219,12 +219,14 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGriffinBackDetectorCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinBackDetector",this);
   AddDetectionSystemGriffinBackDetectorCmd->SetGuidance("Add GriffinBack Detector");
   AddDetectionSystemGriffinBackDetectorCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  AddDetectionSystemGriffinPositionConfigCmd = new G4UIcmdWith3Vector("/DetSys/det/addGriffinPositionConfig",this);
+  AddDetectionSystemGriffinPositionConfigCmd->SetGuidance("Add Griffin Detector #, Position #, Config (0=forward, 1=back)");
+  AddDetectionSystemGriffinPositionConfigCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   AddDetectionSystemGriffinCustomCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinCustom", this ) ; 
   AddDetectionSystemGriffinCustomCmd->SetGuidance("Adds a detector using the paramaters specied") ; 
   AddDetectionSystemGriffinCustomCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
-
-// New Commands for GRIFFIN
 
   AddDetectionSystemGriffinShieldSelectCmd = new G4UIcmdWithAnInteger("/DetSys/det/ShieldsPresent", this );
   AddDetectionSystemGriffinShieldSelectCmd->SetGuidance( "Selects whether or not the detector suppressors are included" ) ;
@@ -234,8 +236,6 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGriffinSetRadialDistanceCmd->SetGuidance("Selects the radial distance for the detector from the origin") ;
   AddDetectionSystemGriffinSetRadialDistanceCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
   
-//
-
   AddDetectionSystemSceptarCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSceptar",this);
   AddDetectionSystemSceptarCmd->SetGuidance("Add Detection System Sceptar");
   AddDetectionSystemSceptarCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -297,8 +297,10 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystemGriffinForwardDetectorCmd;
   delete AddDetectionSystemGriffinBackCmd;
   delete AddDetectionSystemGriffinBackDetectorCmd;
+  
+  delete AddDetectionSystemGriffinPositionConfigCmd;
+  
   delete AddDetectionSystemGriffinCustomCmd ;
-
   delete AddDetectionSystemGriffinShieldSelectCmd ; 
   delete AddDetectionSystemGriffinSetRadialDistanceCmd ; 
 
@@ -416,8 +418,9 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemGriffinBackDetectorCmd ) {
     Detector->AddDetectionSystemGriffinBackDetector(AddDetectionSystemGriffinBackDetectorCmd->GetNewIntValue(newValue));
   }
-
-
+  if( command == AddDetectionSystemGriffinPositionConfigCmd ) {
+    Detector->AddDetectionSystemGriffinPositionConfig(AddDetectionSystemGriffinPositionConfigCmd->GetNew3VectorValue(newValue));
+	}
   if( command == AddDetectionSystemGriffinCustomCmd ) {
     Detector->AddDetectionSystemGriffinCustom(AddDetectionSystemGriffinBackDetectorCmd->GetNewIntValue(newValue));
   }
@@ -427,8 +430,6 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemGriffinSetRadialDistanceCmd ) {
     Detector->AddDetectionSystemGriffinSetRadialDistance(AddDetectionSystemGriffinSetRadialDistanceCmd->GetNewDoubleValue(newValue)) ;
   }
-
-
   if( command == AddDetectionSystemSpiceCmd ) { 
     Detector->AddDetectionSystemSpice(AddDetectionSystemSpiceCmd->GetNewIntValue(newValue)); 
   }
