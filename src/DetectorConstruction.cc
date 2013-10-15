@@ -113,15 +113,6 @@ DetectorConstruction::DetectorConstruction() :
   
   this->matWorldName = "G4_AIR";
 
-//  this->hall_x = 10.0*m;
-//  this->hall_y = 10.0*m;
-//  this->hall_z = 10.0*m; // replaced by world
-
-//  this->hall_vis = false;
-
-  this->detectorShieldSelect = 1 ; // Include suppressors by default. 
-
-
   // Generic Target Apparatus
   this->setGenericTargetMaterial   = false;
   this->setGenericTargetDimensions = false;
@@ -136,8 +127,14 @@ DetectorConstruction::DetectorConstruction() :
   // parameters to suppress:
 
   DefineSuppressedParameters();
+  
+  // Shield Selection Default
+
+  this->detectorShieldSelect = 1 ; // Include suppressors by default. 
+  this->extensionSuppressorLocation = 0 ; // Forward by default
 
   // create commands for interactive definition
+
   detectorMessenger = new DetectorMessenger(this);
 
   // ensure the global field is initialized
@@ -201,64 +198,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
   return physiWorld ; 
   
-//  G4Box*             hallBox  = new G4Box("hallBox", this->hall_x, this->hall_y, this->hall_z);
-//  G4LogicalVolume*   hallLog  = new G4LogicalVolume(hallBox, matWorld, "hallLog", 0, 0, 0);
-//  G4VPhysicalVolume* hallPhys = new G4PVPlacement(0, G4ThreeVector(), "hallPhys", hallLog, 0, false, 0);
-  
- 
-
-//  if(this->builtDetectors) {
-//      G4cout << "Already Built Detectors!" << G4endl;
-//  }
-//  else {
-//      // sensitive detector manager
-//      G4SDManager* mySDman = G4SDManager::GetSDMpointer();
-
-//      //  DetectionSystemGammaTracking* pGammaTracking = new DetectionSystemGammaTracking();
-//      //  this->myGammaTracking = pGammaTracking;
-//      //  this->myGammaTracking->Build(mySDman);
-
-//      DetectionSystemBrillance380V1* pBrillance380V1 = new DetectionSystemBrillance380V1();
-//      this->myBrillance380V1 = pBrillance380V1;
-//      this->myBrillance380V1->Build(mySDman);
-
-//      DetectionSystemSodiumIodide* pSodiumIodide = new DetectionSystemSodiumIodide();
-//      this->mySodiumIodide = pSodiumIodide;
-//      this->mySodiumIodide->Build(mySDman);
-
-//      DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
-//      this->myGriffinForward = pGriffinForward;
-//      this->myGriffinForward->Build(mySDman);
-
-//      DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
-//      this->myGriffinBack = pGriffinBack;
-//      this->myGriffinBack->Build(mySDman);
-
-//      DetectionSystem8pi* p8pi = new DetectionSystem8pi();
-//      this->my8pi = p8pi;
-//      this->my8pi->Build(mySDman);
-
-//      DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar();
-//      this->mySceptar = pSceptar;
-//      this->mySceptar->Build(mySDman);
-
-//      DetectionSystemSpice* pSpice = new DetectionSystemSpice();
-//      this->mySpice = pSpice;
-//      this->mySpice->Build(mySDman);
-
-//      DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02();
-//      this->mySpiceV02 = pSpiceV02;
-//      this->mySpiceV02->Build(mySDman);
-
-//      DetectionSystemPaces* pPaces = new DetectionSystemPaces();
-//      this->myPaces = pPaces;
-//      this->myPaces->Build(mySDman);
-
-//      G4cout << "Built Detectors!" << G4endl;
-//  }
-
-//  this->builtDetectors = true;
-//  return hallPhys;
 
 }
 
@@ -270,9 +209,6 @@ void DetectorConstruction::SetWorldMaterial( G4String name )
 
 void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 {
-//  this->hall_x = vec.x();
-//  this->hall_y = vec.y();
-//  this->hall_z = vec.z();
 	WorldSizeX = vec.x() ;
 	WorldSizeY = vec.y() ; 
 	WorldSizeZ = vec.z() ;
@@ -546,7 +482,7 @@ void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet ){
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin( 0, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
   pGriffinForward->Build();
 
   direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
@@ -564,6 +500,10 @@ void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSe
 
 void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ){
   this->detectorRadialDistance = detectorDist ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ){
+  this->extensionSuppressorLocation = detectorPos ; 
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)

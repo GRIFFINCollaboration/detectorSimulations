@@ -774,7 +774,7 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
 
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveInnerExtension[8];
-   if(this->applied_back_shift == 0.0 && include_extension_suppressors){   // If the detectors are forward, put the extensions in the back position
+   if(this->applied_back_shift == 0.0 && include_extension_suppressors)  // If the detectors are forward, put the extensions in the back position
    
 //  if( !(this->suppressor_position_selector) && include_extension_suppressors )
   {
@@ -871,7 +871,7 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-   else if(this->applied_back_shift == this->back_inner_radius - this->forward_inner_radius && include_extension_suppressors)
+   else if( (this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius ) ) && include_extension_suppressors)
 //   else if( this->suppressor_position_selector == 1 )
   {
 

@@ -236,6 +236,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGriffinSetRadialDistanceCmd->SetGuidance("Selects the radial distance for the detector from the origin") ;
   AddDetectionSystemGriffinSetRadialDistanceCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
   
+  AddDetectionSystemGriffinSetExtensionSuppLocationCmd = new G4UIcmdWithAnInteger("/DetSys/det/SetExtensionSuppressorLocation", this ) ; 
+  AddDetectionSystemGriffinSetExtensionSuppLocationCmd->SetGuidance("Selects a position for the extension suppressors. Either forward or back.") ;
+  AddDetectionSystemGriffinSetExtensionSuppLocationCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ;
+  
   AddDetectionSystemSceptarCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSceptar",this);
   AddDetectionSystemSceptarCmd->SetGuidance("Add Detection System Sceptar");
   AddDetectionSystemSceptarCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -303,6 +307,7 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystemGriffinCustomCmd ;
   delete AddDetectionSystemGriffinShieldSelectCmd ; 
   delete AddDetectionSystemGriffinSetRadialDistanceCmd ; 
+  delete AddDetectionSystemGriffinSetExtensionSuppLocationCmd ; 
 
   delete AddDetectionSystemSpiceCmd;
   delete AddDetectionSystemSpiceV02Cmd;
@@ -422,13 +427,16 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     Detector->AddDetectionSystemGriffinPositionConfig(AddDetectionSystemGriffinPositionConfigCmd->GetNew3VectorValue(newValue));
 	}
   if( command == AddDetectionSystemGriffinCustomCmd ) {
-    Detector->AddDetectionSystemGriffinCustom(AddDetectionSystemGriffinBackDetectorCmd->GetNewIntValue(newValue));
+    Detector->AddDetectionSystemGriffinCustom(AddDetectionSystemGriffinCustomCmd->GetNewIntValue(newValue));
   }
   if( command == AddDetectionSystemGriffinShieldSelectCmd ) {
     Detector->AddDetectionSystemGriffinShieldSelect(AddDetectionSystemGriffinShieldSelectCmd->GetNewIntValue(newValue)) ; 
   }
   if( command == AddDetectionSystemGriffinSetRadialDistanceCmd ) {
     Detector->AddDetectionSystemGriffinSetRadialDistance(AddDetectionSystemGriffinSetRadialDistanceCmd->GetNewDoubleValue(newValue)) ;
+  }
+  if( command == AddDetectionSystemGriffinSetExtensionSuppLocationCmd ) {
+  	Detector->AddDetectionSystemGriffinSetExtensionSuppLocation(AddDetectionSystemGriffinSetExtensionSuppLocationCmd->GetNewIntValue(newValue)) ;
   }
   if( command == AddDetectionSystemSpiceCmd ) { 
     Detector->AddDetectionSystemSpice(AddDetectionSystemSpiceCmd->GetNewIntValue(newValue)); 
