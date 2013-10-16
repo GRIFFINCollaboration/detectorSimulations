@@ -47,7 +47,7 @@ class DetectionSystemGriffin
 		DetectionSystemGriffin(G4int sel, G4int suppSwitch, G4double detRad);
 		~DetectionSystemGriffin();
 
-        void Build() ; //G4SDManager* mySDman);
+        void Build() ; 
         // For detector specific dead layers
         void BuildDeadLayerSpecificDetector(G4int det);
 
