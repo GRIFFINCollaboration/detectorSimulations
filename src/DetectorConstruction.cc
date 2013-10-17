@@ -606,7 +606,7 @@ void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector
     G4int pos_num = (G4int)input.y();
     G4int config  = (G4int)input.z();
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
   pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
   pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
 }
