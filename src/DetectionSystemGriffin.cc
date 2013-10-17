@@ -564,8 +564,6 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificDetector(G4LogicalVolume* ex
   rotate->rotateZ(gamma);
 
   // positioning
-  // G4double dist_from_origin = this->air_box_back_length/2.0 +this->air_box_front_length + this->new_rhombi_radius;
-
   G4double dist_from_origin = this->air_box_back_length/2.0 +this->air_box_front_length + this->new_rhombi_radius ;
   G4double dist_from_origin_det = this->air_box_back_length_det/2.0 +this->air_box_front_length_det + this->new_rhombi_radius_det ;
 

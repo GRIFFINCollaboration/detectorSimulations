@@ -6,15 +6,27 @@
 #/vis/scene/create
 
 #Add Detectors
-#/DetSys/det/addGriffinForward 16
-#/DetSys/det/addGriffinForwardDetector 4
-#/DetSys/det/addGriffinBackDetector 1
-#/DetSys/det/addGriffinPositionConfig 1 4 0
-#/DetSys/det/addGriffinPositionConfig 3 3 1
 
-/DetSys/det/ShieldsPresent 1 # Turns suppressors on or off. ( 1 = on, 0 = off ) 
-/DetSys/det/SetRadialDistance 12.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+# Adds the full array of detectors in the forward position
+#/DetSys/det/addGriffinForward 16
+
+# Adds a single forward detector in the fourth position
+#/DetSys/det/addGriffinForwardDetector 4
+
+# Adds 10 detectors in the back position
+#/DetSys/det/addGriffinBack 10
+
+#This command places detector number three in the fourth location in the forward position. 
+#/DetSys/det/addGriffinPositionConfig 3 4 0
+
+#This command placed detector number one in the fifth location in the back position. 
+#/DetSys/det/addGriffinPositionConfig 1 5 1
+
+# Adds 8 detectors at different radial distances with no suppressors
+/DetSys/det/ShieldsPresent 0 # Turns suppressors on or off. ( 1 = on, 0 = off ) 
 /DetSys/det/SetExtensionSuppressorLocation 0 # Sets the location of the extension suppressors (Forward = 1, Back = 0)
+
+/DetSys/det/SetRadialDistance 12.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
 /DetSys/det/addGriffinCustomDetector 4 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
 
 /DetSys/det/SetRadialDistance 15.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors

@@ -131,7 +131,7 @@ DetectorConstruction::DetectorConstruction() :
   // Shield Selection Default
 
   this->detectorShieldSelect = 1 ; // Include suppressors by default. 
-  this->extensionSuppressorLocation = 0 ; // Forward by default
+  this->extensionSuppressorLocation = 0 ; // Back by default
 
   // create commands for interactive definition
 
@@ -602,9 +602,9 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
 
 void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
 {
-    G4int det_num = (G4int)input.x();
-    G4int pos_num = (G4int)input.y();
-    G4int config  = (G4int)input.z();
+  G4int det_num = (G4int)input.x();
+  G4int pos_num = (G4int)input.y();
+  G4int config  = (G4int)input.z();
 
   DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
   pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
