@@ -478,7 +478,7 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
 }
 
 // Temporary Function for testing purposes
-void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet ){
+void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet ){
   G4double theta,phi,position;
   G4ThreeVector move,direction;
 
@@ -492,6 +492,26 @@ void DetectorConstruction::AddDetectionSystemGriffinCustom( G4int ndet ){
   G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
 
   pGriffinCustom->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinCustom(G4int ndet)
+{
+  G4double theta,phi,position;
+  G4ThreeVector move,direction;
+
+  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
+  pGriffinCustom->Build();
+
+  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+  {
+    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+    position = this->griffinFwdBackPosition;
+    move = position * direction;
+
+    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+
+    pGriffinCustom->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+  }
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ){

@@ -115,7 +115,8 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemPacesCmd;
 
     // Test features
-    G4UIcmdWithAnInteger*       AddDetectionSystemGriffinCustomCmd ;
+    G4UIcmdWithAnInteger*       AddDetectionSystemGriffinCustomDetectorCmd ;
+    G4UIcmdWithAnInteger*	AddDetectionSystemGriffinCustomCmd ;
     G4UIcmdWithAnInteger*       AddDetectionSystemGriffinShieldSelectCmd ;
     G4UIcmdWithADoubleAndUnit*  AddDetectionSystemGriffinSetRadialDistanceCmd ; 
     G4UIcmdWithAnInteger*       AddDetectionSystemGriffinSetExtensionSuppLocationCmd ;

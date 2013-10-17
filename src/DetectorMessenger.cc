@@ -224,10 +224,14 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGriffinPositionConfigCmd->SetGuidance("Add Griffin Detector #, Position #, Config (0=forward, 1=back)");
   AddDetectionSystemGriffinPositionConfigCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
-  AddDetectionSystemGriffinCustomCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinCustom", this ) ; 
-  AddDetectionSystemGriffinCustomCmd->SetGuidance("Adds a detector using the paramaters specified") ; 
-  AddDetectionSystemGriffinCustomCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
+  AddDetectionSystemGriffinCustomDetectorCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinCustomDetector", this ) ; 
+  AddDetectionSystemGriffinCustomDetectorCmd->SetGuidance("Adds a detector using the paramaters specified") ; 
+  AddDetectionSystemGriffinCustomDetectorCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
 
+  AddDetectionSystemGriffinCustomCmd = new G4UIcmdWithAnInteger("/DetSys/det/addGriffinCustom", this ) ; 
+  AddDetectionSystemGriffinCustomCmd->SetGuidance("Adds a detection system using the paramaters specified") ; 
+  AddDetectionSystemGriffinCustomCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
+  
 //////// Commands that are required for addGriffinCustom
   AddDetectionSystemGriffinShieldSelectCmd = new G4UIcmdWithAnInteger("/DetSys/det/ShieldsPresent", this );
   AddDetectionSystemGriffinShieldSelectCmd->SetGuidance( "Selects whether or not the detector suppressors are included" ) ;
@@ -306,7 +310,8 @@ DetectorMessenger::~DetectorMessenger()
   
   delete AddDetectionSystemGriffinPositionConfigCmd;
   
-  delete AddDetectionSystemGriffinCustomCmd ;
+  delete AddDetectionSystemGriffinCustomDetectorCmd ;
+  delete AddDetectionSystemGriffinCustomCmd ; 
   delete AddDetectionSystemGriffinShieldSelectCmd ; 
   delete AddDetectionSystemGriffinSetRadialDistanceCmd ; 
   delete AddDetectionSystemGriffinSetExtensionSuppLocationCmd ; 
@@ -428,9 +433,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemGriffinPositionConfigCmd ) {
     Detector->AddDetectionSystemGriffinPositionConfig(AddDetectionSystemGriffinPositionConfigCmd->GetNew3VectorValue(newValue));
 	}
+  if( command == AddDetectionSystemGriffinCustomDetectorCmd ) {
+    Detector->AddDetectionSystemGriffinCustomDetector(AddDetectionSystemGriffinCustomDetectorCmd->GetNewIntValue(newValue));
+  }
   if( command == AddDetectionSystemGriffinCustomCmd ) {
     Detector->AddDetectionSystemGriffinCustom(AddDetectionSystemGriffinCustomCmd->GetNewIntValue(newValue));
-  }
+  }  
   if( command == AddDetectionSystemGriffinShieldSelectCmd ) {
     Detector->AddDetectionSystemGriffinShieldSelect(AddDetectionSystemGriffinShieldSelectCmd->GetNewIntValue(newValue)) ; 
   }

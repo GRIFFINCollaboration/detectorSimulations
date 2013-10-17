@@ -121,6 +121,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGriffinBackDetector(G4int ndet);
     void AddDetectionSystemGriffinPositionConfig(G4ThreeVector input);
     void AddDetectionSystemGriffinCustom( G4int ndet ) ;
+    void AddDetectionSystemGriffinCustomDetector( G4int ndet ) ; 
     void AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ) ;
     void AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ) ;
     void AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ) ; 
