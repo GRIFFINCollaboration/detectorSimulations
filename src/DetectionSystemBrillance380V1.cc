@@ -72,10 +72,10 @@ DetectionSystemBrillance380V1::DetectionSystemBrillance380V1() :
   this->detectorAngles[1][0] 	= triangleThetaAngle;
   this->detectorAngles[2][0] 	= triangleThetaAngle;
   this->detectorAngles[3][0] 	= triangleThetaAngle;
-  this->detectorAngles[4][0] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[5][0] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[6][0] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[7][0] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[4][0] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[5][0] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[6][0] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[7][0] 	= 180.0*deg - triangleThetaAngle;
   // phi
   this->detectorAngles[0][1] 	= 22.5*deg;
   this->detectorAngles[1][1] 	= 112.5*deg;
@@ -99,10 +99,10 @@ DetectionSystemBrillance380V1::DetectionSystemBrillance380V1() :
   this->detectorAngles[1][3] 	= triangleThetaAngle;
   this->detectorAngles[2][3] 	= triangleThetaAngle;
   this->detectorAngles[3][3] 	= triangleThetaAngle;
-  this->detectorAngles[4][3] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[5][3] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[6][3] 	= 90.0*deg + triangleThetaAngle;
-  this->detectorAngles[7][3] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[4][3] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[5][3] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[6][3] 	= 180.0*deg - triangleThetaAngle;
+  this->detectorAngles[7][3] 	= 180.0*deg - triangleThetaAngle;
   // roll (gamma)
   this->detectorAngles[0][4] 	= 22.5*deg;
   this->detectorAngles[1][4] 	= 112.5*deg;
