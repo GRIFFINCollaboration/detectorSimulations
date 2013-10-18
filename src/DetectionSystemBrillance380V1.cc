@@ -39,51 +39,79 @@ DetectionSystemBrillance380V1::DetectionSystemBrillance380V1() :
   // Brillance380 Crystal and Can Physical Properties 
   /////////////////////////////////////////////////////////////////////
   this->detail_view_end_angle	 	= 360.0*deg;     
-  this->number_of_segments		= 20;  // huh?
-  this->crystal_material		= "Cerium_Doped_Lanthanum_Bromide";
-  this->can_material			= "Aluminum";
-  this->vacuum_material			= "Vacuum";  
-  this->crystal_length_x 		= 0.0*mm; 	  
-  this->crystal_length_y 		= 0.0*mm; 	
-  this->crystal_length_z 		= 7.62*cm;
-  this->crystal_inner_radius 		= 0.0*cm;
-  this->crystal_outer_radius 		= 3.81*cm;
-  this->can_thickness 			= 0.1*cm;
-  this->can_inner_radius 		= 3.91*cm;
+  this->number_of_segments          = 20;  // huh?
+  this->crystal_material            = "Cerium_Doped_Lanthanum_Bromide";
+  this->can_material                = "G4_Al";
+  this->vacuum_material             = "G4_Galactic";
+  this->crystal_length_x            = 0.00*mm;
+  this->crystal_length_y            = 0.00*mm;
+  this->crystal_length_z            = 5.08*cm;
+  this->crystal_inner_radius 		= 0.00*cm;
+  this->crystal_outer_radius 		= 2.54*cm;
+  this->can_thickness               = 0.05*cm;
+  this->can_inner_radius            = 2.64*cm;
   this->can_lid_inner_radius 		= 0*cm;
-  this->can_lid_outer_radius 		= 3.91*cm;	// sits flush inside can cylinder
+  this->can_lid_outer_radius 		= 2.64*cm;	// sits flush inside can cylinder
   this->can_front_lid_thickness		= 0.05*cm;
   this->can_back_lid_thickness 		= 0.1*cm;
 //  this->can_face_dist_from_origin	= this->inner_radius*cm;
   this->crystal_dist_from_can_face 	= 0.05*cm;  	// filled with vacuum
   this->crystal_dist_from_can_back 	= 0.1*cm;   	// filled with vacuum
+
   this->can_length_z			= this->crystal_length_z 
 					+ this->can_front_lid_thickness
 					+ this->can_back_lid_thickness 
 					+ this->crystal_dist_from_can_face
 					+ this->crystal_dist_from_can_back;	    
 
-  /////////////////////////////////////////////////////////////////////
-  // 'phi' and 'theta' (respectively) in degrees
-  // this creates a ring of Brillance380 detectors in 'expHall phi'
-  /////////////////////////////////////////////////////////////////////
-  this->detectorAngles[0][0] 	= 0.0*deg;
-  this->detectorAngles[1][0] 	= 45.0*deg;  
-  this->detectorAngles[2][0] 	= 90.0*deg;
-  this->detectorAngles[3][0] 	= 135.0*deg;  
-  this->detectorAngles[4][0] 	= 180.0*deg;  
-  this->detectorAngles[5][0] 	= 225.0*deg;  
-  this->detectorAngles[6][0] 	= 270.0*deg;  
-  this->detectorAngles[7][0] 	= 315.0*deg;  
-  this->detectorAngles[0][1] 	= 90.0*deg;
-  this->detectorAngles[1][1] 	= 90.0*deg;  
-  this->detectorAngles[2][1] 	= 90.0*deg;  
-  this->detectorAngles[3][1] 	= 90.0*deg;  
-  this->detectorAngles[4][1] 	= 90.0*deg;  
-  this->detectorAngles[5][1] 	= 90.0*deg;  
-  this->detectorAngles[6][1] 	= 90.0*deg;  
-  this->detectorAngles[7][1] 	= 90.0*deg;    			
-  								
+  //G4double triangleThetaAngle = (180/M_PI)*(atan((1/sqrt(3))/sqrt((11/12) + (1/sqrt(2))) )+atan((sqrt(2))/(1+sqrt(2))))*deg;
+  G4double triangleThetaAngle = 54.735610317245360*deg;
+
+  // theta
+  this->detectorAngles[0][0] 	= triangleThetaAngle;
+  this->detectorAngles[1][0] 	= triangleThetaAngle;
+  this->detectorAngles[2][0] 	= triangleThetaAngle;
+  this->detectorAngles[3][0] 	= triangleThetaAngle;
+  this->detectorAngles[4][0] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[5][0] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[6][0] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[7][0] 	= 90.0*deg + triangleThetaAngle;
+  // phi
+  this->detectorAngles[0][1] 	= 22.5*deg;
+  this->detectorAngles[1][1] 	= 112.5*deg;
+  this->detectorAngles[2][1] 	= 202.5*deg;
+  this->detectorAngles[3][1] 	= 292.5*deg;
+  this->detectorAngles[4][1] 	= 22.5*deg;
+  this->detectorAngles[5][1] 	= 112.5*deg;
+  this->detectorAngles[6][1] 	= 202.5*deg;
+  this->detectorAngles[7][1] 	= 292.5*deg;
+  // yaw (alpha)
+  this->detectorAngles[0][2] 	= 0.0*deg;
+  this->detectorAngles[1][2] 	= 0.0*deg;
+  this->detectorAngles[2][2] 	= 0.0*deg;
+  this->detectorAngles[3][2] 	= 0.0*deg;
+  this->detectorAngles[4][2] 	= 0.0*deg;
+  this->detectorAngles[5][2] 	= 0.0*deg;
+  this->detectorAngles[6][2] 	= 0.0*deg;
+  this->detectorAngles[7][2] 	= 0.0*deg;
+  // pitch (beta)
+  this->detectorAngles[0][3] 	= triangleThetaAngle;
+  this->detectorAngles[1][3] 	= triangleThetaAngle;
+  this->detectorAngles[2][3] 	= triangleThetaAngle;
+  this->detectorAngles[3][3] 	= triangleThetaAngle;
+  this->detectorAngles[4][3] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[5][3] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[6][3] 	= 90.0*deg + triangleThetaAngle;
+  this->detectorAngles[7][3] 	= 90.0*deg + triangleThetaAngle;
+  // roll (gamma)
+  this->detectorAngles[0][4] 	= 22.5*deg;
+  this->detectorAngles[1][4] 	= 112.5*deg;
+  this->detectorAngles[2][4] 	= 202.5*deg;
+  this->detectorAngles[3][4] 	= 292.5*deg;
+  this->detectorAngles[4][4] 	= 22.5*deg;
+  this->detectorAngles[5][4] 	= 112.5*deg;
+  this->detectorAngles[6][4] 	= 202.5*deg;
+  this->detectorAngles[7][4] 	= 292.5*deg;
 }
 
 DetectionSystemBrillance380V1::~DetectionSystemBrillance380V1()
@@ -126,13 +154,32 @@ G4int DetectionSystemBrillance380V1::Build()
   return 1;
 }
 
-G4int DetectionSystemBrillance380V1::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number)
+G4int DetectionSystemBrillance380V1::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number)
 {
   G4int detector_copy_ID = 0;
 
   G4cout << "Brillance380V1 Detector Number = " << detector_number << G4endl;
 
   G4int copy_number = detector_copy_ID + detector_number;
+
+  G4double position = 12.5*cm + ( this->can_length_z / 2.0 ) ;
+
+  G4double theta  = this->detectorAngles[detector_number][0];
+  G4double phi    = this->detectorAngles[detector_number][1];
+  G4double alpha  = this->detectorAngles[detector_number][2]; // yaw
+  G4double beta   = this->detectorAngles[detector_number][3]; // pitch
+  G4double gamma  = this->detectorAngles[detector_number][4]; // roll
+
+  G4double x = 0;
+  G4double y = 0;
+  G4double z = position;
+
+  G4RotationMatrix* rotate = new G4RotationMatrix;    // rotation matrix corresponding to direction vector
+  rotate->rotateY(M_PI);
+  rotate->rotateY(beta);
+  rotate->rotateZ(gamma);
+
+  G4ThreeVector move(transX(x,y,z,theta,phi), transY(x,y,z,theta,phi), transZ(x,y,z,theta,phi));
 
   assembly->MakeImprint(exp_hall_log, move, rotate, copy_number);
 
@@ -162,7 +209,7 @@ G4int DetectionSystemBrillance380V1::BuildCrystalVolume()
   //logical volume
   if( crystal_block_log == NULL )
   {
-    crystal_block_log = new G4LogicalVolume(crystal_block, material, "crystal_block_log", 0, 0, 0);
+    crystal_block_log = new G4LogicalVolume(crystal_block, material, "brillance380_crystal_block", 0, 0, 0);
     crystal_block_log->SetVisAttributes(vis_att);
   }
 
@@ -440,3 +487,14 @@ G4ThreeVector DetectionSystemBrillance380V1::GetDirectionXYZ(G4double theta, G4d
   return direction;
 }//end ::GetDirection
 
+G4double DetectionSystemBrillance380V1::transX(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*sin(theta)*cos(phi) );
+}
+
+G4double DetectionSystemBrillance380V1::transY(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*sin(theta)*sin(phi) );
+}
+
+G4double DetectionSystemBrillance380V1::transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*cos(theta) );
+}

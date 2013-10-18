@@ -83,7 +83,7 @@ class DetectorMessenger: public G4UImessenger
 
     G4UIcmdWithoutParameter*   AddApparatusSpiceTargetChamberCmd;
     G4UIcmdWithoutParameter*   AddApparatus8piVacuumChamberCmd;
-    G4UIcmdWithAnInteger*      AddApparatus8piVacuumChamberAuxMatShellCmd;
+    G4UIcmdWithADoubleAndUnit*      AddApparatus8piVacuumChamberAuxMatShellCmd;
 
     G4UIcmdWithAString*         addBoxMatCmd;
     G4UIcmdWithADoubleAndUnit*  addBoxThicknessCmd;

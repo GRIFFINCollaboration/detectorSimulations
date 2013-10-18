@@ -69,6 +69,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     DetectorConstruction();
    ~DetectorConstruction();
 
+    G4int griffinDetectorsMapIndex;
+    G4int griffinDetectorsMap[16];
+
     void SetWorldMaterial( G4String );
     void SetWorldDimensions( G4ThreeVector );
     void SetWorldVis( G4bool );
@@ -98,7 +101,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void AddApparatusSpiceTargetChamber();
     void AddApparatus8piVacuumChamber();
-    void AddApparatus8piVacuumChamberAuxMatShell(G4int thickness);
+    void AddApparatus8piVacuumChamberAuxMatShell(G4double thickness);
 
     G4double GetWorldSizeX()           {return WorldSizeX;};
     G4double GetWorldSizeY()           {return WorldSizeY;};
@@ -177,8 +180,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     DetectorMessenger* detectorMessenger;
 //    DetectionSystemBrillance380V1* myBrillance380V1;
 //    DetectionSystemGammaTracking* myGammaTracking;
-//    DetectionSystemGriffin* myGriffinForward;
-//    DetectionSystemGriffin* myGriffinBack;
+    //DetectionSystemGriffin* myGriffin0;
+    //DetectionSystemGriffin* myGriffin1;
 //    DetectionSystem8pi* my8pi;
 //    DetectionSystemSceptar* mySceptar;
 //    DetectionSystemSpice* mySpice;

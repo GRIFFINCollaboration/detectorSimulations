@@ -144,6 +144,14 @@ DetectorConstruction::DetectorConstruction() :
   //(void)GlobalField::getObject();
 
   //expHallMagField = new MagneticField(); // Global field is set to zero
+
+  griffinDetectorsMapIndex = 0;
+  for(G4int i = 0; i < 16; i++)
+  {
+      griffinDetectorsMap[i] = 0;
+  }
+
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -425,7 +433,7 @@ void DetectorConstruction::AddApparatus8piVacuumChamber()
    pApparatus8piVacuumChamber->Build( logicWorld );
 }
 
-void DetectorConstruction::AddApparatus8piVacuumChamberAuxMatShell(G4int thickness)
+void DetectorConstruction::AddApparatus8piVacuumChamberAuxMatShell(G4double thickness)
 {
    //Create Shell Around Vacuum Chamber
    Apparatus8piVacuumChamberAuxMatShell* pApparatus8piVacuumChamberAuxMatShell = new Apparatus8piVacuumChamberAuxMatShell();
@@ -452,47 +460,12 @@ void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
 
 void DetectorConstruction::AddDetectionSystemBrillance380V1(G4int ndet)
 {
-	// AddLaBr in the new simulation code. 
-  // Describe Placement
-  G4double detectorAngles[8][2] = {0};
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
-	
-  detectorAngles[0][0] 	= 0.0;
-  detectorAngles[1][0] 	= 45.0;  
-  detectorAngles[2][0] 	= 90.0;  
-  detectorAngles[3][0] 	= 135.0;  
-  detectorAngles[4][0] 	= 180.0;  
-  detectorAngles[5][0] 	= 225.0;  
-  detectorAngles[6][0] 	= 270.0;  
-  detectorAngles[7][0] 	= 315.0;  
-  detectorAngles[0][1] 	= 90.0;
-  detectorAngles[1][1] 	= 90.0;  
-  detectorAngles[2][1] 	= 90.0;  
-  detectorAngles[3][1] 	= 90.0;  
-  detectorAngles[4][1] 	= 90.0;  
-  detectorAngles[5][1] 	= 90.0;  
-  detectorAngles[6][1] 	= 90.0;  
-  detectorAngles[7][1] 	= 90.0;
-
-	DetectionSystemBrillance380V1* pDetectionSystemBrillance380V1 = new DetectionSystemBrillance380V1();
-  pDetectionSystemBrillance380V1->Build();
+    DetectionSystemBrillance380V1* pDetectionSystemBrillance380V1 = new DetectionSystemBrillance380V1();
+    pDetectionSystemBrillance380V1->Build();
 
   for(G4int detector_number = 0; detector_number < ndet; detector_number++)
-  {
-    phi = detectorAngles[detector_number][0]*deg; // Creates a ring in phi plane
-    theta = detectorAngles[detector_number][1]*deg;     
-
-    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = 11.0*cm + (pDetectionSystemBrillance380V1->GetDetectorLengthOfUnitsCM() / 2.0 ) ;
-    move = position * direction;
-
-    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
-    rotate->rotateX(theta);
-    rotate->rotateY(0);
-    rotate->rotateZ(phi+0.5*M_PI); // + 0.5 or - 0.5?
-      
-    pDetectionSystemBrillance380V1->PlaceDetector(logicWorld, move, rotate, detector_number);
+  { 
+    pDetectionSystemBrillance380V1->PlaceDetector(logicWorld, detector_number);
   }
 }
 
@@ -543,76 +516,146 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
 
 void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
 {
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
-  pGriffinForward->Build();
+//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+//  pGriffinForward->Build();
 
-  for( G4int detector_number = 0; detector_number < ndet; detector_number++ )
-  {
-    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = this->griffinFwdBackPosition;
-    move = position * direction;
+//  for( G4int detector_number = 0; detector_number < ndet; detector_number++ )
+//  {
+//    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//    position = this->griffinFwdBackPosition;
+//    move = position * direction;
 
-    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+//    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-    pGriffinForward->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
-  }
+//    pGriffinForward->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+//  }
+
+    G4int det_num;
+    G4int pos_num;
+    G4int config  = 0;
+
+    for( det_num = 1; det_num <= ndet; det_num++ ) {
+        pos_num = det_num;
+
+        griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+        griffinDetectorsMapIndex++;
+
+        DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+        pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+        pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinDLS->BuildEverythingButCrystals();
+        pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
+    }
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
 {
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
-  pGriffinForward->Build();
+//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+//  pGriffinForward->Build();
 
-  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-  position = this->griffinFwdBackPosition;
-  move = position * direction;
+//  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//  position = this->griffinFwdBackPosition;
+//  move = position * direction;
 
-  G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+//  G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+//  pGriffinForward->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+
+
+  G4int det_num = ndet;
+  G4int pos_num = ndet;
+  G4int config  = 0;
+
+  griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+  griffinDetectorsMapIndex++;
+
+  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+  pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+  pGriffinDLS->BuildEverythingButCrystals();
+  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
+
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
 {
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
-  pGriffinBack->Build();
+//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+//  pGriffinBack->Build();
 
-  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
-  {
-    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = this->griffinFwdBackPosition;
-    move = position * direction;
+//  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+//  {
+//    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//    position = this->griffinFwdBackPosition;
+//    move = position * direction;
 
-    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+//    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-    pGriffinBack->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+//    pGriffinBack->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+//  }
+
+  G4int det_num;
+  G4int pos_num;
+  G4int config  = 1;
+
+  for( det_num = 1; det_num <= ndet; det_num++ ) {
+      pos_num = det_num;
+
+      griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+      griffinDetectorsMapIndex++;
+
+      DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+      pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+      pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+      pGriffinDLS->BuildEverythingButCrystals();
+      pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
   }
+
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
 {
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
-  pGriffinBack->Build();
+//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+//  pGriffinBack->Build();
 
-  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-  position = this->griffinFwdBackPosition;
-  move = position * direction;
+//  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//  position = this->griffinFwdBackPosition;
+//  move = position * direction;
 
-  G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+//  G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-  pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+//  pGriffinBack->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+
+    G4int det_num = ndet;
+    G4int pos_num = ndet;
+    G4int config  = 1;
+
+    griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+    griffinDetectorsMapIndex++;
+
+    DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+    pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+    pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+    pGriffinDLS->BuildEverythingButCrystals();
+    pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
@@ -621,9 +664,15 @@ void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector
     G4int pos_num = (G4int)input.y();
     G4int config  = (G4int)input.z();
 
-  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
-  pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
-  pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
+    griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+    griffinDetectorsMapIndex++;
+
+    DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+    pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+    pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+    pGriffinDLS->BuildEverythingButCrystals();
+    pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 }
 
 
