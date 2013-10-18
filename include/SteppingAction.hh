@@ -55,11 +55,20 @@ private:
   DetectorConstruction* detector;
   EventAction*          eventaction;  
 
-  void SetDetAndCryNumberForGriffinDetector( G4String );
+  void SetDetAndCryNumberForGriffinComponent( G4String );
+  void SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4String);
   void SetDetNumberForGenericDetector( G4String );
+
+  G4int FindTrueGriffinDetector(G4int);
 
   G4int det;
   G4int cry;
+  G4int trueGriffinDetectorMap[16];
+  G4bool griffinDetectorMapSet;
+
+  G4int numberOfAssemblyVols;
+
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

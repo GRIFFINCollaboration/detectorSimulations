@@ -50,7 +50,7 @@ class Apparatus8piVacuumChamberAuxMatShell
     ~Apparatus8piVacuumChamberAuxMatShell();
 
   public:
-    void Build(G4LogicalVolume*, G4int);
+    void Build(G4LogicalVolume*, G4double);
   
   private:
     G4LogicalVolume* expHallLog;
@@ -79,7 +79,7 @@ private:
 
   private: 
     // internal methods for ConstructApparatus8piVacuumChamberAuxMatShell() for Building
-    void BuildApparatus8piVacuumChamberAuxMatShellSphere(G4int thickness);
+    void BuildApparatus8piVacuumChamberAuxMatShellSphere(G4double thickness);
 
   private: 
     // internal methods for ConstructApparatus8piVacuumChamberAuxMatShell() for Placing

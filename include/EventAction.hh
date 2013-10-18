@@ -77,7 +77,6 @@ public:
 	void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
 
 private:
-  G4String G4intToG4String(G4int value);
 
   void ClearVariables();
 

@@ -110,14 +110,6 @@ void EventAction::EndOfEventAction(const G4Event*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-G4String EventAction::G4intToG4String(G4int value)
-{
-  G4String theString;
-  std::stringstream out;
-  out << value;
-  theString = out.str();
-  return theString;
-}
 
 void EventAction::ClearVariables()
 {
@@ -229,12 +221,24 @@ void EventAction::FillGriffinCryst()
         energySumDet = 0;
         // Find if any suppressors were fired
         for (G4int j=0; j < MAXNUMCRYGRIFFIN; j++) {
-            if (GriffinSuppressorBackEnergyDet[i][j] > 0)             SuppressorBackFired[i] = true;
-            if (GriffinSuppressorLeftExtensionEnergyDet[i][j] > 0)    SuppressorExtensionFired[i] = true;
-            if (GriffinSuppressorRightExtensionEnergyDet[i][j] > 0)   SuppressorExtensionFired[i] = true;
-            if (GriffinSuppressorLeftSideEnergyDet[i][j] > 0)         SuppressorSideFired[i] = true;
-            if (GriffinSuppressorRightSideEnergyDet[i][j] > 0)        SuppressorSideFired[i] = true;
-            if ( !SuppressorFired && ( SuppressorBackFired[i] || SuppressorExtensionFired[i] || SuppressorSideFired[i] ) ) SuppressorFired = true;
+            if (GriffinSuppressorBackEnergyDet[i][j] > MINENERGYTHRES) {
+                SuppressorBackFired[i] = true;
+            }
+            if (GriffinSuppressorLeftExtensionEnergyDet[i][j] > MINENERGYTHRES) {
+                SuppressorExtensionFired[i] = true;
+            }
+            if (GriffinSuppressorRightExtensionEnergyDet[i][j] > MINENERGYTHRES) {
+                SuppressorExtensionFired[i] = true;
+            }
+            if (GriffinSuppressorLeftSideEnergyDet[i][j] > MINENERGYTHRES) {
+                SuppressorSideFired[i] = true;
+            }
+            if (GriffinSuppressorRightSideEnergyDet[i][j] > MINENERGYTHRES) {
+                SuppressorSideFired[i] = true;
+            }
+            if ( !SuppressorFired && ( SuppressorBackFired[i] || SuppressorExtensionFired[i] || SuppressorSideFired[i] ) ) {
+                SuppressorFired = true;
+            }
         }
 
         for (G4int j=0; j < MAXNUMCRYGRIFFIN; j++) {

@@ -238,7 +238,7 @@ void HistoManager::book()
       }
     }
 
-		// Brilliance Detector
+        // Brilliance Detector
     filename  = "labr_crystal_edep";
     MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
 
@@ -252,7 +252,7 @@ void HistoManager::book()
         MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
     }
 
-		// Sodium Iodide detector
+        // Sodium Iodide detector
     filename  = "sodiumIodide_crystal_edep";
     MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
 
@@ -306,7 +306,7 @@ void HistoManager::book()
 
         filename  = "spice_crystal_edep_det" + detString;
         MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
-    } 
+    }
        
     // paces detector
     filename  = "paces_crystal_edep";
@@ -320,8 +320,8 @@ void HistoManager::book()
 
         filename  = "paces_crystal_edep_det" + detString;
         MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
-    }    
-	}
+    }
+    }
 
   /////////////////////////////////////////////////////////////////////
   // Create 1 ntuple
