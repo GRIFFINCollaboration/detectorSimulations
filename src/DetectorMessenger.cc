@@ -174,7 +174,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddApparatus8piVacuumChamberCmd->SetGuidance("Add 8pi vacuum chamber.");
   AddApparatus8piVacuumChamberCmd->AvailableForStates(G4State_Idle);
 
-  AddApparatus8piVacuumChamberAuxMatShellCmd = new G4UIcmdWithAnInteger("/DetSys/app/add8piVacuumChamberAuxMatShell",this);
+  AddApparatus8piVacuumChamberAuxMatShellCmd = new G4UIcmdWithADoubleAndUnit("/DetSys/app/add8piVacuumChamberAuxMatShell",this);
   AddApparatus8piVacuumChamberAuxMatShellCmd->SetGuidance("Add AuxMat shell around 8pi vacuum chamber");
   AddApparatus8piVacuumChamberAuxMatShellCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
@@ -398,7 +398,7 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     Detector->AddApparatus8piVacuumChamber();
   }
   if( command == AddApparatus8piVacuumChamberAuxMatShellCmd ) {
-    Detector->AddApparatus8piVacuumChamberAuxMatShell(AddApparatus8piVacuumChamberAuxMatShellCmd->GetNewIntValue(newValue));
+    Detector->AddApparatus8piVacuumChamberAuxMatShell(AddApparatus8piVacuumChamberAuxMatShellCmd->GetNewDoubleValue(newValue));
   }
   if( command == AddDetectionSystemGammaTrackingCmd ) {
     Detector->AddDetectionSystemGammaTracking(AddDetectionSystemGammaTrackingCmd->GetNewIntValue(newValue)); 

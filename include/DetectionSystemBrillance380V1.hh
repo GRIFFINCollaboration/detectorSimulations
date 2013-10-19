@@ -45,7 +45,7 @@ class DetectionSystemBrillance380V1
     ~DetectionSystemBrillance380V1();
     
     G4int Build();//G4SDManager* mySDman); 
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number);
     G4double const GetDetectorLengthOfUnitsCM() {return this->can_length_z;}; 
 
   private:
@@ -87,7 +87,7 @@ class DetectionSystemBrillance380V1
     G4double crystal_dist_from_can_back;
     G4double can_length_z;
     G4double crystal_dist_from_origin;
-    G4double detectorAngles[8][2];
+    G4double detectorAngles[8][5];
     G4double inner_radius;
 
     G4Tubs* BuildCrystal();
@@ -104,6 +104,11 @@ class DetectionSystemBrillance380V1
     G4int BuildOneDetector();  
         
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
+
+    G4double transX(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transY(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+
 };
 
 #endif
