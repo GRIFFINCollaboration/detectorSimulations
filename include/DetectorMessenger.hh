@@ -109,7 +109,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinForwardDetectorCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinBackCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinBackDetectorCmd;
-    G4UIcmdWith3Vector*     AddDetectionSystemGriffinPositionConfigCmd;
+    //G4UIcmdWith3Vector*     AddDetectionSystemGriffinPositionConfigCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceV02Cmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemPacesCmd;

@@ -700,28 +700,32 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
     pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 }
 
-void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
-{
-  G4int det_num = (G4int)input.x();
-  G4int pos_num = (G4int)input.y();
-  G4int config  = (G4int)input.z();
+
+// This will be reaplced with the addGriffinCustomDetector function. The dead layer must be set using
+// the SetCustomDeadLayer command. This will take longer for many different detectors in different configurations, 
+// but it is possible to place multiple custom detectors using addGriffinCustom as well. 
+//void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
+//{
+//  G4int det_num = (G4int)input.x();
+//  G4int pos_num = (G4int)input.y();
+//  G4int config  = (G4int)input.z();
 
 
-//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
-//  pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
-//  pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
+////  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
+////  pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
+////  pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
 
-  griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
-  griffinDetectorsMapIndex++;
+//  griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+//  griffinDetectorsMapIndex++;
 
-  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
+//  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
 
-  pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
-  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
-  pGriffinDLS->BuildEverythingButCrystals();
-  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+//  pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+//  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+//  pGriffinDLS->BuildEverythingButCrystals();
+//  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 
-}
+//}
 
 
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
