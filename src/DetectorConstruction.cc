@@ -133,6 +133,10 @@ DetectorConstruction::DetectorConstruction() :
   this->detectorShieldSelect = 1 ; // Include suppressors by default. 
   this->extensionSuppressorLocation = 0 ; // Back by default
 
+  this->customDetectorNumber 		= 0 ; // det_num
+  this->customDetectorPosition  = 0 ; // pos_num
+  this->customDetectorVal				= 0 ; // Unused for now (Oct 2013)
+
   // create commands for interactive definition
 
   detectorMessenger = new DetectorMessenger(this);
@@ -451,40 +455,77 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
 }
 
 // Temporary Function for testing purposes
-void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet ){
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet = 0 ){
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
+
+//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+//  pGriffinCustom->Build();
+
+//  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//  position = this->griffinFwdBackPosition;
+//  move = position * direction;
+
+//  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
+
+//  pGriffinCustom->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+
+  griffinDetectorsMap[griffinDetectorsMapIndex] = this->customDetectorNumber ; 
+  griffinDetectorsMapIndex++;
+
+
+	// NOTE: ndet served no purpose in this case but I left it in just in case this needs to be modified later. The position of a detector placed using this function must be set using
+	// SetDeadLayer. 
 
   DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
-  pGriffinCustom->Build();
 
-  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-  position = this->griffinFwdBackPosition;
-  move = position * direction;
+  pGriffinCustom->BuildDeadLayerSpecificCrystal(this->customDetectorNumber-1);
 
-  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
+  pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
 
-  pGriffinCustom->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+  pGriffinCustom->BuildEverythingButCrystals();
+
+  pGriffinCustom->PlaceEverythingButCrystals( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
+
+
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinCustom(G4int ndet)
 {
-  G4double theta,phi,position;
-  G4ThreeVector move,direction;
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
 
-  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
-  pGriffinCustom->Build();
+//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
+//  pGriffinCustom->Build();
 
-  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
-  {
-    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-    position = this->griffinFwdBackPosition;
-    move = position * direction;
+//  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+//  {
+//    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//    position = this->griffinFwdBackPosition;
+//    move = position * direction;
 
-    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+//    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
 
-    pGriffinCustom->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
-  }
+//    pGriffinCustom->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+//  }
+
+    G4int det_num;
+    G4int pos_num;
+
+    for( det_num = 1; det_num <= ndet; det_num++ ) {
+        pos_num = det_num;
+
+        griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+        griffinDetectorsMapIndex++;
+
+        DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
+
+        pGriffinCustom->BuildDeadLayerSpecificCrystal(det_num-1);
+        pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinCustom->BuildEverythingButCrystals();
+        pGriffinCustom->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
+    }
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ){
@@ -497,6 +538,15 @@ void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double 
 
 void DetectorConstruction::AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ){
   this->extensionSuppressorLocation = detectorPos ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetDeadLayer( G4ThreeVector params )
+{
+
+  this->customDetectorNumber 		= (G4int)params.x(); // det_num
+  this->customDetectorPosition  = (G4int)params.y(); // pos_num
+  this->customDetectorVal			  = (G4int)params.z(); // Unused at the moment. 
+
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
@@ -559,7 +609,6 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
   G4int det_num = ndet;
   G4int pos_num = ndet;
   G4int config  = 0;
-	G4cout << " Placing a value in griffinDetectorsMap" <<G4endl ; 
   griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
   griffinDetectorsMapIndex++;
 

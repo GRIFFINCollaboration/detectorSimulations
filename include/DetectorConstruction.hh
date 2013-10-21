@@ -127,7 +127,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGriffinCustomDetector( G4int ndet ) ; 
     void AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ) ;
     void AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ) ;
-    void AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ) ; 
+    void AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ) ;
+    void AddDetectionSystemGriffinSetDeadLayer( G4ThreeVector params ) ; 
 
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
@@ -147,7 +148,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int     detectorShieldSelect ;
     G4double  detectorRadialDistance ;
     G4int     extensionSuppressorLocation ; 
-
+    G4int     customDetectorNumber ; 
+    G4int     customDetectorPosition ; 
+    G4int     customDetectorVal ; 
+    
     // Box
     G4String           box_mat;
     G4double           box_thickness;
