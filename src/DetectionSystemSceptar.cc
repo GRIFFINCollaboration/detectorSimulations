@@ -305,124 +305,133 @@ G4int DetectionSystemSceptar::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int
   G4ThreeVector move_angled_scint10;
   move_angled_scint10 = -1.0*move_angled_scint5;
 
-  for(G4int detector_number = 0; detector_number < 20; detector_number++)
+  for(G4int detector_number = 0; detector_number < detectorNumber; detector_number++)
   {
     if(detector_number == 0)
-    {
-      rotate = rotate_square_scint1;
-      move = move_square_scint1;
-    }
-    else if(detector_number == 1)
-    {
-      rotate = rotate_square_scint2;
-      move = move_square_scint2;
-    }
-    else if(detector_number == 2)
-    {
-      rotate = rotate_square_scint3;
-      move = move_square_scint3;
-    }
-    else if(detector_number == 3)
-    {
-      rotate = rotate_square_scint4;
-      move = move_square_scint4;
-    }
-    else if(detector_number == 4)
-    {
-      rotate = rotate_square_scint5;
-      move = move_square_scint5;
-    }
-    else if(detector_number == 5)
     {
       rotate = rotate_square_scint6;
       move = move_square_scint6;
     }
-    else if(detector_number == 6)
+    else if(detector_number == 1)
     {
       rotate = rotate_square_scint7;
       move = move_square_scint7;
     }
-    else if(detector_number == 7)
+    else if(detector_number == 2)
     {
       rotate = rotate_square_scint8;
       move = move_square_scint8;
     }
-    else if(detector_number == 8)
+    else if(detector_number == 3)
     {
       rotate = rotate_square_scint9;
       move = move_square_scint9;
     }
-    else if(detector_number == 9)
+    else if(detector_number == 4)
     {
       rotate = rotate_square_scint10;
       move = move_square_scint10;
     }
-    else if(detector_number == 10)
-    {
-      rotate = rotate_angled_scint1;
-      move = move_angled_scint1;
-    }
-    else if(detector_number == 11)
-    {
-      rotate = rotate_angled_scint2;
-      move = move_angled_scint2;
-    }
-    else if(detector_number == 12)
-    {
-      rotate = rotate_angled_scint3;
-      move = move_angled_scint3;
-    }
-    else if(detector_number == 13)
-    {
-      rotate = rotate_angled_scint4;
-      move = move_angled_scint4;
-    }
-    else if(detector_number == 14)
-    {
-      rotate = rotate_angled_scint5;
-      move = move_angled_scint5;
-    }
-    else if(detector_number == 15)
+    else if(detector_number == 5)
     {
       rotate = rotate_angled_scint6;
       move = move_angled_scint6;
     }
-    else if(detector_number == 16)
+    else if(detector_number == 6)
     {
       rotate = rotate_angled_scint7;
       move = move_angled_scint7;
     }
-    else if(detector_number == 17)
+    else if(detector_number == 7)
     {
       rotate = rotate_angled_scint8;
       move = move_angled_scint8;
     }
-    else if(detector_number == 18)
+    else if(detector_number == 8)
     {
       rotate = rotate_angled_scint9;
       move = move_angled_scint9;
     }
-    else if(detector_number == 19)
+    else if(detector_number == 9)
     {
       rotate = rotate_angled_scint10;
       move = move_angled_scint10;
     }
-    else
+
+    else if(detector_number == 10)
     {
-      G4cout << "error 132123" << G4endl;
-      exit(1);
+      rotate = rotate_square_scint1;
+      move = move_square_scint1;
+    }
+    else if(detector_number == 11)
+    {
+      rotate = rotate_square_scint2;
+      move = move_square_scint2;
+    }
+    else if(detector_number == 12)
+    {
+      rotate = rotate_square_scint3;
+      move = move_square_scint3;
+    }
+    else if(detector_number == 13)
+    {
+      rotate = rotate_square_scint4;
+      move = move_square_scint4;
+    }
+    else if(detector_number == 14)
+    {
+      rotate = rotate_square_scint5;
+      move = move_square_scint5;
+    }
+    else if(detector_number == 15)
+    {
+      rotate = rotate_angled_scint1;
+      move = move_angled_scint1;
+    }
+    else if(detector_number == 16)
+    {
+      rotate = rotate_angled_scint2;
+      move = move_angled_scint2;
+    }
+    else if(detector_number == 17)
+    {
+      rotate = rotate_angled_scint3;
+      move = move_angled_scint3;
+    }
+    else if(detector_number == 18)
+    {
+      rotate = rotate_angled_scint4;
+      move = move_angled_scint4;
+    }
+    else if(detector_number == 19)
+    {
+      rotate = rotate_angled_scint5;
+      move = move_angled_scint5;
     }
 
-    if(detector_number < 10)
+
+//    if(detector_number < 10)
+//    {
+//      assemblySquareSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*5));
+//      assemblySquare->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*7));
+//    }
+//    if(detector_number >= 10)
+//    {
+//      assemblyAngledSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*6));
+//      assemblyAngled->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*8));
+//    }
+
+    if( (detector_number < 5) || (detector_number >= 10 && detector_number < 15) )
     {
-      assemblySquareSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*5));
-      assemblySquare->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*7));
+      assemblySquareSD->MakeImprint(exp_hall_log, move, rotate, 0);
+      assemblySquare->MakeImprint(exp_hall_log, move, rotate, 0);
     }
-    if(detector_number >= 10)
+    if( (detector_number >= 5 && detector_number < 10) || (detector_number >= 15) )
     {
-      assemblyAngledSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*6));
-      assemblyAngled->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*8));      
+      assemblyAngledSD->MakeImprint(exp_hall_log, move, rotate, 0);
+      assemblyAngled->MakeImprint(exp_hall_log, move, rotate, 0);
     }
+
   }
 
   return 1;
@@ -471,7 +480,7 @@ G4int DetectionSystemSceptar::ConstructScintillator()
 
   G4Trd* square_scintillator = this->squareScintillator();
 
-  square_scintillator_log = new G4LogicalVolume(square_scintillator, material_bc404, "square_scintillator_log", 0, 0, 0);
+  square_scintillator_log = new G4LogicalVolume(square_scintillator, material_bc404, "sceptar_square_scintillator_log", 0, 0, 0);
   square_scintillator_log->SetVisAttributes(scintillator_vis_att);
 
   G4RotationMatrix* rotate_null = new G4RotationMatrix;
@@ -589,7 +598,7 @@ G4int DetectionSystemSceptar::ConstructScintillator()
 
   G4SubtractionSolid* angled_scintillator = this->angledScintillator();
 
-  angled_scintillator_log = new G4LogicalVolume(angled_scintillator, material_bc404, "angled_scintillator_log", 0, 0, 0);
+  angled_scintillator_log = new G4LogicalVolume(angled_scintillator, material_bc404, "sceptar_angled_scintillator_log", 0, 0, 0);
   angled_scintillator_log->SetVisAttributes(scintillator_vis_att);
 
   this->assemblyAngled->AddPlacedVolume(angled_mylar_log, move_null, rotate_null);
