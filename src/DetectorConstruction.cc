@@ -679,8 +679,8 @@ void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 {
 
-	DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar() ;
-	pSceptar->Build() ; 
+  DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar() ;
+  pSceptar->Build() ;
 	
   pSceptar->PlaceDetector( logicWorld, ndet ) ;
 }

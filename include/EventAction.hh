@@ -65,11 +65,11 @@ public:
 
   void AddLaBrCrystDet(G4double de, G4double dl, G4int det) {LaBrCrystEnergyDet[det] += de; LaBrCrystTrackDet[det] += dl;};
 
-	
+  void AddSceptarSquareCrystDet(G4double de, G4double dl, G4int det) {SceptarSquareCrystEnergyDet[det] += de; SceptarSquareCrystTrackDet[det] += dl;} ;
+  void AddSceptarAngledCrystDet(G4double de, G4double dl, G4int det) {SceptarAngledCrystEnergyDet[det] += de; SceptarAngledCrystTrackDet[det] += dl;} ;
+
 	// NOTE: I am initializing and strucuring these based on AddSodiumIodideCrystDet and AddLaBrCrystDet
 	// please correct them if they are wrong. 
-	void AddSceptarCrystDet(G4double de, G4double dl, G4int det) {SceptarCrystEnergyDet[det] += de; SceptarCrystTrackDet[det] += dl;} ;
-
 	void Add8piCrystDet(G4double de, G4double dl, G4int det) {EightPiCrystEnergyDet[det] += de; EightPiCrystTrackDet[det] += dl;} ;
 
 	void AddSpiceCrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
@@ -129,8 +129,11 @@ private:
 
 	// NOTE: I am initializing these arrays based on the LaBr and SodiumIodide definitions. If
 	// they are not correct please correct them. 
-	G4double SceptarCrystEnergyDet[MAXNUMDET] ;
-	G4double SceptarCrystTrackDet[MAXNUMDET] ;
+    G4double SceptarSquareCrystEnergyDet[MAXNUMDET] ;
+    G4double SceptarSquareCrystTrackDet[MAXNUMDET] ;
+
+    G4double SceptarAngledCrystEnergyDet[MAXNUMDET] ;
+    G4double SceptarAngledCrystTrackDet[MAXNUMDET] ;
 
 	G4double EightPiCrystEnergyDet[MAXNUMDET] ;
 	G4double EightPiCrystTrackDet[MAXNUMDET] ; 	
