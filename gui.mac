@@ -5,51 +5,63 @@
 # Create an empty scene
 #/vis/scene/create
 
-#Add Detectors
+#Add Detectors - Examples. Uncomment and run to see the effect. 
 
+################
 # Adds the full array of detectors in the forward position
 #/DetSys/det/addGriffinForward 16
 
+################
 # Adds a single forward detector in the fourth position
 #/DetSys/det/addGriffinForwardDetector 4
 
+################
 # Adds 10 detectors in the back position
 #/DetSys/det/addGriffinBack 10
 
-#This command places detector number three in the fourth location in the forward position. 
-#/DetSys/det/addGriffinPositionConfig 3 4 0
+################
+#Adds 8 detectors at different radial distances with no suppressors
+#/DetSys/det/SetCustomShieldsPresent 0 # Turns suppressors on or off. ( 1 = on, 0 = off ) 
+#/DetSys/det/SetCustomExtensionSuppressorLocation 0 # Sets the location of the extension suppressors (Forward = 1, Back = 0)
+#/DetSys/det/SetCustomDeadLayer 12 12 0 # Detector Number, Position number, Unused. 
 
-#This command placed detector number one in the fifth location in the back position. 
-#/DetSys/det/addGriffinPositionConfig 1 5 1
+#/DetSys/det/SetCustomRadialDistance 12.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-# Adds 8 detectors at different radial distances with no suppressors
-/DetSys/det/ShieldsPresent 0 # Turns suppressors on or off. ( 1 = on, 0 = off ) 
-/DetSys/det/SetExtensionSuppressorLocation 0 # Sets the location of the extension suppressors (Forward = 1, Back = 0)
+#/DetSys/det/SetCustomRadialDistance 15.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 5 5 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 12.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 4 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 18.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 6 6 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 15.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 5 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 21.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 7 7 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 18.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 6 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 24.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 8 8 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 21.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 7 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 27.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 9 9 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 24.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 8 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 30.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 10 10 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused.
 
-/DetSys/det/SetRadialDistance 27.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 9 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
+#/DetSys/det/SetCustomRadialDistance 33.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
+#/DetSys/det/SetCustomDeadLayer 11 11 0 # Detector Number, Position number, Unused. 
+#/DetSys/det/addGriffinCustomDetector 0 # Adds a detector based on the SetCustomShieldsPresent, SetCustomRadialDistance, and SetCustomDeadLayer paramaters. The integer is currently unused. 
+################
+# Adds an array of 16 detectors at 25cm with no suppressors
+/DetSys/det/SetCustomShieldsPresent 0
+/DetSys/det/SetCustomRadialDistance 25.0 cm
+/DetSys/det/addGriffinCustom 16
 
-/DetSys/det/SetRadialDistance 30.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 10 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
-
-/DetSys/det/SetRadialDistance 33.0 cm # Sets radial distance of the detector assembly. Does not affect extension suppressors
-/DetSys/det/addGriffinCustomDetector 11 # Adds a detector based on the ShieldsPresent and SetRadialDistance. The integer selects detector number. 
-
+################
 
 #Prepare Visualisation
 

@@ -133,8 +133,8 @@ DetectorConstruction::DetectorConstruction() :
   this->detectorShieldSelect = 1 ; // Include suppressors by default. 
   this->extensionSuppressorLocation = 0 ; // Back by default
 
-  this->customDetectorNumber 		= 0 ; // det_num
-  this->customDetectorPosition  = 0 ; // pos_num
+  this->customDetectorNumber 		= 1 ; // det_num
+  this->customDetectorPosition  = 1 ; // pos_num
   this->customDetectorVal				= 0 ; // Unused for now (Oct 2013)
 
   // create commands for interactive definition
