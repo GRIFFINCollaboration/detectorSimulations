@@ -44,10 +44,10 @@
 class DetectionSystemGriffin
 {
 	public:
-		DetectionSystemGriffin(G4int sel);
+		DetectionSystemGriffin(G4int sel, G4int suppSwitch, G4double detRad);
 		~DetectionSystemGriffin();
 
-        void Build() ; //G4SDManager* mySDman);
+        void Build() ; 
         // For detector specific dead layers
         void BuildDeadLayerSpecificCrystal(G4int det);
         void BuildEverythingButCrystals();
@@ -143,6 +143,10 @@ class DetectionSystemGriffin
 
 		G4double forward_inner_radius;
 		G4double back_inner_radius;
+		
+		G4double suppressor_forward_radius;
+		G4double suppressor_back_radius;
+		
 
 		// For the optimization of the depth segmentation
 		G4double depth_segmentation_adjustment;
@@ -195,6 +199,8 @@ class DetectionSystemGriffin
     G4double suppressor_extension_thickness;
     G4double suppressor_extension_length;
     G4double suppressor_extension_angle;
+    
+    G4double suppressor_extension_length_det ; 
 
     //Values for the HeavyMet
     G4double HeavyMet_thickness;
@@ -203,8 +209,13 @@ class DetectionSystemGriffin
     G4double air_box_front_width;
     G4double air_box_front_length;
     G4double air_box_back_length;
+    
+    G4double air_box_back_length_det ; 
+    G4double air_box_front_length_det ; 
+    G4double air_box_front_width_det ; 
 
     G4double shift;
+    G4double suppShift ;
 
     G4int copy_number;
     G4int copy_number_two;
@@ -217,6 +228,9 @@ class DetectionSystemGriffin
     
     G4double rhombi_diameter;
     G4double new_rhombi_radius;
+
+    G4double new_rhombi_radius_det;    
+
     G4double detector_position_shift;
     G4double applied_back_shift;
 
@@ -240,13 +254,6 @@ class DetectionSystemGriffin
     G4String electrodeMaterial;
     G4String structureMaterial;
 
-//    SensitiveDetector* germanium_block_SD;
-//    SensitiveDetector* left_casing_SD;
-//    SensitiveDetector* right_casing_SD;
-//    SensitiveDetector* left_extension_SD;
-//    SensitiveDetector* right_extension_SD;
-//    SensitiveDetector* back_plug_SD;
-
     // Assembly volumes
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* germaniumAssembly;
@@ -264,6 +271,12 @@ class DetectionSystemGriffin
     G4AssemblyVolume* rightSuppressorExtensionAssemblyCry[4];
     G4AssemblyVolume* suppressorBackAssemblyCry[4];
     G4AssemblyVolume* suppressorShellAssembly;
+    G4AssemblyVolume* backAndSideSuppressorShellAssembly ; 
+    G4AssemblyVolume* extensionSuppressorShellAssembly ; 
+//    G4AssemblyVolume* extensionSuppressorAssembly ; 
+//    G4AssemblyVolume* backAndSideSuppressorAssembly ;
+//    G4AssemblyVolume* detectionSystemAssembly ;          
+    
       
     // Logical volumes
     G4LogicalVolume* air_box_log;

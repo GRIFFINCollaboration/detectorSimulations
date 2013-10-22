@@ -109,10 +109,18 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinForwardDetectorCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinBackCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinBackDetectorCmd;
-    G4UIcmdWith3Vector*     AddDetectionSystemGriffinPositionConfigCmd;
+    //G4UIcmdWith3Vector*     AddDetectionSystemGriffinPositionConfigCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceV02Cmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemPacesCmd;
+
+    // Test features
+    G4UIcmdWithAnInteger*       AddDetectionSystemGriffinCustomDetectorCmd ;
+    G4UIcmdWithAnInteger*	AddDetectionSystemGriffinCustomCmd ;
+    G4UIcmdWithAnInteger*       AddDetectionSystemGriffinShieldSelectCmd ;
+    G4UIcmdWithADoubleAndUnit*  AddDetectionSystemGriffinSetRadialDistanceCmd ; 
+    G4UIcmdWithAnInteger*       AddDetectionSystemGriffinSetExtensionSuppLocationCmd ;
+    G4UIcmdWith3Vector*         AddDetectionSystemGriffinSetDeadLayerCmd ; 
 
 };
 

@@ -34,7 +34,6 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-//#include "SensitiveDetector.hh"
 #include "G4RunManager.hh"
 
 #include "G4Material.hh"
@@ -52,8 +51,6 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
-
-//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -116,12 +113,6 @@ DetectorConstruction::DetectorConstruction() :
   
   this->matWorldName = "G4_AIR";
 
-//  this->hall_x = 10.0*m;
-//  this->hall_y = 10.0*m;
-//  this->hall_z = 10.0*m; // replaced by world
-
-//  this->hall_vis = false;
-
   // Generic Target Apparatus
   this->setGenericTargetMaterial   = false;
   this->setGenericTargetDimensions = false;
@@ -136,8 +127,18 @@ DetectorConstruction::DetectorConstruction() :
   // parameters to suppress:
 
   DefineSuppressedParameters();
+  
+  // Shield Selection Default
+
+  this->detectorShieldSelect = 1 ; // Include suppressors by default. 
+  this->extensionSuppressorLocation = 0 ; // Back by default
+
+  this->customDetectorNumber 		= 1 ; // det_num
+  this->customDetectorPosition  = 1 ; // pos_num
+  this->customDetectorVal				= 0 ; // Unused for now (Oct 2013)
 
   // create commands for interactive definition
+
   detectorMessenger = new DetectorMessenger(this);
 
   // ensure the global field is initialized
@@ -209,64 +210,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
   return physiWorld ; 
   
-//  G4Box*             hallBox  = new G4Box("hallBox", this->hall_x, this->hall_y, this->hall_z);
-//  G4LogicalVolume*   hallLog  = new G4LogicalVolume(hallBox, matWorld, "hallLog", 0, 0, 0);
-//  G4VPhysicalVolume* hallPhys = new G4PVPlacement(0, G4ThreeVector(), "hallPhys", hallLog, 0, false, 0);
-  
- 
-
-//  if(this->builtDetectors) {
-//      G4cout << "Already Built Detectors!" << G4endl;
-//  }
-//  else {
-//      // sensitive detector manager
-//      G4SDManager* mySDman = G4SDManager::GetSDMpointer();
-
-//      //  DetectionSystemGammaTracking* pGammaTracking = new DetectionSystemGammaTracking();
-//      //  this->myGammaTracking = pGammaTracking;
-//      //  this->myGammaTracking->Build(mySDman);
-
-//      DetectionSystemBrillance380V1* pBrillance380V1 = new DetectionSystemBrillance380V1();
-//      this->myBrillance380V1 = pBrillance380V1;
-//      this->myBrillance380V1->Build(mySDman);
-
-//      DetectionSystemSodiumIodide* pSodiumIodide = new DetectionSystemSodiumIodide();
-//      this->mySodiumIodide = pSodiumIodide;
-//      this->mySodiumIodide->Build(mySDman);
-
-//      DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
-//      this->myGriffinForward = pGriffinForward;
-//      this->myGriffinForward->Build(mySDman);
-
-//      DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
-//      this->myGriffinBack = pGriffinBack;
-//      this->myGriffinBack->Build(mySDman);
-
-//      DetectionSystem8pi* p8pi = new DetectionSystem8pi();
-//      this->my8pi = p8pi;
-//      this->my8pi->Build(mySDman);
-
-//      DetectionSystemSceptar* pSceptar = new DetectionSystemSceptar();
-//      this->mySceptar = pSceptar;
-//      this->mySceptar->Build(mySDman);
-
-//      DetectionSystemSpice* pSpice = new DetectionSystemSpice();
-//      this->mySpice = pSpice;
-//      this->mySpice->Build(mySDman);
-
-//      DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02();
-//      this->mySpiceV02 = pSpiceV02;
-//      this->mySpiceV02->Build(mySDman);
-
-//      DetectionSystemPaces* pPaces = new DetectionSystemPaces();
-//      this->myPaces = pPaces;
-//      this->myPaces->Build(mySDman);
-
-//      G4cout << "Built Detectors!" << G4endl;
-//  }
-
-//  this->builtDetectors = true;
-//  return hallPhys;
 
 }
 
@@ -278,9 +221,6 @@ void DetectorConstruction::SetWorldMaterial( G4String name )
 
 void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 {
-//  this->hall_x = vec.x();
-//  this->hall_y = vec.y();
-//  this->hall_z = vec.z();
 	WorldSizeX = vec.x() ;
 	WorldSizeY = vec.y() ; 
 	WorldSizeZ = vec.z() ;
@@ -514,12 +454,107 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
   }
 }
 
+// Temporary Function for testing purposes
+void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet = 0 ){
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
+
+//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+//  pGriffinCustom->Build();
+
+//  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//  position = this->griffinFwdBackPosition;
+//  move = position * direction;
+
+//  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
+
+//  pGriffinCustom->PlaceDetector( logicWorld, move, rotate, ndet ) ;
+
+  griffinDetectorsMap[griffinDetectorsMapIndex] = this->customDetectorNumber ; 
+  griffinDetectorsMapIndex++;
+
+
+	// NOTE: ndet served no purpose in this case but I left it in just in case this needs to be modified later. The position of a detector placed using this function must be set using
+	// SetDeadLayer. 
+
+  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
+
+  pGriffinCustom->BuildDeadLayerSpecificCrystal(this->customDetectorNumber-1);
+
+  pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
+
+  pGriffinCustom->BuildEverythingButCrystals();
+
+  pGriffinCustom->PlaceEverythingButCrystals( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
+
+
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinCustom(G4int ndet)
+{
+//  G4double theta,phi,position;
+//  G4ThreeVector move,direction;
+
+//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
+//  pGriffinCustom->Build();
+
+//  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+//  {
+//    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+//    position = this->griffinFwdBackPosition;
+//    move = position * direction;
+
+//    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+
+//    pGriffinCustom->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+//  }
+
+    G4int det_num;
+    G4int pos_num;
+
+    for( det_num = 1; det_num <= ndet; det_num++ ) {
+        pos_num = det_num;
+
+        griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+        griffinDetectorsMapIndex++;
+
+        DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
+
+        pGriffinCustom->BuildDeadLayerSpecificCrystal(det_num-1);
+        pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinCustom->BuildEverythingButCrystals();
+        pGriffinCustom->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
+    }
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ){
+  this->detectorShieldSelect = ShieldSelect ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ){
+  this->detectorRadialDistance = detectorDist ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ){
+  this->extensionSuppressorLocation = detectorPos ; 
+}
+
+void DetectorConstruction::AddDetectionSystemGriffinSetDeadLayer( G4ThreeVector params )
+{
+
+  this->customDetectorNumber 		= (G4int)params.x(); // det_num
+  this->customDetectorPosition  = (G4int)params.y(); // pos_num
+  this->customDetectorVal			  = (G4int)params.z(); // Unused at the moment. 
+
+}
+
 void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
 {
 //  G4double theta,phi,position;
 //  G4ThreeVector move,direction;
 
-//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
 //  pGriffinForward->Build();
 
 //  for( G4int detector_number = 0; detector_number < ndet; detector_number++ )
@@ -543,7 +578,7 @@ void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
         griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
         griffinDetectorsMapIndex++;
 
-        DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+        DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
 
         pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
         pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
@@ -558,7 +593,8 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
 //  G4double theta,phi,position;
 //  G4ThreeVector move,direction;
 
-//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0); // Select Forward (0) or Back (1)
+
+//  DetectionSystemGriffin* pGriffinForward = new DetectionSystemGriffin(0, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
 //  pGriffinForward->Build();
 
 //  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
@@ -573,15 +609,19 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
   G4int det_num = ndet;
   G4int pos_num = ndet;
   G4int config  = 0;
-
   griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
   griffinDetectorsMapIndex++;
 
-  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+
+  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
+
 
   pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+
   pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+
   pGriffinDLS->BuildEverythingButCrystals();
+
   pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 
 
@@ -592,7 +632,8 @@ void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
 //  G4double theta,phi,position;
 //  G4ThreeVector move,direction;
 
-//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+
+//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1, 1, this->griffinFwdBackPosition ) ; // Select Forward (0) or Back (1)
 //  pGriffinBack->Build();
 
 //  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
@@ -616,7 +657,7 @@ void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
       griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
       griffinDetectorsMapIndex++;
 
-      DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+      DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
 
       pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
       pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
@@ -632,7 +673,8 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
 //  G4double theta,phi,position;
 //  G4ThreeVector move,direction;
 
-//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1); // Select Forward (0) or Back (1)
+
+//  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin(1, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
 //  pGriffinBack->Build();
 
 //  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
@@ -650,7 +692,7 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
     griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
     griffinDetectorsMapIndex++;
 
-    DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
+    DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
 
     pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
     pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
@@ -658,22 +700,32 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
     pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
 }
 
-void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
-{
-    G4int det_num = (G4int)input.x();
-    G4int pos_num = (G4int)input.y();
-    G4int config  = (G4int)input.z();
 
-    griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
-    griffinDetectorsMapIndex++;
+// This will be reaplced with the addGriffinCustomDetector function. The dead layer must be set using
+// the SetCustomDeadLayer command. This will take longer for many different detectors in different configurations, 
+// but it is possible to place multiple custom detectors using addGriffinCustom as well. 
+//void DetectorConstruction::AddDetectionSystemGriffinPositionConfig(G4ThreeVector input)
+//{
+//  G4int det_num = (G4int)input.x();
+//  G4int pos_num = (G4int)input.y();
+//  G4int config  = (G4int)input.z();
 
-    DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config); // Select Forward (0) or Back (1)
 
-    pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
-    pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
-    pGriffinDLS->BuildEverythingButCrystals();
-    pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
-}
+////  DetectionSystemGriffin* pGriffinBack = new DetectionSystemGriffin( config, 1, this->griffinFwdBackPosition ); // Select Forward (0) or Back (1)
+////  pGriffinBack->BuildDeadLayerSpecificDetector(det_num-1);
+////  pGriffinBack->PlaceDeadLayerSpecificDetector( logicWorld, det_num-1, pos_num-1 ) ;
+
+//  griffinDetectorsMap[griffinDetectorsMapIndex] = det_num;
+//  griffinDetectorsMapIndex++;
+
+//  DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition); // Select Forward (0) or Back (1)
+
+//  pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
+//  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+//  pGriffinDLS->BuildEverythingButCrystals();
+//  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+
+//}
 
 
 void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)

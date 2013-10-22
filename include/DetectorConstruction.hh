@@ -122,7 +122,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGriffinForwardDetector(G4int ndet);
     void AddDetectionSystemGriffinBack(G4int ndet);
     void AddDetectionSystemGriffinBackDetector(G4int ndet);
-    void AddDetectionSystemGriffinPositionConfig(G4ThreeVector input);
+    //void AddDetectionSystemGriffinPositionConfig(G4ThreeVector input);
+    void AddDetectionSystemGriffinCustom( G4int ndet ) ;
+    void AddDetectionSystemGriffinCustomDetector( G4int ndet ) ; 
+    void AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ) ;
+    void AddDetectionSystemGriffinSetRadialDistance( G4double detectorDist ) ;
+    void AddDetectionSystemGriffinSetExtensionSuppLocation( G4int detectorPos ) ;
+    void AddDetectionSystemGriffinSetDeadLayer( G4ThreeVector params ) ; 
+
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
     void AddDetectionSystemSpice(G4int ndet);
@@ -132,13 +139,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   
   	MagneticField* worldMagField;
 
-    G4double WorldSizeX;
-    G4double WorldSizeY;
-    G4double WorldSizeZ;
-    G4bool   world_vis;
-    G4bool   builtDetectors;
-    G4double griffinFwdBackPosition;
-
+    G4double  WorldSizeX;
+    G4double  WorldSizeY;
+    G4double  WorldSizeZ;
+    G4bool    world_vis;
+    G4bool    builtDetectors;
+    G4double  griffinFwdBackPosition;
+    G4int     detectorShieldSelect ;
+    G4double  detectorRadialDistance ;
+    G4int     extensionSuppressorLocation ; 
+    G4int     customDetectorNumber ; 
+    G4int     customDetectorPosition ; 
+    G4int     customDetectorVal ; 
+    
     // Box
     G4String           box_mat;
     G4double           box_thickness;
@@ -178,16 +191,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4String matWorldName;
                  
     DetectorMessenger* detectorMessenger;
-//    DetectionSystemBrillance380V1* myBrillance380V1;
-//    DetectionSystemGammaTracking* myGammaTracking;
-    //DetectionSystemGriffin* myGriffin0;
-    //DetectionSystemGriffin* myGriffin1;
-//    DetectionSystem8pi* my8pi;
-//    DetectionSystemSceptar* mySceptar;
-//    DetectionSystemSpice* mySpice;
-//    DetectionSystemSpiceV02* mySpiceV02;
-//    DetectionSystemPaces* myPaces;
-//    DetectionSystemSodiumIodide* mySodiumIodide;
 
 };
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
