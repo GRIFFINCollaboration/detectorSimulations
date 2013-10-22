@@ -987,16 +987,6 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificCrystal(G4LogicalVolume* exp
 void DetectionSystemGriffin::BuildOneDetector()
 {
   // Build assembly volumes
-
-  // // Holds extension suppressors and shells
-  // this->extensionSuppressorAssembly = new G4AssemblyVolume() ; 
-
-  // // Holds back and side suppressors and their shells
-  // this->backAndSideSuppressorAssembly= new G4AssemblyVolume() ; 
-  
-  // // Holds HPGe's, electrodes, can, tank, cold finger, etc. 
-  // this->detectionSystemAssembly = new G4AssemblyVolume() ; 
-
   // Holds all pieces that are not a detector (ie. the can, nitrogen tank, cold finger, electrodes, etc.)
   this->assembly = new G4AssemblyVolume(); 
   
