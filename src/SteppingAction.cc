@@ -167,6 +167,21 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       eventaction->AddSodiumIodideCrystDet(edep,stepl,det-1);
   }
 
+  // Sceptar
+  found = volname.find("sceptar_square_scintillator_log");
+  if (edep != 0 && found!=G4String::npos) {
+      SetDetNumberForGenericDetector(volname);
+      eventaction->AddSceptarSquareCrystDet(edep,stepl,det-1);
+  }
+
+  found = volname.find("sceptar_angled_scintillator_log");
+  if (edep != 0 && found!=G4String::npos) {
+      SetDetNumberForGenericDetector(volname);
+      eventaction->AddSceptarAngledCrystDet(edep,stepl,det-1);
+  }
+
+
+
 }
 
 void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)

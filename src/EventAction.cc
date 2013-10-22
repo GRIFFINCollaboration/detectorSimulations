@@ -127,8 +127,11 @@ void EventAction::ClearVariables()
       SodiumIodideCrystTrackDet[i]      = 0 ;
       
       
-      SceptarCrystEnergyDet[i]					= 0 ;
-      SceptarCrystTrackDet[i] 					= 0 ;
+      SceptarSquareCrystEnergyDet[i]					= 0 ;
+      SceptarSquareCrystTrackDet[i] 					= 0 ;
+      SceptarAngledCrystEnergyDet[i]					= 0 ;
+      SceptarAngledCrystTrackDet[i] 					= 0 ;
+
       EightPiCrystEnergyDet[i]					= 0 ; 
       EightPiCrystTrackDet[i]						= 0 ;
       SpiceCrystEnergyDet[i]						= 0 ;
@@ -326,7 +329,32 @@ void EventAction::FillSodiumIodideCryst()
 
 void EventAction::FillSceptarCryst() 
 {
-
+    G4double  energySum = 0, trackSum = 0;
+    for (G4int i=0; i < MAXNUMDET; i++) {
+      if(SceptarSquareCrystEnergyDet[i] > MINENERGYTHRES) {
+        // fill energies in each detector
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(sceptar_square_edep_det0+i, SceptarSquareCrystEnergyDet[i]);
+        // fill standard energy and track spectra
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(sceptar_square_edep, SceptarSquareCrystEnergyDet[i]);
+        // add sum energies
+        energySum    += SceptarSquareCrystEnergyDet[i];
+        trackSum     += SceptarSquareCrystTrackDet[i];
+      }
+    }
+    for (G4int i=0; i < MAXNUMDET; i++) {
+      if(SceptarAngledCrystEnergyDet[i] > MINENERGYTHRES) {
+        // fill energies in each detector
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(sceptar_angled_edep_det0+i, SceptarAngledCrystEnergyDet[i]);
+        // fill standard energy and track spectra
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(sceptar_angled_edep, SceptarAngledCrystEnergyDet[i]);
+        // add sum energies
+        energySum    += SceptarAngledCrystEnergyDet[i];
+        trackSum     += SceptarAngledCrystTrackDet[i];
+      }
+    }
+    if(energySum > MINENERGYTHRES) {
+      if(WRITEEDEPHISTOS)     histoManager->FillHisto(sceptar_edep_sum, energySum);
+    }
 }
 
 void EventAction::Fill8piCryst() 
