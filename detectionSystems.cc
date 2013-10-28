@@ -38,8 +38,8 @@
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
-#include "SteppingAction.hh" // Included in new system
-#include "HistoManager.hh" // Included in new system
+#include "SteppingAction.hh" 
+#include "HistoManager.hh" 
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"

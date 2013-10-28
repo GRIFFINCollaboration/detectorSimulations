@@ -45,7 +45,7 @@ SteppingAction::SteppingAction(DetectorConstruction* det,
 :detector(det), eventaction(evt)					 
 {
     griffinDetectorMapSet = false;
-    numberOfAssemblyVols = 11;
+    numberOfAssemblyVols = 12;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -191,11 +191,11 @@ void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)
     G4int impr;
     G4int avOver9 = cstr[4]-'0';
     G4int avOver99 = cstr[5]-'0';
-    if(avOver9 == 47) { // under 10
+    if( avOver9 == 47 ) { // under 10
         av = cstr[3]-'0';
         impr = cstr[10]-'0';
     }
-    else if(avOver99 == 47) { // under 100
+    else if( avOver99 == 47 ) { // under 100
         av = (cstr[3]-'0')*10+(cstr[4]-'0');
         impr = cstr[11]-'0';
     }
