@@ -131,7 +131,7 @@ DetectorConstruction::DetectorConstruction() :
   // Shield Selection Default
 
   this->detectorShieldSelect = 1 ; // Include suppressors by default. 
-  this->extensionSuppressorLocation = 0 ; // Back by default
+  this->extensionSuppressorLocation = 0 ; // Back by default (Detector Forward)
 
   this->customDetectorNumber 		= 1 ; // det_num
   this->customDetectorPosition  = 1 ; // pos_num
@@ -456,19 +456,6 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
 
 // Temporary Function for testing purposes
 void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet = 0 ){
-//  G4double theta,phi,position;
-//  G4ThreeVector move,direction;
-
-//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation , this->detectorShieldSelect, this->detectorRadialDistance ); // Select Forward (0) or Back (1)
-//  pGriffinCustom->Build();
-
-//  direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-//  position = this->griffinFwdBackPosition;
-//  move = position * direction;
-
-//  G4RotationMatrix* rotate = new G4RotationMatrix;    //rotation matrix corresponding to direction vector
-
-//  pGriffinCustom->PlaceDetector( logicWorld, move, rotate, ndet ) ;
 
   griffinDetectorsMap[griffinDetectorsMapIndex] = this->customDetectorNumber ; 
   griffinDetectorsMapIndex++;
@@ -492,22 +479,6 @@ void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet =
 
 void DetectorConstruction::AddDetectionSystemGriffinCustom(G4int ndet)
 {
-//  G4double theta,phi,position;
-//  G4ThreeVector move,direction;
-
-//  DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance ) ; // Select Forward (0) or Back (1)
-//  pGriffinCustom->Build();
-
-//  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
-//  {
-//    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
-//    position = this->griffinFwdBackPosition;
-//    move = position * direction;
-
-//    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
-
-//    pGriffinCustom->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
-//  }
 
     G4int det_num;
     G4int pos_num;

@@ -335,8 +335,8 @@ this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium[i], rotate_ger
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveInnerExtension[8];
   
-   if( (this->applied_back_shift == 0.0) && include_extension_suppressors)
-//  if( !(this->suppressor_position_selector) && include_extension_suppressors )
+   // if( (this->applied_back_shift == 0.0) && include_extension_suppressors)
+ if( !(this->suppressor_position_selector) && include_extension_suppressors )
   {
     // If the detectors are forward, put the extensions in the back position
     // the placement of the extensions matches the placement of the side_suppressor pieces	
@@ -352,8 +352,6 @@ this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium[i], rotate_ger
           + this->suppressor_shell_thickness*2.0)
           * sin(this->bent_end_angle))
           * tan(this->bent_end_angle)) + extension_radial_shift;
-
-
 
     y0 = (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
     + (this->suppressor_forward_radius
@@ -407,8 +405,8 @@ this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium[i], rotate_ger
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-   else if( ( this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius) ) && include_extension_suppressors)
-//  else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
+   // else if( ( this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius) ) && include_extension_suppressors)
+ else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
   {
 	
     // The only difference between this x0 and the x0 when the detectors are forward is that this
@@ -460,7 +458,7 @@ this->germaniumAssembly->MakeImprint(exp_hall_log, move_germanium[i], rotate_ger
       y = -x0*sin(i*M_PI/2.0) + y0*cos(i*M_PI/2);
       z = z0;
       
-            moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
+      moveInnerExtension[2*i] = G4ThreeVector(DetectionSystemGriffin::transX(x,y,z,theta,phi),DetectionSystemGriffin::transY(x,y,z,theta,phi),DetectionSystemGriffin::transZ(x,y,z,theta,phi));
       this->rightSuppressorExtensionAssembly->MakeImprint(exp_hall_log, moveInnerExtension[2*i], rotateExtension[2*i], copy_number++);
 
       rotateExtension[2*i+1] = new G4RotationMatrix;
@@ -650,8 +648,8 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveInnerExtension[8];
   
-   if( (this->applied_back_shift == 0.0) && include_extension_suppressors)
-//  if( !(this->suppressor_position_selector) && include_extension_suppressors )
+   // if( (this->applied_back_shift == 0.0) && include_extension_suppressors)
+ if( !(this->suppressor_position_selector) && include_extension_suppressors )
   {
     // If the detectors are forward, put the extensions in the back position
     // the placement of the extensions matches the placement of the side_suppressor pieces	
@@ -721,8 +719,8 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-   else if( ( this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius) ) && include_extension_suppressors)
-//  else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
+   // else if( ( this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius) ) && include_extension_suppressors)
+ else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
   {
 	
     // The only difference between this x0 and the x0 when the detectors are forward is that this
@@ -2174,8 +2172,8 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveExtension[8];
 
-  if(this->applied_back_shift == 0.0)		// If the detectors are forward, put the extensions in the back position
-  // if( this->suppressor_position_selector == 0 )
+  // if(this->applied_back_shift == 0.0)		// If the detectors are forward, put the extensions in the back position
+  if( this->suppressor_position_selector == 0 )
   {
 
     // these two parameters are for shifting the extensions back and out when in their BACK position
@@ -2243,12 +2241,14 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
       this->extensionSuppressorShellAssembly->AddPlacedVolume(left_suppressor_shell_extension_log, moveExtension[i*2+1], rotateExtension[i*2+1]);
     }
          
+    
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-  else if(this->applied_back_shift == this->back_inner_radius - this->forward_inner_radius)
-  // else if( this->suppressor_position_selector == 1 )
+  // else if(this->applied_back_shift == this->back_inner_radius - this->forward_inner_radius)
+  else if( this->suppressor_position_selector == 1 )
   {
+  			
     
   //   // the placement of the extensions matches the placement of the side_suppressor pieces
 
@@ -2600,8 +2600,8 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingJustShells()
   G4ThreeVector moveExtension[8];
 
 	// If the detectors are forward, put the extensions in the back position
-  if( this->applied_back_shift = 0.0 )
-  // if( this->suppressor_position_selector == 0 ) 
+  // if( this->applied_back_shift = 0.0 )
+  if( this->suppressor_position_selector == 0 ) 
   {
 
     // NOTE: There is a variable called suppressor_position_selector in the suppressed
@@ -2680,8 +2680,8 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingJustShells()
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-  else if( this->applied_back_shift == ( this->back_inner_radius - this->forward_inner_radius ))
-  // else if( this->suppressor_position_selector == 1 )
+  // else if( this->applied_back_shift == ( this->back_inner_radius - this->forward_inner_radius ))
+  else if( this->suppressor_position_selector == 1 )
   {
    // the placement of the extensions matches the placement of the side_suppressor pieces
 
