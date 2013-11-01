@@ -45,7 +45,26 @@ SteppingAction::SteppingAction(DetectorConstruction* det,
 :detector(det), eventaction(evt)					 
 {
     griffinDetectorMapSet = false;
-    numberOfAssemblyVols = 12;
+    numberOfAssemblyVols = 13;
+    
+  // List of assembly volumes just to keep track:
+  // 
+  // assembly 
+  // leftSuppressorCasingAssembly
+  // rightSuppressorCasingAssembly
+  // leftSuppressorExtensionAssembly
+  // rightSuppressorExtensionAssembly
+  // suppressorBackAssembly 
+  // extensionSuppressorShellAssembly   
+  // backAndSideSuppressorShellAssembly
+  // hevimetAssembly 
+  // germaniumAssemblyCry[0]
+  // germaniumAssemblyCry[1]
+  // germaniumAssemblyCry[2]
+  // germaniumAssemblyCry[3]
+
+    
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

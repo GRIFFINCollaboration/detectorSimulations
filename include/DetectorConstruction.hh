@@ -123,6 +123,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGriffinBack(G4int ndet);
     void AddDetectionSystemGriffinBackDetector(G4int ndet);
     //void AddDetectionSystemGriffinPositionConfig(G4ThreeVector input);
+    void AddDetectionSystemGriffinHevimet( G4int input ) ; 
     void AddDetectionSystemGriffinCustom( G4int ndet ) ;
     void AddDetectionSystemGriffinCustomDetector( G4int ndet ) ; 
     void AddDetectionSystemGriffinShieldSelect( G4int ShieldSelect ) ;
@@ -151,6 +152,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int     customDetectorNumber ; 
     G4int     customDetectorPosition ; 
     G4int     customDetectorVal ; 
+    G4int     hevimetSelector ; 
     
     // Box
     G4String           box_mat;

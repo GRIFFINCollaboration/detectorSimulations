@@ -44,7 +44,7 @@
 class DetectionSystemGriffin
 {
 	public:
-		DetectionSystemGriffin(G4int sel, G4int suppSwitch, G4double detRad);
+		DetectionSystemGriffin(G4int sel, G4int suppSwitch, G4double detRad, G4int hevimetSel );
 		~DetectionSystemGriffin();
 
         void Build() ; 
@@ -273,9 +273,7 @@ class DetectionSystemGriffin
     G4AssemblyVolume* suppressorShellAssembly;
     G4AssemblyVolume* backAndSideSuppressorShellAssembly ; 
     G4AssemblyVolume* extensionSuppressorShellAssembly ; 
-//    G4AssemblyVolume* extensionSuppressorAssembly ; 
-//    G4AssemblyVolume* backAndSideSuppressorAssembly ;
-//    G4AssemblyVolume* detectionSystemAssembly ;          
+    G4AssemblyVolume* hevimetAssembly ;   
     
       
     // Logical volumes
