@@ -62,6 +62,12 @@
 /DetSys/det/addGriffinCustom 16
 
 ################
+# Adds an array of forward detectors at 11cm with hevimets
+#/DetSys/det/SetCustomShieldsPresent 1
+#/DetSys/det/includeGriffinHevimet 1
+#/DetSys/det/SetCustomRadialDistance 11.0 cm
+#/DetSys/det/SetCustomExtensionSuppressorLocation 1
+#/DetSys/det/addGriffinCustom 12
 
 #Prepare Visualisation
 

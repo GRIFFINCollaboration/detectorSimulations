@@ -891,7 +891,7 @@ void DetectionSystemGriffin::BuildOneDetector()
   // Holds the back and side suppressor shells
   this->backAndSideSuppressorShellAssembly = new G4AssemblyVolume() ; 
   
-  // Holds Hevimet
+  // Holds the Hevimets
   this->hevimetAssembly = new G4AssemblyVolume() ; 
 
   ConstructComplexDetectorBlockWithDeadLayer();
@@ -938,6 +938,8 @@ void DetectionSystemGriffin::BuildEverythingButCrystals()
 
   // Holds the back and side suppressor shells
   this->backAndSideSuppressorShellAssembly = new G4AssemblyVolume() ; 
+  
+  // Holds the hevimets
   this->hevimetAssembly = new G4AssemblyVolume() ; 
 
   BuildelectrodeMatElectrodes();
@@ -1317,8 +1319,8 @@ void DetectionSystemGriffin::ConstructDetector()
   for( i = 0 ; i < 4 ; i++ )
     {
       // Top, Right, Bottom, Left
-      side_piece[i] = this->bentSidePiece() ;  // G4Para*
-      rotate_piece[i] = new G4RotationMatrix ;  // G4RotationMatrix*
+      side_piece[i] = this->bentSidePiece() ;  
+      rotate_piece[i] = new G4RotationMatrix ;  
           
       // The left side is slightly different than the others, so this if statement is required. The order of rotation matters.  
       if(i == 3)
@@ -1711,7 +1713,7 @@ void DetectionSystemGriffin::ConstructColdFinger()
   cooling_side_block_log->SetVisAttributes(structureMat_vis_att);
 
   G4Box* cooling_bar = this->coolingBar();
-  cooling_bar_log = new G4LogicalVolume(cooling_bar, structureMaterial, "cooling_bar_log", 0, 0, 0); // Note: This was copied here so that it would run before the loop. 
+  cooling_bar_log = new G4LogicalVolume(cooling_bar, structureMaterial, "cooling_bar_log", 0, 0, 0); 
   cooling_bar_log->SetVisAttributes(structureMat_vis_att);
 
   G4RotationMatrix* rotate_piece[8] ; 
@@ -2075,12 +2077,12 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
     "left_suppressor_shell_log", 0,0,0);
   left_suppressor_shell_log->SetVisAttributes(Suppressor_vis_att);
   
-  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping. // CALLED
+  G4SubtractionSolid* right_suppressor = this->frontSlantSuppressor(false, false); // Right, non-chopping. 
 
   right_suppressor_log = new G4LogicalVolume(right_suppressor, materialBGO, "right_suppressor_casing_log", 0, 0, 0);
   right_suppressor_log->SetVisAttributes(innards_vis_att);
 
-  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false); // Left, non-chopping. // CALLED
+  G4SubtractionSolid* left_suppressor = this->frontSlantSuppressor(true, false); // Left, non-chopping.
 
   left_suppressor_log = new G4LogicalVolume(left_suppressor, materialBGO, "left_suppressor_casing_log", 0, 0, 0);
   left_suppressor_log->SetVisAttributes(innards_vis_att);
@@ -2182,7 +2184,6 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveExtension[8];
 
-  // if(this->applied_back_shift == 0.0)		// If the detectors are forward, put the extensions in the back position
   if( this->suppressor_position_selector == 0 )
   {
 
@@ -2445,7 +2446,6 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingJustShells()
 	      - tan(this->bent_end_angle));
 
   // Replacement for this->suppressor_extension_angle: must totally recalculate
-
   G4double shell_suppressor_extension_angle = atan(((this->suppressor_back_radius 
         + this->bent_end_length +(this->BGO_can_seperation 
         + this->side_BGO_thickness + this->suppressor_shell_thickness*2.0)
@@ -2930,7 +2930,7 @@ G4SubtractionSolid* DetectionSystemGriffin::shellForRightSuppressorExtension()
 
 
     G4SubtractionSolid* extension_suppressor_shell_with_cavity = new G4SubtractionSolid("extension_suppressor_shell_with_cavity",
-       right_extension_shell, this->sideSuppressorExtension( false, true ), 0, move_cut); // Right, Chopping sideSuppressorExtension // CALLED
+       right_extension_shell, this->sideSuppressorExtension( false, true ), 0, move_cut); // Right, Chopping sideSuppressorExtension 
 
 
     return extension_suppressor_shell_with_cavity;
@@ -3723,26 +3723,26 @@ G4SubtractionSolid* DetectionSystemGriffin::newHeavyMet()
   G4double half_height_z =  ( 2.0 * half_thickness_z + ( half_length_longer_x 
                           - ( ( this->suppressor_forward_radius + this->hevimet_tip_thickness )
                           * tan( this->hevimet_tip_angle ) ) / cos( this->bent_end_angle ) 
-                          - half_shorter_length_x)*tan(this->bent_end_angle))/2.0;
+                          - half_shorter_length_x)*tan( this->bent_end_angle )) / 2.0;
 
-  G4double half_longer_length_x 	= half_shorter_length_x +2.0*half_height_z/tan(this->bent_end_angle);
+  G4double half_longer_length_x 	= half_shorter_length_x + 2.0 * half_height_z/tan( this->bent_end_angle ) ;
   G4double half_shorter_length_y 	= half_shorter_length_x;
   G4double half_longer_length_y 	= half_longer_length_x;
 
-  G4Trd* intersector = new G4Trd("intersector", half_shorter_length_x, 
-  	half_longer_length_x, half_shorter_length_y, half_longer_length_y, half_height_z);
+  G4Trd* intersector = new G4Trd( "intersector", half_shorter_length_x, 
+  	half_longer_length_x, half_shorter_length_y, half_longer_length_y, half_height_z );
 
-  G4Trd* chopper = new G4Trd("chopper", half_shorter_length_x, half_longer_length_x,
-  	half_shorter_length_y, half_longer_length_y, half_height_z);
+  G4Trd* chopper = new G4Trd( "chopper", half_shorter_length_x, half_longer_length_x,
+  	half_shorter_length_y, half_longer_length_y, half_height_z );
 
-  G4ThreeVector move_chopper(0.0, 0.0, half_height_z +half_thickness_z 
+  G4ThreeVector move_chopper(0.0, 0.0, half_height_z + half_thickness_z 
                               - this->suppressor_forward_radius * tan(this->hevimet_tip_angle)
                               * sin(this->bent_end_angle) ) ;
 	
   G4SubtractionSolid* chopped_hevimet = new G4SubtractionSolid("chopped_hevimet", 
   	uncut_hevimet, chopper, 0, move_chopper);   
 
-  G4ThreeVector move_intersector(0.0, 0.0, -half_height_z +half_thickness_z);
+  G4ThreeVector move_intersector(0.0, 0.0, -half_height_z + half_thickness_z);
 
   G4IntersectionSolid* intersected_hevimet = new G4IntersectionSolid("intersected_hevimet", 
   	chopped_hevimet, intersector, 0, move_intersector);
