@@ -250,6 +250,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGriffinSetDeadLayerCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
 ////////
   
+  AddDetectionSystemGriffinHevimetCmd = new G4UIcmdWithAnInteger( "/DetSys/det/includeGriffinHevimet", this ) ; 
+  AddDetectionSystemGriffinHevimetCmd->SetGuidance( "Includes the Hevimet for a Griffin detector." ) ; 
+  AddDetectionSystemGriffinHevimetCmd->AvailableForStates( G4State_PreInit, G4State_Idle ) ; 
+
   AddDetectionSystemSceptarCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSceptar",this);
   AddDetectionSystemSceptarCmd->SetGuidance("Add Detection System Sceptar");
   AddDetectionSystemSceptarCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -318,7 +322,8 @@ DetectorMessenger::~DetectorMessenger()
 //  delete AddDetectionSystemGriffinPositionConfigCmd;
   delete AddDetectionSystemGriffinCustomDetectorCmd ;
   delete AddDetectionSystemGriffinCustomCmd ; 
-  
+  delete AddDetectionSystemGriffinHevimetCmd ; 
+
   delete AddDetectionSystemGriffinShieldSelectCmd ; 
   delete AddDetectionSystemGriffinSetRadialDistanceCmd ; 
   delete AddDetectionSystemGriffinSetExtensionSuppLocationCmd ; 
@@ -445,6 +450,9 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemGriffinCustomCmd ) {
     Detector->AddDetectionSystemGriffinCustom(AddDetectionSystemGriffinCustomCmd->GetNewIntValue(newValue));
   }  
+  if( command == AddDetectionSystemGriffinHevimetCmd ) {
+    Detector->AddDetectionSystemGriffinHevimet(AddDetectionSystemGriffinHevimetCmd->GetNewIntValue(newValue));
+  }
   if( command == AddDetectionSystemGriffinShieldSelectCmd ) {
     Detector->AddDetectionSystemGriffinShieldSelect(AddDetectionSystemGriffinShieldSelectCmd->GetNewIntValue(newValue)) ; 
   }
