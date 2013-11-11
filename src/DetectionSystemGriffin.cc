@@ -484,7 +484,7 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 }
 // end PlaceDetector    
 
-G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number)
+G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number, G4bool posTigress)
 {
   G4double theta  = this->coords[position_number][0]*deg;
   G4double phi    = this->coords[position_number][1]*deg;
@@ -492,6 +492,11 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   G4double beta   = this->coords[position_number][3]*deg; // pitch
   G4double gamma  = this->coords[position_number][4]*deg; // roll
 
+  //In GRIFFIN upstream is now downstream relative to TIGRESS. However, we want to maintain the same numbering scheme as TIGRESS. Net result is that the lampshade angles change by 45 degrees.
+  if(posTigress && (position_number < 4 || position_number > 11) ) {
+      phi       = this->coords[position_number][1]*deg - 45.0*deg;
+      gamma     = this->coords[position_number][4]*deg - 45.0*deg;
+  }
 
   G4double x;
   G4double y;
@@ -800,7 +805,7 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   return 1;
 } // End PlaceEverythingButCrystals
 
-G4int DetectionSystemGriffin::PlaceDeadLayerSpecificCrystal(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number)
+G4int DetectionSystemGriffin::PlaceDeadLayerSpecificCrystal(G4LogicalVolume* exp_hall_log, G4int detector_number, G4int position_number, G4bool posTigress)
 {
 
   G4double theta  = this->coords[position_number][0]*deg;
@@ -808,6 +813,12 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificCrystal(G4LogicalVolume* exp
   G4double alpha  = this->coords[position_number][2]*deg; // yaw
   G4double beta   = this->coords[position_number][3]*deg; // pitch
   G4double gamma  = this->coords[position_number][4]*deg; // roll
+
+  //In GRIFFIN upstream is now downstream relative to TIGRESS. However, we want to maintain the same numbering scheme as TIGRESS. Net result is that the lampshade angles change by 45 degrees.
+  if(posTigress && (position_number < 4 || position_number > 11) ) {
+      phi       = this->coords[position_number][1]*deg - 45.0*deg;
+      gamma     = this->coords[position_number][4]*deg - 45.0*deg;
+  }
 
   G4double x;
   G4double y;

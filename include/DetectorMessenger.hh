@@ -120,7 +120,8 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*       AddDetectionSystemGriffinShieldSelectCmd ;
     G4UIcmdWithADoubleAndUnit*  AddDetectionSystemGriffinSetRadialDistanceCmd ; 
     G4UIcmdWithAnInteger*       AddDetectionSystemGriffinSetExtensionSuppLocationCmd ;
-    G4UIcmdWith3Vector*         AddDetectionSystemGriffinSetDeadLayerCmd ; 
+    G4UIcmdWith3Vector*         AddDetectionSystemGriffinSetDeadLayerCmd ;
+    G4UIcmdWithABool*           UseTIGRESSPositionsCmd;
 
 };
 

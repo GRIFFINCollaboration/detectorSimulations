@@ -130,6 +130,8 @@ DetectorConstruction::DetectorConstruction() :
   
   // Shield Selection Default
 
+  this->useTigressPositions = false;
+
   this->detectorShieldSelect = 1 ; // Include suppressors by default. 
   this->extensionSuppressorLocation = 0 ; // Back by default (Detector Forward)
   this->hevimetSelector = 0 ; // Chooses whether or not to include a hevimet
@@ -470,11 +472,11 @@ void DetectorConstruction::AddDetectionSystemGriffinCustomDetector( G4int ndet =
 
   pGriffinCustom->BuildDeadLayerSpecificCrystal(this->customDetectorNumber-1);
 
-  pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
+  pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1, useTigressPositions ) ;
 
   pGriffinCustom->BuildEverythingButCrystals();
 
-  pGriffinCustom->PlaceEverythingButCrystals( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1 ) ;
+  pGriffinCustom->PlaceEverythingButCrystals( logicWorld, this->customDetectorNumber-1, this->customDetectorPosition-1, useTigressPositions ) ;
 
 
 }
@@ -494,9 +496,9 @@ void DetectorConstruction::AddDetectionSystemGriffinCustom(G4int ndet)
         DetectionSystemGriffin* pGriffinCustom = new DetectionSystemGriffin( this->extensionSuppressorLocation,  this->detectorShieldSelect ,  this->detectorRadialDistance, this->hevimetSelector ) ; // Select Forward (0) or Back (1)
 
         pGriffinCustom->BuildDeadLayerSpecificCrystal(det_num-1);
-        pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinCustom->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
         pGriffinCustom->BuildEverythingButCrystals();
-        pGriffinCustom->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinCustom->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 
     }
 }
@@ -554,9 +556,9 @@ void DetectorConstruction::AddDetectionSystemGriffinForward(G4int ndet)
         DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition, this->hevimetSelector); // Select Forward (0) or Back (1)
 
         pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
-        pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
         pGriffinDLS->BuildEverythingButCrystals();
-        pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+        pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 
     }
 }
@@ -591,11 +593,11 @@ void DetectorConstruction::AddDetectionSystemGriffinForwardDetector(G4int ndet)
 
   pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
 
-  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+  pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 
   pGriffinDLS->BuildEverythingButCrystals();
 
-  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+  pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 
 
 }
@@ -633,9 +635,9 @@ void DetectorConstruction::AddDetectionSystemGriffinBack(G4int ndet)
       DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition, this->hevimetSelector ); // Select Forward (0) or Back (1)
 
       pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
-      pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+      pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
       pGriffinDLS->BuildEverythingButCrystals();
-      pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+      pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 
   }
 
@@ -668,9 +670,9 @@ void DetectorConstruction::AddDetectionSystemGriffinBackDetector(G4int ndet)
     DetectionSystemGriffin* pGriffinDLS = new DetectionSystemGriffin(config, 1, this->griffinFwdBackPosition, this->hevimetSelector); // Select Forward (0) or Back (1)
 
     pGriffinDLS->BuildDeadLayerSpecificCrystal(det_num-1);
-    pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1 ) ;
+    pGriffinDLS->PlaceDeadLayerSpecificCrystal( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
     pGriffinDLS->BuildEverythingButCrystals();
-    pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1 ) ;
+    pGriffinDLS->PlaceEverythingButCrystals( logicWorld, det_num-1, pos_num-1, useTigressPositions ) ;
 }
 
 void DetectorConstruction::AddDetectionSystemGriffinHevimet(G4int input)

@@ -136,6 +136,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemSpice(G4int ndet);
     void AddDetectionSystemSpiceV02(G4int ndet);
 
+    void UseTIGRESSPositions( G4bool input )                  {useTigressPositions = input;};
   private:
   
   	MagneticField* worldMagField;
@@ -153,6 +154,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int     customDetectorPosition ; 
     G4int     customDetectorVal ; 
     G4int     hevimetSelector ; 
+    G4bool    useTigressPositions;
     
     // Box
     G4String           box_mat;
