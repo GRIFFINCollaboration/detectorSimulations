@@ -63,7 +63,7 @@ SteppingAction::SteppingAction(DetectorConstruction* det,
   // germaniumAssemblyCry[2]
   // germaniumAssemblyCry[3]
 
-    
+  stepNumber = 0;
 
 }
 
@@ -78,6 +78,12 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
   G4int particleType = 0;
   G4int volNameOver9;
+  G4int evntNb;
+
+  det = 0;
+  cry = 0;
+
+  stepNumber++;
 
   // get volume of the current step
   G4VPhysicalVolume* volume 
@@ -103,10 +109,19 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   else                                                                                  particleType = 0;
 
   eventaction->AddParticleType(particleType);
-
+  evntNb =  eventaction->GetEventNumber();
   //G4cout << "Found Edep = " << edep/keV << " keV in " << volname << G4endl;
   // example volname
   //volname = av_1_impr_6_sodium_iodide_crystal_block_log_pv_0
+
+  G4StepPoint* point1 = aStep->GetPreStepPoint();
+  G4StepPoint* point2 = aStep->GetPostStepPoint();
+
+  G4ThreeVector pos1 = point1->GetPosition();
+  G4ThreeVector pos2 = point2->GetPosition();
+
+  G4double time1 = point1->GetGlobalTime();
+  G4double time2 = point2->GetGlobalTime();
 
   size_t found;
   G4String search;
@@ -130,12 +145,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinCrystDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   found = volname.find("back_quarter_suppressor");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorBackDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   found = volname.find("left_suppressor_extension");
@@ -143,12 +160,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForGriffinComponent(volname);
       //G4cout << "left_suppressor_extension Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinSuppressorLeftExtensionDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   found = volname.find("right_suppressor_extension");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorRightExtensionDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   found = volname.find("left_suppressor_casing");
@@ -156,12 +175,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForGriffinComponent(volname);
       //G4cout << "left_suppressor_casing_log Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinSuppressorLeftSideDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   found = volname.find("right_suppressor_casing");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorRightSideDet(edep,stepl,det-1,cry-1);
+      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   // Dead layer specific code
@@ -170,6 +191,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(volname);
       //G4cout << "germanium_dls_block1 Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinCrystDet(edep,stepl,det-1,cry-1);
+      eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
 
   // LaBr
@@ -247,7 +269,7 @@ void SteppingAction::SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4Stri
         impr = cstr[11]-'0';
     }
     else { // OVER 100
-        av = (cstr[3]-'0')*100+(cstr[4]-'0')+10+(cstr[5]-'0');
+        av = (cstr[3]-'0')*100+(cstr[4]-'0')*10+(cstr[5]-'0');
         impr = cstr[12]-'0';
     }
 

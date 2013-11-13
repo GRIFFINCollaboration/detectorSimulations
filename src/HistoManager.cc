@@ -98,8 +98,8 @@ void HistoManager::book()
   fileName[1] = fileName[0] + "." + extension;
       
   // Create directories
-  //analysisManager->SetHistoDirectoryName("histo");
-  //analysisManager->SetNtupleDirectoryName("ntuple");
+  analysisManager->SetHistoDirectoryName("histo");
+  analysisManager->SetNtupleDirectoryName("ntuple");
     
   // Open an output file
   G4bool fileOpen = analysisManager->OpenFile(fileName[0]);
@@ -333,17 +333,23 @@ void HistoManager::book()
     }
     }
 
-  /////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
   // Create 1 ntuple
-  //    
-//  analysisManager->CreateNtuple("101", "Edep and TrackL");
-//  fNtColId[0] = analysisManager->CreateNtupleDColumn("Eabs");
-//  fNtColId[1] = analysisManager->CreateNtupleDColumn("Egap");
-//  fNtColId[2] = analysisManager->CreateNtupleDColumn("Labs");
-//  fNtColId[3] = analysisManager->CreateNtupleDColumn("Lgap");
-//  analysisManager->FinishNtuple();
-  
-  factoryOn = true;       
+
+  analysisManager->CreateNtuple("ntuple", "StepTracker");
+  fNtColId[0] = analysisManager->CreateNtupleDColumn("eventNum");
+  fNtColId[1] = analysisManager->CreateNtupleDColumn("stepNum");
+  fNtColId[2] = analysisManager->CreateNtupleDColumn("cryNum");
+  fNtColId[3] = analysisManager->CreateNtupleDColumn("detNum");
+  fNtColId[4] = analysisManager->CreateNtupleDColumn("edep_keV");
+  fNtColId[5] = analysisManager->CreateNtupleDColumn("x_mm");
+  fNtColId[6] = analysisManager->CreateNtupleDColumn("y_mm");
+  fNtColId[7] = analysisManager->CreateNtupleDColumn("z_mm");
+  fNtColId[8] = analysisManager->CreateNtupleDColumn("time_sec");
+  fNtColId[9] = analysisManager->CreateNtupleDColumn("empty");
+  analysisManager->FinishNtuple();
+
+  factoryOn = true;
   G4cout << "\n----> Histogram Tree is opened in " << fileName[1] << G4endl;
 }
 
@@ -402,41 +408,46 @@ void HistoManager::Normalize(G4int ih, G4double fac)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::FillNtuple(G4double energyAbs, G4double energyGap,
-                              G4double trackLAbs, G4double trackLGap)
+void HistoManager::FillNtuple(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
 {                
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillNtupleDColumn(fNtColId[0], energyAbs);
-  analysisManager->FillNtupleDColumn(fNtColId[1], energyGap);
-  analysisManager->FillNtupleDColumn(fNtColId[2], trackLAbs);
-  analysisManager->FillNtupleDColumn(fNtColId[2], trackLGap);
-  analysisManager->AddNtupleRow();  
+  analysisManager->FillNtupleDColumn(fNtColId[0], eventNumber);
+  analysisManager->FillNtupleDColumn(fNtColId[1], stepNumber);
+  analysisManager->FillNtupleDColumn(fNtColId[2], cryNumber);
+  analysisManager->FillNtupleDColumn(fNtColId[3], detNumber);
+  analysisManager->FillNtupleDColumn(fNtColId[4], depEnergy);
+  analysisManager->FillNtupleDColumn(fNtColId[5], posx);
+  analysisManager->FillNtupleDColumn(fNtColId[6], posy);
+  analysisManager->FillNtupleDColumn(fNtColId[7], posz);
+  analysisManager->FillNtupleDColumn(fNtColId[8], time);
+  analysisManager->FillNtupleDColumn(fNtColId[9], 0);
+  analysisManager->AddNtupleRow();
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::PrintStatistic()
 {
-  if(factoryOn) {
-    G4cout << "\n ----> print histograms statistic \n" << G4endl;
+//  if(factoryOn) {
+//    G4cout << "\n ----> print histograms statistic \n" << G4endl;
     
-    G4cout 
-       << " EAbs : mean = " << G4BestUnit(fHistPt[1]->mean(), "Energy") 
-               << " rms = " << G4BestUnit(fHistPt[1]->rms(),  "Energy") 
-               << G4endl;
-    G4cout                
-       << " EGap : mean = " << G4BestUnit(fHistPt[2]->mean(), "Energy") 
-               << " rms = " << G4BestUnit(fHistPt[2]->rms(),  "Energy") 
-               << G4endl;
-    G4cout 
-       << " LAbs : mean = " << G4BestUnit(fHistPt[3]->mean(), "Length") 
-               << " rms = " << G4BestUnit(fHistPt[3]->rms(),  "Length") 
-               << G4endl;
-    G4cout 
-       << " LGap : mean = " << G4BestUnit(fHistPt[4]->mean(), "Length") 
-               << " rms = " << G4BestUnit(fHistPt[4]->rms(),  "Length") 
-               << G4endl;
-  }
+//    G4cout
+//       << " EAbs : mean = " << G4BestUnit(fHistPt[1]->mean(), "Energy")
+//               << " rms = " << G4BestUnit(fHistPt[1]->rms(),  "Energy")
+//               << G4endl;
+//    G4cout
+//       << " EGap : mean = " << G4BestUnit(fHistPt[2]->mean(), "Energy")
+//               << " rms = " << G4BestUnit(fHistPt[2]->rms(),  "Energy")
+//               << G4endl;
+//    G4cout
+//       << " LAbs : mean = " << G4BestUnit(fHistPt[3]->mean(), "Length")
+//               << " rms = " << G4BestUnit(fHistPt[3]->rms(),  "Length")
+//               << G4endl;
+//    G4cout
+//       << " LGap : mean = " << G4BestUnit(fHistPt[4]->mean(), "Length")
+//               << " rms = " << G4BestUnit(fHistPt[4]->rms(),  "Length")
+//               << G4endl;
+//  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
