@@ -68,7 +68,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
   
   //save histograms
   //
-  histoManager->PrintStatistic();
+  //histoManager->PrintStatistic();
   histoManager->save();
 }
 

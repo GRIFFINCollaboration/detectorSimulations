@@ -57,7 +57,9 @@
 EventAction::EventAction(RunAction* run, HistoManager* histo)
 :runAct(run),histoManager(histo)
 	{
+        evtNb = 0;
 		printModulo = 1000; 
+        stepTrackerBool = false;
 	}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -69,7 +71,7 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {  
-  G4int evtNb = evt->GetEventID();
+  evtNb = evt->GetEventID();
   if (evtNb%printModulo == 0) 
 //    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
     printf( " ---> Ev.# %5d\r", evtNb);
@@ -82,6 +84,13 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 
 void EventAction::EndOfEventAction(const G4Event*)
 {
+    for(G4int i = 0; i < MAXSTEPS; i++) {
+        if(stepTracker[1][i] !=0 && stepTrackerBool) {
+            histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
+        }
+    }
+
+
   FillParticleType() ; 
   FillGridEkin() ;
   FillGriffinCryst() ;
@@ -95,6 +104,12 @@ void EventAction::EndOfEventAction(const G4Event*)
   FillSpiceCryst() ;
   FillPacesCryst() ; 
 	Fill8piCryst() ;
+
+
+  //G4int i =0;
+  //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
+
+  //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
 
   ClearVariables() ;
 }
@@ -113,6 +128,15 @@ void EventAction::EndOfEventAction(const G4Event*)
 
 void EventAction::ClearVariables()
 {
+  if(stepTrackerBool) {
+      stepIndex = 0;
+      for (G4int i = 0 ; i < MAXSTEPS; i++) {
+        for (G4int j = 0 ; j < NUMSTEPVARS; j++) {
+            stepTracker[j][i] = 0;
+        }
+      }
+  }
+
   for (G4int i = 0 ; i < NUMPARTICLETYPES; i++) {
       particleTypes[i]                  = 0;
   }
@@ -371,7 +395,24 @@ void EventAction::FillPacesCryst()
 {
 
 }
-  
+
+//void AddStepTracker(G4int eventNumber, G4int stepNumber, G4int cryNumber, G4int detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
+//{
+//    stepTracker[0][stepIndex] = (G4double)(eventNumber);
+//    stepTracker[1][stepIndex] = (G4double)(stepNumber);
+//    stepTracker[2][stepIndex] = (G4double)(cryNumber);
+//    stepTracker[3][stepIndex] = (G4double)(detNumber);
+//    stepTracker[4][stepIndex] = depEnergy;
+//    stepTracker[5][stepIndex] = posx;
+//    stepTracker[6][stepIndex] = posy;
+//    stepTracker[7][stepIndex] = posz;
+//    stepTracker[8][stepIndex] = time;
+//    stepIndex++;
+
+
+
+//}
+
 // *****************************************************************************
 // *  Old code.
 // *	

@@ -270,6 +270,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemPacesCmd->SetGuidance("Add Detection System Paces");
   AddDetectionSystemPacesCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+  UseTIGRESSPositionsCmd = new G4UIcmdWithABool("/DetSys/det/UseTIGRESSPositions",this);
+  UseTIGRESSPositionsCmd->SetGuidance("Use TIGRESS detector positions rather than GRIFFIN");
+  UseTIGRESSPositionsCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -328,6 +332,8 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystemGriffinSetRadialDistanceCmd ; 
   delete AddDetectionSystemGriffinSetExtensionSuppLocationCmd ; 
   delete AddDetectionSystemGriffinSetDeadLayerCmd ; 
+
+  delete UseTIGRESSPositionsCmd;
 
 
 }
@@ -474,6 +480,10 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemPacesCmd ) {
     Detector->AddDetectionSystemPaces(AddDetectionSystemPacesCmd->GetNewIntValue(newValue));
   }
+  if( command == UseTIGRESSPositionsCmd ) {
+    Detector->UseTIGRESSPositions(UseTIGRESSPositionsCmd->GetNewBoolValue(newValue));
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

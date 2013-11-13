@@ -61,6 +61,7 @@ private:
 
   G4int FindTrueGriffinDetector(G4int);
 
+  G4int stepNumber;
   G4int det;
   G4int cry;
   G4int trueGriffinDetectorMap[16];

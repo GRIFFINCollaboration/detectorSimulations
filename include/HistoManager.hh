@@ -48,7 +48,7 @@ const G4bool WRITEEDEPHISTOS    = true;
 const G4bool WRITETRACKLHISTOS  = true;
 
 const G4int MAXHISTO            = 500;
-const G4int MAXNTCOL            = 4;
+const G4int MAXNTCOL            = 10;
 const G4int MAXNUMDET           = 20;
 const G4int MAXNUMDETGRIFFIN    = 16;
 const G4int MAXNUMCRYGRIFFIN    = 4;
@@ -367,7 +367,7 @@ enum HISTONAME
     sodiumIodide_crystal_edep_det16,
     sodiumIodide_crystal_edep_det17,
     sodiumIodide_crystal_edep_det18,
-    sodiumIodide_crystal_edep_det19, 
+    sodiumIodide_crystal_edep_det19,
     sceptar_edep_sum,
     sceptar_square_edep,
     sceptar_square_edep_det0,
@@ -391,8 +391,8 @@ enum HISTONAME
     sceptar_angled_edep_det7,
     sceptar_angled_edep_det8,
     sceptar_angled_edep_det9,
-    Eightpi_crystal_edep, 
-    Eightpi_crystal_edep_sum, 
+    Eightpi_crystal_edep,
+    Eightpi_crystal_edep_sum,
     Eightpi_crystal_edep_det0,
     Eightpi_crystal_edep_det1,
     Eightpi_crystal_edep_det2,
@@ -412,7 +412,7 @@ enum HISTONAME
     Eightpi_crystal_edep_det16,
     Eightpi_crystal_edep_det17,
     Eightpi_crystal_edep_det18,
-    Eightpi_crystal_edep_det19, 
+    Eightpi_crystal_edep_det19,
     spice_crystal_edep,
     spice_crystal_edep_sum,
     spice_crystal_edep_det0,
@@ -435,8 +435,8 @@ enum HISTONAME
     spice_crystal_edep_det17,
     spice_crystal_edep_det18,
     spice_crystal_edep_det19,
-    paces_crystal_edep, 
-    paces_crystal_edep_sum,    
+    paces_crystal_edep,
+    paces_crystal_edep_sum,
     paces_crystal_edep_det0,
     paces_crystal_edep_det1,
     paces_crystal_edep_det2,
@@ -456,7 +456,7 @@ enum HISTONAME
     paces_crystal_edep_det16,
     paces_crystal_edep_det17,
     paces_crystal_edep_det18,
-    paces_crystal_edep_det19    
+    paces_crystal_edep_det19
 
 };
 
@@ -476,7 +476,7 @@ class HistoManager
     void FillHisto(G4int ih, G4double e, G4double weight = 1.0);
     void Normalize(G4int id, G4double fac);    
 
-    void FillNtuple(G4double EnergyAbs, G4double EnergyGap, G4double TrackLAbs, G4double TrackLGap);
+    void FillNtuple(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time);
     
     void PrintStatistic();        
 
