@@ -59,7 +59,6 @@ EventAction::EventAction(RunAction* run, HistoManager* histo)
 	{
         evtNb = 0;
 		printModulo = 1000; 
-        stepTrackerBool = false;
 	}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -85,7 +84,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 void EventAction::EndOfEventAction(const G4Event*)
 {
     for(G4int i = 0; i < MAXSTEPS; i++) {
-        if(stepTracker[1][i] !=0 && stepTrackerBool) {
+        if(stepTracker[1][i] !=0 && histoManager->GetStepTrackerBool()) {
             histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
         }
     }
@@ -128,7 +127,7 @@ void EventAction::EndOfEventAction(const G4Event*)
 
 void EventAction::ClearVariables()
 {
-  if(stepTrackerBool) {
+  if(histoManager->GetStepTrackerBool()) {
       stepIndex = 0;
       for (G4int i = 0 ; i < MAXSTEPS; i++) {
         for (G4int j = 0 ; j < NUMSTEPVARS; j++) {

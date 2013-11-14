@@ -43,6 +43,8 @@ HistoManager::HistoManager()
   fileName[0] = "g4out";
   factoryOn = false;
 
+  stepTrackerBool = false;
+
   makeHistoIndex = 0;
 
   // histograms
@@ -336,18 +338,20 @@ void HistoManager::book()
   ///////////////////////////////////////////////////////////////////
   // Create 1 ntuple
 
-  analysisManager->CreateNtuple("ntuple", "StepTracker");
-  fNtColId[0] = analysisManager->CreateNtupleDColumn("eventNum");
-  fNtColId[1] = analysisManager->CreateNtupleDColumn("stepNum");
-  fNtColId[2] = analysisManager->CreateNtupleDColumn("cryNum");
-  fNtColId[3] = analysisManager->CreateNtupleDColumn("detNum");
-  fNtColId[4] = analysisManager->CreateNtupleDColumn("edep_keV");
-  fNtColId[5] = analysisManager->CreateNtupleDColumn("x_mm");
-  fNtColId[6] = analysisManager->CreateNtupleDColumn("y_mm");
-  fNtColId[7] = analysisManager->CreateNtupleDColumn("z_mm");
-  fNtColId[8] = analysisManager->CreateNtupleDColumn("time_sec");
-  fNtColId[9] = analysisManager->CreateNtupleDColumn("empty");
-  analysisManager->FinishNtuple();
+  if(stepTrackerBool) {
+      analysisManager->CreateNtuple("ntuple", "StepTracker");
+      fNtColId[0] = analysisManager->CreateNtupleDColumn("eventNum");
+      fNtColId[1] = analysisManager->CreateNtupleDColumn("stepNum");
+      fNtColId[2] = analysisManager->CreateNtupleDColumn("cryNum");
+      fNtColId[3] = analysisManager->CreateNtupleDColumn("detNum");
+      fNtColId[4] = analysisManager->CreateNtupleDColumn("edep_keV");
+      fNtColId[5] = analysisManager->CreateNtupleDColumn("x_mm");
+      fNtColId[6] = analysisManager->CreateNtupleDColumn("y_mm");
+      fNtColId[7] = analysisManager->CreateNtupleDColumn("z_mm");
+      fNtColId[8] = analysisManager->CreateNtupleDColumn("time_sec");
+      fNtColId[9] = analysisManager->CreateNtupleDColumn("empty");
+      analysisManager->FinishNtuple();
+  }
 
   factoryOn = true;
   G4cout << "\n----> Histogram Tree is opened in " << fileName[1] << G4endl;
@@ -409,19 +413,21 @@ void HistoManager::Normalize(G4int ih, G4double fac)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::FillNtuple(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
-{                
-  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillNtupleDColumn(fNtColId[0], eventNumber);
-  analysisManager->FillNtupleDColumn(fNtColId[1], stepNumber);
-  analysisManager->FillNtupleDColumn(fNtColId[2], cryNumber);
-  analysisManager->FillNtupleDColumn(fNtColId[3], detNumber);
-  analysisManager->FillNtupleDColumn(fNtColId[4], depEnergy);
-  analysisManager->FillNtupleDColumn(fNtColId[5], posx);
-  analysisManager->FillNtupleDColumn(fNtColId[6], posy);
-  analysisManager->FillNtupleDColumn(fNtColId[7], posz);
-  analysisManager->FillNtupleDColumn(fNtColId[8], time);
-  analysisManager->FillNtupleDColumn(fNtColId[9], 0);
-  analysisManager->AddNtupleRow();
+{
+  if(stepTrackerBool) {
+      G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+      analysisManager->FillNtupleDColumn(fNtColId[0], eventNumber);
+      analysisManager->FillNtupleDColumn(fNtColId[1], stepNumber);
+      analysisManager->FillNtupleDColumn(fNtColId[2], cryNumber);
+      analysisManager->FillNtupleDColumn(fNtColId[3], detNumber);
+      analysisManager->FillNtupleDColumn(fNtColId[4], depEnergy);
+      analysisManager->FillNtupleDColumn(fNtColId[5], posx);
+      analysisManager->FillNtupleDColumn(fNtColId[6], posy);
+      analysisManager->FillNtupleDColumn(fNtColId[7], posz);
+      analysisManager->FillNtupleDColumn(fNtColId[8], time);
+      analysisManager->FillNtupleDColumn(fNtColId[9], 0);
+      analysisManager->AddNtupleRow();
+  }
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
