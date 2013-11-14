@@ -53,7 +53,7 @@ public:
 
   G4int GetEventNumber(){return evtNb;};
 
-  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time){if(stepTrackerBool){stepTracker[0][stepIndex] = eventNumber; stepTracker[1][stepIndex] = stepNumber; stepTracker[2][stepIndex] = cryNumber; stepTracker[3][stepIndex] = detNumber; stepTracker[4][stepIndex] = depEnergy; stepTracker[5][stepIndex] = posx; stepTracker[6][stepIndex] = posy; stepTracker[7][stepIndex] = posz; stepTracker[8][stepIndex] = time; stepIndex++; if(stepIndex == MAXSTEPS){G4cout << "\n ----> error 13423549 \n" << G4endl; exit(1);}}; };
+  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time){if(histoManager->GetStepTrackerBool()){stepTracker[0][stepIndex] = eventNumber; stepTracker[1][stepIndex] = stepNumber; stepTracker[2][stepIndex] = cryNumber; stepTracker[3][stepIndex] = detNumber; stepTracker[4][stepIndex] = depEnergy; stepTracker[5][stepIndex] = posx; stepTracker[6][stepIndex] = posy; stepTracker[7][stepIndex] = posz; stepTracker[8][stepIndex] = time; stepIndex++; if(stepIndex == MAXSTEPS){G4cout << "\n ----> error 13423549 \n" << G4endl; exit(1);}}; };
 
   // particle types
   void AddParticleType(G4int index) {particleTypes[index] += 1;};
@@ -102,7 +102,7 @@ private:
 
 	RunAction*    runAct;
 	HistoManager* histoManager;
-		
+
 	G4int     printModulo;
     G4int     evtNb;
     G4bool    stepTrackerBool;

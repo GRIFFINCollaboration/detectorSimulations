@@ -478,7 +478,9 @@ class HistoManager
 
     void FillNtuple(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time);
     
-    void PrintStatistic();        
+    void PrintStatistic();
+
+    G4bool GetStepTrackerBool() {return stepTrackerBool;};
 
   private:
     G4String G4intToG4String(G4int value);
@@ -491,6 +493,8 @@ class HistoManager
     G4int         fHistId[MAXHISTO];
     G4AnaH1*      fHistPt[MAXHISTO];
     G4int         fNtColId[MAXNTCOL];
+
+    G4bool stepTrackerBool;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
