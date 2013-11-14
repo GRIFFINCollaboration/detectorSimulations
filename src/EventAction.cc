@@ -59,7 +59,7 @@ EventAction::EventAction(RunAction* run, HistoManager* histo)
 	{
         evtNb = 0;
 		printModulo = 1000; 
-        stepTrackerBool = false;
+        stepTrackerBool = true;
 	}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
