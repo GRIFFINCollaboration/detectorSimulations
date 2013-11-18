@@ -284,14 +284,37 @@ void SteppingAction::SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4Stri
 void SteppingAction::SetDetNumberForGenericDetector(G4String volname)
 {
     const char *cstr = volname.c_str();
-    G4int volNameOver9 = cstr[11]-'0';
-    if(volNameOver9 == 47) {
-        // if volNameOver9 = 47 then this character is "_" and the imprint is between 0 - 9, else between 10 - 99
-        det = cstr[10]-'0';
+    G4int volNameOver9;
+    G4int avOver9 = cstr[4]-'0';
+    G4int avOver99 = cstr[5]-'0';
+    if(avOver9 == 47) { // under 10
+        volNameOver9 = cstr[11]-'0';
+        if(volNameOver9 == 47) {
+            det = cstr[10]-'0';
+        }
+        else {
+            det = ((cstr[10]-'0')*10)+volNameOver9 ;
+        }
     }
-    else {
-        det = ((cstr[10]-'0')*10)+volNameOver9 ;
+    else if(avOver99 == 47) { // under 100
+        volNameOver9 = cstr[12]-'0';
+        if(volNameOver9 == 47) {
+            det = cstr[11]-'0';
+        }
+        else {
+            det = ((cstr[11]-'0')*10)+volNameOver9 ;
+        }
     }
+    else { // OVER 100
+        volNameOver9 = cstr[13]-'0';
+        if(volNameOver9 == 47) {
+            det = cstr[12]-'0';
+        }
+        else {
+            det = ((cstr[12]-'0')*10)+volNameOver9 ;
+        }
+    }
+
     //G4cout << "Found electron ekin in " << volname << " det = " << det << G4endl;
 }
 
