@@ -103,17 +103,8 @@ DetectionSystemSceptar::~DetectionSystemSceptar()
     delete Hevimet_shell_log;
 }
 
-G4int DetectionSystemSceptar::Build()//G4SDManager* mySDman)
+G4int DetectionSystemSceptar::Build()
 { 
-//  if( !square_scint_SD ) {
-//    square_scint_SD = new SensitiveDetector("/sd/allSceptar0", "CollectionSquareScint");
-//    mySDman->AddNewDetector( square_scint_SD );
-//  }
-//  if( !angled_scint_SD ) {
-//    angled_scint_SD = new SensitiveDetector("/sd/allSceptar1", "CollectionAngledScint");
-//    mySDman->AddNewDetector( angled_scint_SD );
-//  }
-
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
   this->assembly = myAssembly;
@@ -130,10 +121,6 @@ G4int DetectionSystemSceptar::Build()//G4SDManager* mySDman)
 //  ConstructDelrinShell();
 //  Construct2ndDelrinShell();
 //  ConstructHevimetShell();
-
-  // Sensitive Detector
-//  square_scintillator_log->SetSensitiveDetector( square_scint_SD );
-//  angled_scintillator_log->SetSensitiveDetector( angled_scint_SD );
 
   return 1;
 }
@@ -405,18 +392,6 @@ G4int DetectionSystemSceptar::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int
       rotate = rotate_angled_scint5;
       move = move_angled_scint5;
     }
-
-
-//    if(detector_number < 10)
-//    {
-//      assemblySquareSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*5));
-//      assemblySquare->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*7));
-//    }
-//    if(detector_number >= 10)
-//    {
-//      assemblyAngledSD->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*6));
-//      assemblyAngled->MakeImprint(exp_hall_log, move, rotate, detector_number+(20*8));
-//    }
 
     if( (detector_number < 5) || (detector_number >= 10 && detector_number < 15) )
     {
