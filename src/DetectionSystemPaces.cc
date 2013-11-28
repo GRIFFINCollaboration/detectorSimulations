@@ -347,7 +347,7 @@ G4int DetectionSystemPaces::AddCanister()
   }
   
   //vis attributes
-  G4VisAttributes* canister_vis_att = new G4VisAttributes(G4Colour(0.0,1.0,0.0));
+  G4VisAttributes* canister_vis_att = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   canister_vis_att->SetVisibility(true);
   
   //main annulus
@@ -378,7 +378,7 @@ G4int DetectionSystemPaces::AddAluminumAnnulusTop()
   }
   
   //vis attributes
-  G4VisAttributes* aluminum_annulus_top_vis_att = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
+  G4VisAttributes* aluminum_annulus_top_vis_att = new G4VisAttributes(G4Colour(0.5,0.5,0.0));
   aluminum_annulus_top_vis_att->SetVisibility(true);
   
   //main annulus
@@ -437,7 +437,7 @@ G4int DetectionSystemPaces::AddAluminumAnnulusBot()
   }
   
   //vis attributes
-  G4VisAttributes* aluminum_annulus_bot_vis_att = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
+  G4VisAttributes* aluminum_annulus_bot_vis_att = new G4VisAttributes(G4Colour(0.5,0.5,0.0));
   aluminum_annulus_bot_vis_att->SetVisibility(true);
   
   //main annulus
