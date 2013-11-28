@@ -392,7 +392,21 @@ void EventAction::FillSpiceCryst()
 
 void EventAction::FillPacesCryst() 
 {
-
+		G4double  energySum = 0, trackSum = 0;
+    for (G4int i=0; i < MAXNUMDET; i++) {
+      if(PacesCrystEnergyDet[i] > MINENERGYTHRES) {
+        // fill energies in each detector
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(paces_crystal_edep_det0+i, PacesCrystEnergyDet[i]);
+        // fill standard energy and track spectra
+        if(WRITEEDEPHISTOS)   histoManager->FillHisto(paces_crystal_edep, PacesCrystEnergyDet[i]);
+        // add sum energies
+        energySum    += PacesCrystEnergyDet[i];
+        trackSum     += PacesCrystTrackDet[i];
+      }
+    }
+    if(energySum > MINENERGYTHRES) {
+      if(WRITEEDEPHISTOS)     histoManager->FillHisto(paces_crystal_edep_sum, energySum);
+    }     
 }
 
 //void AddStepTracker(G4int eventNumber, G4int stepNumber, G4int cryNumber, G4int detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)

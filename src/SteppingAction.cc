@@ -221,7 +221,11 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       eventaction->AddSceptarAngledCrystDet(edep,stepl,det-1);
   }
 
-
+  found = volname.find("paces_silicon_block_log");
+  if (edep != 0 && found!=G4String::npos) {
+      SetDetNumberForGenericDetector(volname);
+      eventaction->AddPacesCrystDet(edep,stepl,det-1);
+  }
 
 }
 

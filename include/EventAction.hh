@@ -78,11 +78,9 @@ public:
 
 	// NOTE: I am initializing and strucuring these based on AddSodiumIodideCrystDet and AddLaBrCrystDet
 	// please correct them if they are wrong. 
-	void Add8piCrystDet(G4double de, G4double dl, G4int det) {EightPiCrystEnergyDet[det] += de; EightPiCrystTrackDet[det] += dl;} ;
-
-	void AddSpiceCrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
-	
-	void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
+  void Add8piCrystDet(G4double de, G4double dl, G4int det) {EightPiCrystEnergyDet[det] += de; EightPiCrystTrackDet[det] += dl;} ;  
+  void AddSpiceCrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
+  void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
 
 
 
