@@ -407,7 +407,6 @@ void EventAction::FillPacesCryst()
     if(energySum > MINENERGYTHRES) {
       if(WRITEEDEPHISTOS)     histoManager->FillHisto(paces_crystal_edep_sum, energySum);
     }     
-
 }
 
 //void AddStepTracker(G4int eventNumber, G4int stepNumber, G4int cryNumber, G4int detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
