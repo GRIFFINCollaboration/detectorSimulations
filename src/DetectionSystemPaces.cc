@@ -160,8 +160,7 @@ DetectionSystemPaces::~DetectionSystemPaces()
   delete teflon_annulus_top_log;
   delete teflon_annulus_bot_log;
   delete delrin_hemisphere_log;
-  // sensitive detectors
-  //delete silicon_block_SD;
+
 }
 
 G4int DetectionSystemPaces::Build()
@@ -648,42 +647,48 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   G4UnionSolid* al_he_shell_rim = new G4UnionSolid("al_he_shell_rim", al_he_shell, al_he_rim, R0, T0);
   G4SubtractionSolid* al_he_shell_rim_hole = new G4SubtractionSolid("al_he_shell_rim_hole", al_he_shell_rim, cut_beam_hole, R0, T0);
   //cut out detectors
-  G4int d_i;
+  
   G4double* ptr_pd = this->paces_placement_distance;
   G4double* ptr_pt = this->paces_placement_phi;
   G4double* ptr_pp = this->paces_placement_theta;
   G4double* ptr_ot = this->paces_orientation_phi;
   G4double* ptr_op = this->paces_orientation_theta;
-  /*
-  G4RotationMatrix** rotate_cut[5];
-  G4ThreeVector* move_cut[5];
-  for (int i=0; i<5; i++)
-  {
-    d_i = i;
-    G4double d_dist = ptr_pd[d_i] + detector_half_length_z, d_phi = ptr_pt[d_i], d_theta = ptr_pp[d_i];
-    (*rotate_cut[i]) = new G4RotationMatrix;
-    (*move_cut[i]).setX( d_dist * cos(d_phi) * sin(d_theta) );
-    (*move_cut[i]).setY( d_dist * sin(d_phi) * sin(d_theta) );
-    (*move_cut[i]).setZ( d_dist *      1.0     * cos(d_theta) );
-    G4double ori_phi = d_phi + ptr_ot[d_i] - pi/2; //minus 90 deg
-    G4double ori_theta = d_theta + ptr_op[d_i];
-    G4ThreeVector yprimeaxis = G4ThreeVector(cos(ori_phi), sin(ori_phi), 0);
-    (*rotate_cut[i])->set(yprimeaxis, ori_theta);
-  }
-  G4SubtractionSolid* al_he_0 = new G4SubtractionSolid("al_he_0", al_he_with_rim, cut_detector, *rotate_cut[0], *move_cut[0]);
-  G4SubtractionSolid* al_he_1 = new G4SubtractionSolid("al_he_1", al_he_0, cut_detector, *rotate_cut[1], *move_cut[1]);
-  G4SubtractionSolid* al_he_2 = new G4SubtractionSolid("al_he_2", al_he_1, cut_detector, *rotate_cut[2], *move_cut[2]);
-  G4SubtractionSolid* al_he_3 = new G4SubtractionSolid("al_he_3", al_he_2, cut_detector, *rotate_cut[3], *move_cut[3]);
-  G4SubtractionSolid* aluminum_hemisphere = new G4SubtractionSolid("aluminum_hemisphere", al_he_3, cut_detector, *rotate_cut[4], *move_cut[4]);
-  for (int i=0; i<5; i++) delete rotate_cut[i]; //safety
-  */
+  
+//  G4RotationMatrix* rotate_cut[5];
+//  G4ThreeVector move_cut[5], yprimeaxis;
+//  G4double d_dist, d_phi, d_theta, ori_phi, ori_theta;
+//  
+//  for (int i=0; i<5; i++)
+//  {
+//    d_dist = ptr_pd[i] + detector_half_length_z; 
+//    d_phi = ptr_pt[i]; 
+//    d_theta = ptr_pp[i];
+//    rotate_cut[i] = new G4RotationMatrix;
+//    move_cut[i].setX( d_dist * cos(d_phi) * sin(d_theta) );
+//    move_cut[i].setY( d_dist * sin(d_phi) * sin(d_theta) );
+//    move_cut[i].setZ( d_dist *    1.0     * cos(d_theta) );
+//    ori_phi = d_phi + ptr_ot[i] - pi/2; //minus 90 deg
+//    ori_theta = d_theta + ptr_op[i];
+////    yprimeaxis = G4ThreeVector(cos(ori_phi), sin(ori_phi), 0);
+//	  yprimeaxis.set(cos(ori_phi), sin(ori_phi), 0);
+//    rotate_cut[i]->set(yprimeaxis, ori_theta);
+//  }
+//  G4SubtractionSolid* al_he_0 = new G4SubtractionSolid("al_he_0", al_he_shell_rim_hole, cut_detector, rotate_cut[0], move_cut[0]);
+//  G4SubtractionSolid* al_he_1 = new G4SubtractionSolid("al_he_1", al_he_0, cut_detector, rotate_cut[1], move_cut[1]);
+//  G4SubtractionSolid* al_he_2 = new G4SubtractionSolid("al_he_2", al_he_1, cut_detector, rotate_cut[2], move_cut[2]);
+//  G4SubtractionSolid* al_he_3 = new G4SubtractionSolid("al_he_3", al_he_2, cut_detector, rotate_cut[3], move_cut[3]);
+//  G4SubtractionSolid* aluminum_hemisphere = new G4SubtractionSolid("aluminum_hemisphere", al_he_3, cut_detector, rotate_cut[4], move_cut[4]);
+//  for (int i=0; i<5; i++) delete rotate_cut[i]; //safety
+
   G4ThreeVector move_cut, yprimeaxis;
   G4RotationMatrix* rotate_cut = new G4RotationMatrix;
-  G4double d_dist, d_phi, d_theta;
-  G4double ori_phi, ori_theta;
+  G4double d_dist, d_phi, d_theta, ori_phi, ori_theta;
+	G4int d_i;
   //one
   d_i = 0;
-  d_dist = ptr_pd[d_i] + detector_half_length_z; d_phi = ptr_pt[d_i]; d_theta = ptr_pp[d_i];
+  d_dist = ptr_pd[d_i] + detector_half_length_z; 
+  d_phi = ptr_pt[d_i]; 
+  d_theta = ptr_pp[d_i];
   move_cut.setX( d_dist * cos(d_phi) * sin(d_theta) );
   move_cut.setY( d_dist * sin(d_phi) * sin(d_theta) );
   move_cut.setZ( d_dist *      1.0     * cos(d_theta) );
@@ -694,7 +699,9 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   G4SubtractionSolid* al_he_0 = new G4SubtractionSolid("al_he_0", al_he_shell_rim_hole, cut_detector, rotate_cut, move_cut);
   //two
   d_i = 1;
-  d_dist = ptr_pd[d_i] + detector_half_length_z; d_phi = ptr_pt[d_i]; d_theta = ptr_pp[d_i];
+  d_dist = ptr_pd[d_i] + detector_half_length_z; 
+  d_phi = ptr_pt[d_i]; 
+  d_theta = ptr_pp[d_i];
   move_cut.setX( d_dist * cos(d_phi) * sin(d_theta) );
   move_cut.setY( d_dist * sin(d_phi) * sin(d_theta) );
   move_cut.setZ( d_dist *      1.0     * cos(d_theta) );
@@ -705,7 +712,9 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   G4SubtractionSolid* al_he_1 = new G4SubtractionSolid("al_he_1", al_he_0, cut_detector, rotate_cut, move_cut);
   //three
   d_i = 2;
-  d_dist = ptr_pd[d_i] + detector_half_length_z; d_phi = ptr_pt[d_i]; d_theta = ptr_pp[d_i];
+  d_dist = ptr_pd[d_i] + detector_half_length_z; 
+  d_phi = ptr_pt[d_i]; 
+  d_theta = ptr_pp[d_i];
   move_cut.setX( d_dist * cos(d_phi) * sin(d_theta) );
   move_cut.setY( d_dist * sin(d_phi) * sin(d_theta) );
   move_cut.setZ( d_dist *      1.0     * cos(d_theta) );
@@ -716,7 +725,9 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   G4SubtractionSolid* al_he_2 = new G4SubtractionSolid("al_he_2", al_he_1, cut_detector, rotate_cut, move_cut);
   //four
   d_i = 3;
-  d_dist = ptr_pd[d_i] + detector_half_length_z; d_phi = ptr_pt[d_i]; d_theta = ptr_pp[d_i];
+  d_dist = ptr_pd[d_i] + detector_half_length_z; 
+  d_phi = ptr_pt[d_i]; 
+  d_theta = ptr_pp[d_i];
   move_cut.setX( d_dist * cos(d_phi) * sin(d_theta) );
   move_cut.setY( d_dist * sin(d_phi) * sin(d_theta) );
   move_cut.setZ( d_dist *      1.0     * cos(d_theta) );
@@ -727,7 +738,9 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   G4SubtractionSolid* al_he_3 = new G4SubtractionSolid("al_he_3", al_he_2, cut_detector, rotate_cut, move_cut);
   //five
   d_i = 4;
-  d_dist = ptr_pd[d_i] + detector_half_length_z; d_phi = ptr_pt[d_i]; d_theta = ptr_pp[d_i];
+  d_dist = ptr_pd[d_i] + detector_half_length_z; 
+  d_phi = ptr_pt[d_i]; 
+  d_theta = ptr_pp[d_i];
   move_cut.setX( d_dist * cos(d_phi) * sin(d_theta) );
   move_cut.setY( d_dist * sin(d_phi) * sin(d_theta) );
   move_cut.setZ( d_dist *      1.0     * cos(d_theta) );
@@ -736,7 +749,7 @@ G4int DetectionSystemPaces::AddAluminumHemisphere()
   yprimeaxis.set(cos(ori_phi), sin(ori_phi), 0);
   rotate_cut->set(yprimeaxis, ori_theta);
   G4SubtractionSolid* aluminum_hemisphere = new G4SubtractionSolid("aluminum_hemisphere", al_he_3, cut_detector, rotate_cut, move_cut);
-  //end
+//  //end
   
   //logical volume
   if( aluminum_hemisphere_log == NULL ) {
