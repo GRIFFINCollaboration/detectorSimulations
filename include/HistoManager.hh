@@ -435,7 +435,7 @@ enum HISTONAME
     spice_crystal_edep_det17,
     spice_crystal_edep_det18,
     spice_crystal_edep_det19,
-    paces_crystal_edep,
+    paces_crystal_edep,		// This is probably the wrong number of detectors for paces.
     paces_crystal_edep_sum,
     paces_crystal_edep_det0,
     paces_crystal_edep_det1,

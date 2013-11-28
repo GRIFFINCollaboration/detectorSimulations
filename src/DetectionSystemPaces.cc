@@ -164,13 +164,8 @@ DetectionSystemPaces::~DetectionSystemPaces()
   //delete silicon_block_SD;
 }
 
-G4int DetectionSystemPaces::Build()//G4SDManager* mySDman)
+G4int DetectionSystemPaces::Build()
 {
-  // Add sensitive detectors
-//  if( !silicon_block_SD ) {
-//    silicon_block_SD = new SensitiveDetector("/sd/allPaces", "CollectionPacesSilicon");
-//    mySDman->AddNewDetector( silicon_block_SD );
-//  }
   
   // Build assembly volumes
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -199,9 +194,7 @@ G4int DetectionSystemPaces::Build()//G4SDManager* mySDman)
   CombineAssemblySilicon();
   CombineAssemblyDetector();
   CombineAssembly();
-  
-  //silicon_block_log->SetSensitiveDetector( silicon_block_SD );
-  
+    
   return 1;
 }//end ::Build
 
@@ -305,7 +298,7 @@ G4int DetectionSystemPaces::AddSiliconBlock()
   
   //logical volume
   if( silicon_block_log == NULL ) {
-    silicon_block_log = new G4LogicalVolume(silicon_block, material, "silicon_block_log", 0, 0, 0);
+    silicon_block_log = new G4LogicalVolume(silicon_block, material, "paces_silicon_block_log", 0, 0, 0); // Renamed from "silicon_block_log" to "paces_silicon_block_log"
     silicon_block_log->SetVisAttributes(silicon_block_vis_att);
   }
   
