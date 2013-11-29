@@ -287,7 +287,6 @@ class DetectionSystemGriffin
     // For detector specific dead layers
     void ConstructComplexDetectorBlockWithDetectorSpecificDeadLayer(G4int det, G4int cry);
     void ConstructNewSuppressorCasingDetectorSpecificDeadLayer(G4int det, G4int cry);
-    void ConstructNewSuppressorCasingJustShells();
     void ConstructDetector();
     void ConstructComplexDetectorBlock();
     void ConstructColdFinger();
