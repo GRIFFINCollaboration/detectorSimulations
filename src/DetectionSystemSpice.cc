@@ -20,8 +20,6 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-//#include "G4SDManager.hh"
-
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
@@ -129,18 +127,12 @@ DetectionSystemSpice::~DetectionSystemSpice()
   delete casing_log;
   delete crystal_block_log;
 
-//  delete crystal_block_SD;
-
 }// end ::~DetectionSystemSpice
 
 
 
 G4int DetectionSystemSpice::Build()//G4SDManager* mySDman)
 { 
-//  if( !crystal_block_SD ) {
-//    crystal_block_SD = new SensitiveDetector("/sd/allSpice", "CollectionSpice");
-//    mySDman->AddNewDetector( crystal_block_SD );
-//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -155,9 +147,6 @@ G4int DetectionSystemSpice::Build()//G4SDManager* mySDman)
 
 //   G4ThreeVector finalPlace;
 //   finalPlace.setX(0); finalPlace.setY(0); finalPlace.setZ(this->detector2target);
-  
-  // Sensitive Detector
-//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );  
 
   return 1;
 }
@@ -165,13 +154,13 @@ G4int DetectionSystemSpice::Build()//G4SDManager* mySDman)
 G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number)
 {
   // Create Ring of Detectors
-  for(G4int detector_number=0; detector_number < number_of_detectors; detector_number++) {
+  for(G4int detector_number = 0; detector_number < number_of_detectors; detector_number++) {
     G4ThreeVector move =  getDirection(detector_number); //direction vector from origin
 
     //Crystal Rotation
     G4RotationMatrix* rotate = new G4RotationMatrix; //rotation matrix corresponding to direction vector
     rotate->rotateX(-theta);
-    if(detector_number == 1 || detector_number ==3) {
+    if(detector_number == 1 || detector_number == 3) {
       rotate->rotateZ(-45.*deg);
       rotate->rotateY(phi);
       rotate->rotateX(90.*deg);
@@ -195,7 +184,7 @@ G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int d
 ///////////////////////////////////////////////////////////////////////
 //methods used to build shapes
 ///////////////////////////////////////////////////////////////////////
-G4int DetectionSystemSpice::BuildSiliconWafer()
+void DetectionSystemSpice::BuildSiliconWafer()
 {
   //vis attributes
   G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
@@ -214,7 +203,7 @@ G4int DetectionSystemSpice::BuildSiliconWafer()
   G4Material* material = G4Material::GetMaterial(this->wafer_material);
   if( !material ) {
     G4cout << " ----> Material " << this->wafer_material << " not found, cannot build the detector shell! " << G4endl;
-    return 0;
+    exit(1) ;
   }
 
   // Define rotation and movement objects
@@ -238,7 +227,7 @@ G4ThreeVector DetectionSystemSpice::getDirection(G4int detector_number)
 {
   theta = getTheta(detector_number);
   phi = getPhi(detector_number);
-  G4double transx, transy, transz;
+  G4double transx, transz;
   G4double distance = (this->crystal_dist_from_origin + (this->crystal_length_z/2));
 
 //  if (detector_number%3 == 0 )  //Creates Side wafer

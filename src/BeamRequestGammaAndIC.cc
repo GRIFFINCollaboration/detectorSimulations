@@ -1060,14 +1060,17 @@ G4ThreeVector BeamRequestGammaAndIC::GetParticleDirection(G4int pNum, G4double t
 {
   G4ThreeVector particleDirection;
   G4double x,y,z;
-  G4double rand1, rand2, phi, theta, A2, A4, Alpha2, Alpha4, B, a, b, func, funcSum, norm, r, val, mytheta, myphi;
+//  G4double rand1, rand2, phi, theta, A2, A4, Alpha2, Alpha4, B, a, b, func, funcSum, norm, r, val, mytheta, myphi;
+  G4double rand1, rand2, phi, theta, funcSum, r ;
   G4double x_prime,y_prime,z_prime;
   G4double rotate;
   G4bool breakOut = false;
     
-  G4double P2;
-  G4double P4;    
-  G4int mdex,th,ph;
+  // G4double P2;
+  // G4double P4;    
+  // G4int mdex,th,ph;
+  G4int mdex ;  
+
   funcSum = 0;
 
   if(this->eff_calib_flag) {
@@ -1278,7 +1281,7 @@ void BeamRequestGammaAndIC::PrintAllGeneratedParticles()
   G4cout << "==============================================New Decay======================================================" << G4endl;
   //G4cout << "Number of Particles \t" << particle.size() << "\t" << G4endl;
 
-  for( int i = 0 ; i < particle.size() ; i++ ) {
+  for( G4int i = 0 ; i < particle.size() ; i++ ) {
     G4cout << "Name   = " << particle[i].name << "\t\t";
     G4cout << "Energy = " << setprecision(2) << fixed << particle[i].energy << "\t\t";
     G4cout << "Leveli = " <<particle[i].levelInitial << "\t\t";    
@@ -1518,7 +1521,9 @@ G4String BeamRequestGammaAndIC::GetDate()
   date.append(1,'_');  
   date.append(BUF4,8);   
   date.append(1,'_');   
-  date.append(BUF5,4);        
+  date.append(BUF5,4);   
+
+  return date ;      
 }
 
 ////////////////////////////////////////////////////////////////////////
