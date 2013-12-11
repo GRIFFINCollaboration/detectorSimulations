@@ -334,42 +334,51 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
 
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveInnerExtension[8];
-  
-   // if( (this->applied_back_shift == 0.0) && include_extension_suppressors)
- if( !(this->suppressor_position_selector) && include_extension_suppressors )
+
+  // this->back_inner_radius changed to this->suppressor_back_radius
+  // this->forward_inner_radius changed to this->suppressor_forward_radius
+  x0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
+        / cos(this->bent_end_angle)
+        + (shell_suppressor_extension_length/2.0 - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0) * sin(this->bent_end_angle) - (this->suppressor_back_radius
+        + this->bent_end_length + (this->BGO_can_seperation + this->side_BGO_thickness
+        + this->suppressor_shell_thickness*2.0)
+        / tan(this->bent_end_angle) - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle))
+        * tan(this->bent_end_angle));
+
+
+  // This is the exact same as the y0 when the suppressors are forward. 
+  y0 =  (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
+        + (this->suppressor_forward_radius
+        + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;
+
+  // only difference between this z0 and the detectors forward z0 is that this one does 
+  // not have extension_back_shift added. 
+  z0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
+        - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0)
+        * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
+        + this->side_BGO_thickness
+        + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
+        - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle) +this->suppShift + this->suppressor_back_radius
+        - this->suppressor_forward_radius
+        - this->suppressor_shell_thickness/2.0 + dist_from_origin;
+
+
+
+  if( !(this->suppressor_position_selector) && include_extension_suppressors )
   {
-    // If the detectors are forward, put the extensions in the back position
-    // the placement of the extensions matches the placement of the side_suppressor pieces	
 
-    x0 =  -((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)  
-          / cos(this->bent_end_angle) 
-          + (shell_suppressor_extension_length/2.0 -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)*sin(this->bent_end_angle) -(this->suppressor_back_radius
-          + this->bent_end_length +(this->BGO_can_seperation +this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle))
-          * tan(this->bent_end_angle)) + extension_radial_shift;
+    x0 += extension_radial_shift ; 
 
-    y0 = (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
-    + (this->suppressor_forward_radius
-    + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;     
+    z0 += extension_back_shift ; 
 
-    z0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
-          - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)    
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) + this->bent_end_length + ( this->BGO_can_seperation 
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0) / tan(this->bent_end_angle) 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness * 2.0 )
-          * sin(this->bent_end_angle) + this->suppShift + this->suppressor_back_radius
-          - this->suppressor_forward_radius + extension_back_shift
-          - this->suppressor_shell_thickness/2.0 + dist_from_origin;
-
-    for(i=0; i<4; i++)
+    for( i = 0 ; i < 4 ; i++ )
     {
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
@@ -405,47 +414,11 @@ G4int DetectionSystemGriffin::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Thr
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-   // else if( ( this->applied_back_shift == (this->back_inner_radius - this->forward_inner_radius) ) && include_extension_suppressors)
- else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
+   
+ else if( this->suppressor_position_selector && include_extension_suppressors)
   {
 	
-    // The only difference between this x0 and the x0 when the detectors are forward is that this
-    // x0 does not include extension_radial_shift. 
-    // this->back_inner_radius changed to this->suppressor_back_radius
-    // this->forward_inner_radius changed to this->suppressor_forward_radius
-    x0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
-          / cos(this->bent_end_angle)
-          + (shell_suppressor_extension_length/2.0 - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0) * sin(this->bent_end_angle) - (this->suppressor_back_radius
-          + this->bent_end_length + (this->BGO_can_seperation + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle))
-          * tan(this->bent_end_angle));
-
-
-    // This is the exact same as the y0 when the suppressors are forward. 
-    y0 =  (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
-          + (this->suppressor_forward_radius
-          + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;
-
-    // only difference between this z0 and the detectors forward z0 is that this one does 
-    // not have extension_back_shift added. 
-    z0 =  -	this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
-          - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle) +this->suppShift + this->suppressor_back_radius
-          - this->suppressor_forward_radius
-          - this->suppressor_shell_thickness/2.0 + dist_from_origin;
-
-    for(i=0; i<4; i++)
+    for( i = 0 ; i < 4 ; i++ )
     {
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
@@ -658,40 +631,44 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveInnerExtension[8];
   
+  x0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
+        / cos(this->bent_end_angle)
+        + (shell_suppressor_extension_length/2.0 - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0) * sin(this->bent_end_angle) - (this->suppressor_back_radius
+        + this->bent_end_length + (this->BGO_can_seperation + this->side_BGO_thickness
+        + this->suppressor_shell_thickness*2.0)
+        / tan(this->bent_end_angle) - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle))
+        * tan(this->bent_end_angle));
   
+  y0 =  (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
+        + (this->suppressor_forward_radius
+        + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;
+
+  z0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
+        - (this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0)
+        * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
+        + this->side_BGO_thickness
+        + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
+        - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle) +this->suppShift + this->suppressor_back_radius
+        - this->suppressor_forward_radius
+        - this->suppressor_shell_thickness/2.0 + dist_from_origin;
+
+
   if( !(this->suppressor_position_selector) && include_extension_suppressors )
   {
     // If the detectors are forward, put the extensions in the back position
     // the placement of the extensions matches the placement of the side_suppressor pieces	
 
-    x0 =  -((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
-          / cos(this->bent_end_angle)
-          + (shell_suppressor_extension_length/2.0 -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)*sin(this->bent_end_angle) -(this->suppressor_back_radius
-          + this->bent_end_length +(this->BGO_can_seperation +this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle))
-          * tan(this->bent_end_angle)) + extension_radial_shift;
+      x0 += extension_radial_shift ; 
 
-    y0 =  (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0
-          + (this->suppressor_forward_radius
-          + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;
+      z0 += extension_back_shift ; 
 
-
-    z0 =  -this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0
-          - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle)
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle) +this->suppShift +this->suppressor_back_radius
-          - this->suppressor_forward_radius + extension_back_shift
-          - this->suppressor_shell_thickness/2.0 + dist_from_origin;
 
     for(i=0; i<4; i++)
     {
@@ -732,41 +709,6 @@ G4int DetectionSystemGriffin::PlaceEverythingButCrystals(G4LogicalVolume* exp_ha
   else if( ( this->suppressor_position_selector == 1 ) && include_extension_suppressors)
   {
 	
-    // The only difference between this x0 and the x0 when the detectors are forward is that this
-    // x0 does not include extension_radial_shift. 
-    x0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
-          / cos(this->bent_end_angle)
-          + (shell_suppressor_extension_length/2.0 - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0) * sin(this->bent_end_angle) - (this->suppressor_back_radius
-          + this->bent_end_length + (this->BGO_can_seperation + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle))
-          * tan(this->bent_end_angle));
-
-   
-    // This is the exact same as the y0 when the suppressors are forward. 
-    y0 =  (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 
-          + (this->suppressor_forward_radius
-          + this->hevimet_tip_thickness)*sin(this->bent_end_angle) - this->BGO_can_seperation*2.0 - this->detectorPlacementCxn)/2.0;
-
-
-    // only difference between this z0 and the detectors forward z0 is that this one does 
-    // not have extension_back_shift added. 
-    z0 =  -	this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
-          - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle) +this->suppShift + this->suppressor_back_radius
-          - this->suppressor_forward_radius
-          - this->suppressor_shell_thickness/2.0 + dist_from_origin;
-
     for(i=0; i<4; i++)
     {
 
@@ -2203,44 +2145,47 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
   G4RotationMatrix* rotateExtension[8];
   G4ThreeVector moveExtension[8];
 
+  x0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
+        - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0)
+        * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
+        + this->side_BGO_thickness
+        + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
+        - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle) +this->suppShift +this->suppressor_back_radius
+        - this->suppressor_forward_radius ; 
+
+  y0 =  - ( shell_suppressor_extension_length * tan( shell_suppressor_extension_angle ) / 2.0 
+        + ( this->suppressor_forward_radius + this->hevimet_tip_thickness ) 
+        * sin(this->bent_end_angle))/2.0;
+
+  z0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
+        / cos(this->bent_end_angle) 
+        + (shell_suppressor_extension_length/2.0 -(this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * tan(this->bent_end_angle)/2.0)*sin(this->bent_end_angle) -(this->suppressor_back_radius
+        + this->bent_end_length +(this->BGO_can_seperation 
+        + this->side_BGO_thickness + this->suppressor_shell_thickness*2.0)
+        / tan(this->bent_end_angle) -(this->suppressor_extension_thickness
+        + this->suppressor_shell_thickness*2.0)
+        * sin(this->bent_end_angle)) * tan(this->bent_end_angle)) ;
+
   if( this->suppressor_position_selector == 0 )
   {
 
     // these two parameters are for shifting the extensions back and out when in their BACK position
-    G4double extension_back_shift = this->air_box_front_length
-	- (this->hevimet_tip_thickness +shell_suppressor_extension_length
-	+ (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-	* tan(this->bent_end_angle))
-	* cos(this->bent_end_angle);
-    G4double extension_radial_shift = extension_back_shift*tan(this->bent_end_angle);
+    G4double extension_back_shift =   this->air_box_front_length
+                                      - (this->hevimet_tip_thickness +shell_suppressor_extension_length
+                                      + (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
+                                      * tan(this->bent_end_angle)) * cos(this->bent_end_angle) ;
 
-    // the placement of the extensions matches the placement of the side_suppressor pieces
+    G4double extension_radial_shift = extension_back_shift * tan(this->bent_end_angle) ;
 
-    x0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle) +this->suppShift +this->suppressor_back_radius
-          - this->suppressor_forward_radius + extension_back_shift;
+    // The suppressors are put into the back position 
 
-    y0 =  - ( shell_suppressor_extension_length * tan( shell_suppressor_extension_angle ) / 2.0 
-          + ( this->suppressor_forward_radius + this->hevimet_tip_thickness ) 
-          * sin(this->bent_end_angle))/2.0;
-
-
-    z0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
-          / cos(this->bent_end_angle) 
-          + (shell_suppressor_extension_length/2.0 -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)*sin(this->bent_end_angle) -(this->suppressor_back_radius
-          + this->bent_end_length +(this->BGO_can_seperation 
-          + this->side_BGO_thickness + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle)) * tan(this->bent_end_angle)) + extension_radial_shift;
+			x0 += extension_back_shift ; 
+			
+			z0 += extension_radial_shift ; 
 
     for(i=0; i<4; i++)
     {
@@ -2275,36 +2220,10 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
   }//end if(detectors forward) statement
 
   // Otherwise, put them forward
-  // else if(this->applied_back_shift == this->back_inner_radius - this->forward_inner_radius)
   else if( this->suppressor_position_selector == 1 )
   {
-    // the placement of the extensions matches the placement of the side_suppressor pieces
-    x0 =  - this->can_face_thickness/2.0 -(shell_suppressor_extension_length/2.0 
-          - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)
-          * cos(this->bent_end_angle) +this->bent_end_length +(this->BGO_can_seperation 
-          + this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)/tan(this->bent_end_angle) 
-          - (this->suppressor_extension_thickness + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle) +this->suppShift + this->suppressor_back_radius 
-          - this->suppressor_forward_radius ;
 
-    y0 =  - (shell_suppressor_extension_length*tan(shell_suppressor_extension_angle)/2.0 +( this->suppressor_forward_radius
-          + this->hevimet_tip_thickness)*sin(this->bent_end_angle))/2.0;
-
-    z0 =  - ((this->suppressor_extension_thickness/2.0 + this->suppressor_shell_thickness)
-          / cos(this->bent_end_angle)
-          + (shell_suppressor_extension_length/2.0 -(this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * tan(this->bent_end_angle)/2.0)*sin(this->bent_end_angle) -(this->suppressor_back_radius 
-          + this->bent_end_length +(this->BGO_can_seperation +this->side_BGO_thickness
-          + this->suppressor_shell_thickness*2.0)
-          / tan(this->bent_end_angle) - (this->suppressor_extension_thickness
-          + this->suppressor_shell_thickness*2.0)
-          * sin(this->bent_end_angle)) * tan(this->bent_end_angle));
-
-    for(i=0; i<4; i++){
+    for( i = 0 ; i < 4 ; i++){
       rotateExtension[2*i] = new G4RotationMatrix;
       rotateExtension[2*i]->rotateZ(M_PI/2.0);
       rotateExtension[2*i]->rotateY(this->bent_end_angle);
@@ -2324,8 +2243,8 @@ void DetectionSystemGriffin::ConstructNewSuppressorCasingWithShells()
       rotateExtension[2*i+1]->rotateX(M_PI - i*M_PI/2);
 
       x =  x0;
-      y =  -z0*cos(i*M_PI/2) -y0*sin(i*M_PI/2);
-      z =  -y0*cos(i*M_PI/2) +z0*sin(i*M_PI/2);
+      y =  -z0 * cos(i*M_PI/2) - y0 * sin(i*M_PI/2);
+      z =  -y0 * cos(i*M_PI/2) + z0 * sin(i*M_PI/2);
 
       moveExtension[i*2+1] = G4ThreeVector(x, y, z);
 
