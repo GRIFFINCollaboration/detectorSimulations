@@ -51,11 +51,6 @@ DetectionSystemBox::~DetectionSystemBox()
 //G4int DetectionSystemBox::Build(G4SDManager* mySDman)
 G4int DetectionSystemBox::Build()
 { 
-//  if( !crystal_block_SD ) {
-//    crystal_block_SD = new SensitiveDetector("/sd/allSteelBox", "CollectionSteelBox");
-//    mySDman->AddNewDetector( crystal_block_SD );
-//  }
-
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
   this->assembly = myAssembly;
@@ -64,9 +59,6 @@ G4int DetectionSystemBox::Build()
   BuildXNormalVolumes();
   BuildYNormalVolumes();
   BuildZNormalVolumes();
-
-//  // Sensitive Detector
-//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );
 
   return 1;
 }
