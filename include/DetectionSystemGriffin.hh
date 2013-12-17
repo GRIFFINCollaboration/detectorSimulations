@@ -287,7 +287,6 @@ class DetectionSystemGriffin
     // For detector specific dead layers
     void ConstructComplexDetectorBlockWithDetectorSpecificDeadLayer(G4int det, G4int cry);
     void ConstructNewSuppressorCasingDetectorSpecificDeadLayer(G4int det, G4int cry);
-    void ConstructNewSuppressorCasingJustShells();
     void ConstructDetector();
     void ConstructComplexDetectorBlock();
     void ConstructColdFinger();
@@ -408,15 +407,13 @@ class DetectionSystemGriffin
 
     //internal methods for ConstructNewSuppressorCasing()
     G4SubtractionSolid* backSuppressorQuarter();
-    G4SubtractionSolid* frontSlantSuppressor(G4bool leftSide, G4bool choppingSuppressor) ; 
-    G4SubtractionSolid* sideSuppressorExtension(G4bool leftSide, G4bool choppingSuppressor) ;
+    G4SubtractionSolid* frontSlantSuppressor(G4String sidePosition, G4bool choppingSuppressor) ; 
+    G4SubtractionSolid* sideSuppressorExtension(G4String sidePosition, G4bool choppingSuppressor) ;
 
     //internal methods for New SuppressorCasingWithShells
     G4SubtractionSolid* shellForBackSuppressorQuarter();
-    G4SubtractionSolid* shellForFrontRightSlantSuppressor();
-    G4SubtractionSolid* shellForFrontLeftSlantSuppressor();
-    G4SubtractionSolid* shellForRightSuppressorExtension();
-    G4SubtractionSolid* shellForLeftSuppressorExtension();
+    G4SubtractionSolid* shellForFrontSlantSuppressor(G4String sidePosition) ; 
+    G4SubtractionSolid* shellForSuppressorExtension(G4String sidePosition);
 
     //internal methods for ConstructNewHeavyMet()
     G4SubtractionSolid* newHeavyMet();

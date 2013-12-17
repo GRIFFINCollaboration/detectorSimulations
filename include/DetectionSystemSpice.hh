@@ -47,7 +47,7 @@ class DetectionSystemSpice
     G4double GetDetector2Origin(DetectionSystemSpice*);
     G4double GetCrystalWidth();
 
-    G4int Build() ; //G4SDManager* mySDman); 
+    G4int Build() ; 
     G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number); 
 
   private:
@@ -61,11 +61,10 @@ class DetectionSystemSpice
     G4AssemblyVolume* assembly;
     G4AssemblyVolume* assemblySi;
 
-//    SensitiveDetector* crystal_block_SD;
-
     // LogicalVolumes used in SPICEDetection()
-    G4LogicalVolume* casing_log;
     G4LogicalVolume* crystal_block_log;
+    G4LogicalVolume* casing_log;
+    
 
     G4AssemblyVolume* spiceDetector;
 
@@ -109,7 +108,7 @@ class DetectionSystemSpice
 
     G4ThreeVector finalPlace;
   
-    G4int BuildSiliconWafer();
+    void BuildSiliconWafer();
 
 };
 

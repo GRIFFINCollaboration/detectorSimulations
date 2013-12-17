@@ -1,6 +1,5 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-//#include "SensitiveDetector.hh"
 
 //#include "FieldSetup.hh"
 #include "G4UniformMagField.hh"
@@ -17,8 +16,6 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
-
-//#include "G4SDManager.hh"
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
@@ -62,16 +59,11 @@ DetectionSystemGrid::~DetectionSystemGrid()
     // LogicalVolumes 
     delete gridcell_log;
 
-//    delete crystal_block_SD;
 }
 
-//G4int DetectionSystemGrid::Build(G4SDManager* mySDman)
+
 G4int DetectionSystemGrid::Build()
 { 
-//  if( !crystal_block_SD ) {
-//    crystal_block_SD = new SensitiveDetector("/sd/allGrid", "CollectionGrid");
-//    mySDman->AddNewDetector( crystal_block_SD );
-//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -79,9 +71,6 @@ G4int DetectionSystemGrid::Build()
 
   G4cout << "BuildCellVolume" << G4endl;
   BuildCellVolume();
-
-//  // Sensitive Detector
-//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );
 
   return 1;
 }

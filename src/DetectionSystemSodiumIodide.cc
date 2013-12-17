@@ -125,16 +125,11 @@ DetectionSystemSodiumIodide::~DetectionSystemSodiumIodide()
     delete packing_cylinder_log;
     delete packing_front_lid_log;
 
-//    delete crystal_block_SD;
 }
 
 
 G4int DetectionSystemSodiumIodide::Build()//G4SDManager* mySDman)
 {
-//  if( !crystal_block_SD ) {
-//    crystal_block_SD = new SensitiveDetector("/sd/allSodiumIodide", "CollectionSodiumIodide");
-//    mySDman->AddNewDetector( crystal_block_SD );
-//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -150,9 +145,6 @@ G4int DetectionSystemSodiumIodide::Build()//G4SDManager* mySDman)
   BuildDiscVolume();
   G4cout << "BuildSealVolume" << G4endl;
   BuildSealVolume();
-
-  // Sensitive Detector
-//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );
 
   return 1;
 }

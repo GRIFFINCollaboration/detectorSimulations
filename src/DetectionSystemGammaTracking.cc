@@ -36,11 +36,6 @@ DetectionSystemGammaTracking::~DetectionSystemGammaTracking()
 ///////////////////////////////////////////////////////////////////////
 G4int DetectionSystemGammaTracking::Build()//G4SDManager* mySDman)
 { 
-//  if( !shell_SD ) {
-//    shell_SD = new SensitiveDetector("/sd/allGammaTracking", "CollectionGammaTracking");
-//    mySDman->AddNewDetector( shell_SD );
-//  }
-
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
   this->assembly = myAssembly;
@@ -84,9 +79,6 @@ G4int DetectionSystemGammaTracking::Build()//G4SDManager* mySDman)
   G4VisAttributes *pVA = new G4VisAttributes( G4Colour(0.0, 1.0, 1.0) );
   logicShell->SetVisAttributes( pVA );
   
-  // Sensitive Detector
-//  logicShell->SetSensitiveDetector( shell_SD );  
-
   // Describe Orientation
   G4ThreeVector direction = G4ThreeVector(0,0,1);
   G4ThreeVector move = 0.0 * direction;

@@ -123,16 +123,11 @@ DetectionSystemBrillance380V1::~DetectionSystemBrillance380V1()
     delete can_vacuum_front_lid_log;
     delete can_vacuum_back_lid_log;
 
-//    delete crystal_block_SD;
 }
 
 //G4int DetectionSystemBrillance380V1::Build(G4SDManager* mySDman)
 G4int DetectionSystemBrillance380V1::Build()
 { 
-//  if( !crystal_block_SD ) {
-//    crystal_block_SD = new SensitiveDetector("/sd/allBrillance380V1", "CollectionBrillance380V1");
-//    mySDman->AddNewDetector( crystal_block_SD );
-//  }
 
   // Build assembly volume
   G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
@@ -144,9 +139,6 @@ G4int DetectionSystemBrillance380V1::Build()
   BuildAluminumCanVolume(); 
   G4cout << "BuildCanVacuumVolume" << G4endl;
   BuildCanVacuumVolume();   
-
-  // Sensitive Detector
-//  crystal_block_log->SetSensitiveDetector( crystal_block_SD );  
 
   return 1;
 }

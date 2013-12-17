@@ -1,5 +1,4 @@
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
