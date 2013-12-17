@@ -775,7 +775,7 @@ G4int DetectionSystemGriffin::PlaceDeadLayerSpecificCrystal(G4LogicalVolume* exp
 
   x0 = (this->germanium_width + this->germanium_separation)/2.0;
   y0 = (this->germanium_width + this->germanium_separation)/2.0;
-  z0 = this->germanium_length/2.0 +this->can_face_thickness/2.0 +this->germanium_dist_from_can_face +this->shift + this->applied_back_shift+ dist_from_origin_det;
+  z0 = this->germanium_length/2.0 + this->can_face_thickness/2.0 + this->germanium_dist_from_can_face + this->shift + this->applied_back_shift + dist_from_origin_det;
 
   /////////////////////////////////////////////////////////////////////
   // now we place all 4 of the 1/4 detectors using the LogicalVolume
@@ -818,34 +818,34 @@ void DetectionSystemGriffin::BuildOneDetector()
 {
   // Build assembly volumes
   // Holds all pieces that are not a detector (ie. the can, nitrogen tank, cold finger, electrodes, etc.)
-  this->assembly = new G4AssemblyVolume(); 
+  this->assembly                           = new G4AssemblyVolume(); 
   
   // Holds germanium cores
-  this->germaniumAssembly = new G4AssemblyVolume();   
+  this->germaniumAssembly                  = new G4AssemblyVolume();   
 	
   // Holds left suppressors
-	this->leftSuppressorCasingAssembly = new G4AssemblyVolume(); 
+	this->leftSuppressorCasingAssembly       = new G4AssemblyVolume(); 
 
   // Holds right suppressors
-	this->rightSuppressorCasingAssembly =new G4AssemblyVolume(); 
+	this->rightSuppressorCasingAssembly      = new G4AssemblyVolume(); 
 	
   // holds left suppressor extensions
-	this->leftSuppressorExtensionAssembly = new G4AssemblyVolume(); 
+	this->leftSuppressorExtensionAssembly    = new G4AssemblyVolume(); 
 	
   // holds right suppressor extensions
-	this->rightSuppressorExtensionAssembly = new G4AssemblyVolume(); 
+	this->rightSuppressorExtensionAssembly   = new G4AssemblyVolume(); 
 
   // Holds back suppressors
-	this->suppressorBackAssembly = new G4AssemblyVolume(); 
+	this->suppressorBackAssembly             = new G4AssemblyVolume(); 
 
   // Holds the extension suppressor shells
-  this->extensionSuppressorShellAssembly = new G4AssemblyVolume() ; 
+  this->extensionSuppressorShellAssembly   = new G4AssemblyVolume() ; 
 
   // Holds the back and side suppressor shells
   this->backAndSideSuppressorShellAssembly = new G4AssemblyVolume() ; 
   
   // Holds the Hevimets
-  this->hevimetAssembly = new G4AssemblyVolume() ; 
+  this->hevimetAssembly                    = new G4AssemblyVolume() ; 
 
   ConstructComplexDetectorBlockWithDeadLayer();
   BuildelectrodeMatElectrodes();
@@ -872,28 +872,26 @@ void DetectionSystemGriffin::BuildOneDetector()
   if( this->suppressor_position_selector && this->hevimet_selector ) 
     ConstructNewHeavyMet(); 
   
-}
-
-// } // end BuildOneDetector()
+} // end BuildOneDetector()
 
 void DetectionSystemGriffin::BuildEverythingButCrystals()
 {
 	// Build assembly volumes
-	this->assembly = new G4AssemblyVolume();
-  this->leftSuppressorCasingAssembly = new G4AssemblyVolume();
-	this->rightSuppressorCasingAssembly = new G4AssemblyVolume();
-	this->leftSuppressorExtensionAssembly = new G4AssemblyVolume();
-	this->rightSuppressorExtensionAssembly = new G4AssemblyVolume();
-	this->suppressorBackAssembly = new G4AssemblyVolume();
+	this->assembly                           = new G4AssemblyVolume();
+  this->leftSuppressorCasingAssembly       = new G4AssemblyVolume();
+	this->rightSuppressorCasingAssembly      = new G4AssemblyVolume();
+	this->leftSuppressorExtensionAssembly    = new G4AssemblyVolume();
+	this->rightSuppressorExtensionAssembly   = new G4AssemblyVolume();
+	this->suppressorBackAssembly             = new G4AssemblyVolume();
 
   // Holds the extension suppressor shells
-  this->extensionSuppressorShellAssembly = new G4AssemblyVolume() ; 
+  this->extensionSuppressorShellAssembly   = new G4AssemblyVolume() ; 
 
   // Holds the back and side suppressor shells
   this->backAndSideSuppressorShellAssembly = new G4AssemblyVolume() ; 
   
   // Holds the hevimets
-  this->hevimetAssembly = new G4AssemblyVolume() ; 
+  this->hevimetAssembly                    = new G4AssemblyVolume() ; 
 
   BuildelectrodeMatElectrodes();
 
@@ -1283,7 +1281,7 @@ void DetectionSystemGriffin::ConstructDetector()
         }
       else
         {
-          rotate_piece[i]->rotateY(-this->bent_end_angle) ; // Note the negative -this
+          rotate_piece[i]->rotateY( -this->bent_end_angle) ; 
           rotate_piece[i]->rotateX( -M_PI/2.0 + i*M_PI/2.0 ) ;   
         }
       
@@ -1355,7 +1353,7 @@ void DetectionSystemGriffin::ConstructDetector()
   G4double hole_eliminator = this->can_face_thickness *(1.0 -tan(this->bent_end_angle));	
   G4Cons* cone_location[4] ;
   
-  x0 = this->bent_end_length/2.0 +this->shift +this->applied_back_shift ; 
+  x0 = this->bent_end_length/2.0 + this->shift + this->applied_back_shift ; 
 
   y0 = (this->detector_total_width/2.0) - (this->bent_end_length * tan(this->bent_end_angle)) - hole_eliminator ; 
 
@@ -1439,12 +1437,12 @@ void DetectionSystemGriffin::ConstructDetector()
 
   G4Box* panel_location[4] ; 
   
-  x0 = (this->detector_total_length +this->bent_end_length - this->rear_plate_thickness -this->can_face_thickness)/2.0 
-  + this->shift +this->applied_back_shift ;
+  x0 = (this->detector_total_length + this->bent_end_length - this->rear_plate_thickness - this->can_face_thickness)/2.0 
+  + this->shift + this->applied_back_shift ;
 
   y0 = 0 ; 
 
-  z0 = (this->detector_total_width -this->can_side_thickness)/2.0 ;
+  z0 = (this->detector_total_width - this->can_side_thickness)/2.0 ;
 
   for( i = 0 ; i < 4 ; i++ )
   {
