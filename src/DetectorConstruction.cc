@@ -71,7 +71,7 @@
 #include "DetectionSystemSpiceV02.hh"
 #include "DetectionSystemPaces.hh"
 #include "DetectionSystemSodiumIodide.hh"
-
+#include "DetectionSystemLanthanumBromide.hh"
 #include "ApparatusGenericTarget.hh"
 #include "ApparatusSpiceTargetChamber.hh"
 #include "Apparatus8piVacuumChamber.hh"
@@ -455,6 +455,51 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
     rotate->rotateZ(phi+0.5*M_PI);
 
     pSodiumIodide->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+  }
+}
+
+void DetectorConstruction::AddDetectionSystemLanthanumBromide(G4int ndet)
+{
+  // Describe Placement
+  G4double detectorAngles[8][2] = {0};
+  G4double theta,phi,position;
+  G4ThreeVector move,direction;
+
+  detectorAngles[0][0] 	= 0.0;
+  detectorAngles[1][0] 	= 45.0;
+  detectorAngles[2][0] 	= 90.0;
+  detectorAngles[3][0] 	= 135.0;
+  detectorAngles[4][0] 	= 180.0;
+  detectorAngles[5][0] 	= 225.0;
+  detectorAngles[6][0] 	= 270.0;
+  detectorAngles[7][0] 	= 315.0;
+  detectorAngles[0][1] 	= 90.0;
+  detectorAngles[1][1] 	= 90.0;
+  detectorAngles[2][1] 	= 90.0;
+  detectorAngles[3][1] 	= 90.0;
+  detectorAngles[4][1] 	= 90.0;
+  detectorAngles[5][1] 	= 90.0;
+  detectorAngles[6][1] 	= 90.0;
+  detectorAngles[7][1] 	= 90.0;
+
+  DetectionSystemLanthanumBromide* pLanthanumBromide = new DetectionSystemLanthanumBromide() ;
+  pLanthanumBromide->Build() ;
+
+  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+  {
+    phi = detectorAngles[detector_number][0]*deg; // Creates a ring in phi plane
+    theta = detectorAngles[detector_number][1]*deg;
+
+    direction = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+    position = 25.0*cm + (pLanthanumBromide->GetDetectorLengthOfUnitsCM()/2.0);
+    move = position * direction;
+
+    G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
+    rotate->rotateX(theta);
+    rotate->rotateY(0);
+    rotate->rotateZ(phi+0.5*M_PI);
+
+    pLanthanumBromide->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
   }
 }
 
