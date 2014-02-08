@@ -102,6 +102,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemGammaTrackingCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemBrillance380V1Cmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSodiumIodideCmd;
+    G4UIcmdWithAnInteger*   AddDetectionSystemLanthanumBromideCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystem8piCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystem8piDetectorCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSceptarCmd;

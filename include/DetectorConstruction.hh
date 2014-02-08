@@ -56,6 +56,7 @@ class DetectionSystemSpice;
 class DetectionSystemSpiceV02;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
+class DetectionSystemLanthanumBromide;
 
 class DetectionSystemBox;
 
@@ -116,6 +117,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddDetectionSystemGammaTracking(G4int ndet);
     void AddDetectionSystemBrillance380V1(G4int ndet);
     void AddDetectionSystemSodiumIodide(G4int ndet);
+    void AddDetectionSystemLanthanumBromide(G4int ndet);
     void AddDetectionSystem8pi(G4int ndet);
     void AddDetectionSystem8piDetector(G4int ndet);
     void AddDetectionSystemGriffinForward(G4int ndet);

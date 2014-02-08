@@ -71,7 +71,7 @@
 #include "DetectionSystemSpiceV02.hh"
 #include "DetectionSystemPaces.hh"
 #include "DetectionSystemSodiumIodide.hh"
-
+#include "DetectionSystemLanthanumBromide.hh"
 #include "ApparatusGenericTarget.hh"
 #include "ApparatusSpiceTargetChamber.hh"
 #include "Apparatus8piVacuumChamber.hh"
@@ -455,6 +455,17 @@ void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)
     rotate->rotateZ(phi+0.5*M_PI);
 
     pSodiumIodide->PlaceDetector( logicWorld, move, rotate, detector_number ) ;
+  }
+}
+
+void DetectorConstruction::AddDetectionSystemLanthanumBromide(G4int ndet)
+{
+    DetectionSystemLanthanumBromide* pDetectionSystemLanthanumBromide = new DetectionSystemLanthanumBromide();
+    pDetectionSystemLanthanumBromide->Build();
+
+  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
+  {
+    pDetectionSystemLanthanumBromide->PlaceDetector(logicWorld, detector_number);
   }
 }
 
