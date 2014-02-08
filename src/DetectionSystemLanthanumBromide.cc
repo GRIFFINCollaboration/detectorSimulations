@@ -111,6 +111,56 @@ DetectionSystemLanthanumBromide::DetectionSystemLanthanumBromide() :
                                     this->seal_front_lid_thickness +
                                     this->can_front_lid_thickness +
                                     this->can_back_lid_thickness;
+   {
+    //G4double triangleThetaAngle = (180/M_PI)*(atan((1/sqrt(3))/sqrt((11/12) + (1/sqrt(2))) )+atan((sqrt(2))/(1+sqrt(2))))*deg;
+    G4double triangleThetaAngle = 54.735610317245360*deg;
+
+    // theta
+    this->detectorAngles[0][0] 	= triangleThetaAngle;
+    this->detectorAngles[1][0] 	= triangleThetaAngle;
+    this->detectorAngles[2][0] 	= triangleThetaAngle;
+    this->detectorAngles[3][0] 	= triangleThetaAngle;
+    this->detectorAngles[4][0] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[5][0] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[6][0] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[7][0] 	= 180.0*deg - triangleThetaAngle;
+    // phi
+    this->detectorAngles[0][1] 	= 22.5*deg;
+    this->detectorAngles[1][1] 	= 112.5*deg;
+    this->detectorAngles[2][1] 	= 202.5*deg;
+    this->detectorAngles[3][1] 	= 292.5*deg;
+    this->detectorAngles[4][1] 	= 22.5*deg;
+    this->detectorAngles[5][1] 	= 112.5*deg;
+    this->detectorAngles[6][1] 	= 202.5*deg;
+    this->detectorAngles[7][1] 	= 292.5*deg;
+    // yaw (alpha)
+    this->detectorAngles[0][2] 	= 0.0*deg;
+    this->detectorAngles[1][2] 	= 0.0*deg;
+    this->detectorAngles[2][2] 	= 0.0*deg;
+    this->detectorAngles[3][2] 	= 0.0*deg;
+    this->detectorAngles[4][2] 	= 0.0*deg;
+    this->detectorAngles[5][2] 	= 0.0*deg;
+    this->detectorAngles[6][2] 	= 0.0*deg;
+    this->detectorAngles[7][2] 	= 0.0*deg;
+    // pitch (beta)
+    this->detectorAngles[0][3] 	= triangleThetaAngle;
+    this->detectorAngles[1][3] 	= triangleThetaAngle;
+    this->detectorAngles[2][3] 	= triangleThetaAngle;
+    this->detectorAngles[3][3] 	= triangleThetaAngle;
+    this->detectorAngles[4][3] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[5][3] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[6][3] 	= 180.0*deg - triangleThetaAngle;
+    this->detectorAngles[7][3] 	= 180.0*deg - triangleThetaAngle;
+    // roll (gamma)
+    this->detectorAngles[0][4] 	= 22.5*deg;
+    this->detectorAngles[1][4] 	= 112.5*deg;
+    this->detectorAngles[2][4] 	= 202.5*deg;
+    this->detectorAngles[3][4] 	= 292.5*deg;
+    this->detectorAngles[4][4] 	= 22.5*deg;
+    this->detectorAngles[5][4] 	= 112.5*deg;
+    this->detectorAngles[6][4] 	= 202.5*deg;
+    this->detectorAngles[7][4] 	= 292.5*deg;
+}
 }
 
 DetectionSystemLanthanumBromide::~DetectionSystemLanthanumBromide()
@@ -150,18 +200,54 @@ G4int DetectionSystemLanthanumBromide::Build()//G4SDManager* mySDman)
   return 1;
 }
 
-G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number)
+G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number)
 {
   G4int detector_copy_ID = 0;
 
-  G4cout << "SodiumIodide Detector Number = " << detector_number << G4endl;
+  G4cout << "LanthanumBromide Detector Number = " << detector_number << G4endl;
+
+  G4int copy_number = detector_copy_ID + detector_number;
+
+  G4double position = 12.5*cm + ( this->can_length_z / 2.0 ) ;
+
+  G4double theta  = this->detectorAngles[detector_number][0];
+  G4double phi    = this->detectorAngles[detector_number][1];
+  G4double alpha  = this->detectorAngles[detector_number][2]; // yaw
+  G4double beta   = this->detectorAngles[detector_number][3]; // pitch
+  G4double gamma  = this->detectorAngles[detector_number][4]; // roll
+
+  G4double x = 0;
+  G4double y = 0;
+  G4double z = position;
+
+  G4RotationMatrix* rotate = new G4RotationMatrix;    // rotation matrix corresponding to direction vector
+  rotate->rotateY(M_PI);
+  rotate->rotateY(beta);
+  rotate->rotateZ(gamma);
+
+  G4ThreeVector move(transX(x,y,z,theta,phi), transY(x,y,z,theta,phi), transZ(x,y,z,theta,phi));
+
+  assembly->MakeImprint(exp_hall_log, move, rotate, copy_number);
+
+  return 1;
+}
+/* G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number)
+{
+  G4int detector_copy_ID = 0;
+
+  G4cout << "LanthanumBromide Detector Number = " << detector_number << G4endl;
+  G4double theta  = this->detectorAngles[detector_number][0];
+  G4double phi    = this->detectorAngles[detector_number][1];
+  G4double alpha  = this->detectorAngles[detector_number][2]; // yaw
+  G4double beta   = this->detectorAngles[detector_number][3]; // pitch
+  G4double gamma  = this->detectorAngles[detector_number][4]; // roll
 
   G4int copy_number = detector_copy_ID + detector_number;
 
   assembly->MakeImprint(exp_hall_log, move, rotate, copy_number);
 
   return 1;
-}
+} */                   // old lanthanum bromide placement code
 
 G4int DetectionSystemLanthanumBromide::BuildCrystalVolume()
 {
@@ -537,4 +623,16 @@ G4ThreeVector DetectionSystemLanthanumBromide::GetDirectionXYZ(G4double theta, G
 	
   return direction;
 }//end ::GetDirection
+
+G4double DetectionSystemLanthanumBromide::transX(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*sin(theta)*cos(phi) );
+}
+
+G4double DetectionSystemLanthanumBromide::transY(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*sin(theta)*sin(phi) );
+}
+
+G4double DetectionSystemLanthanumBromide::transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi){
+  return ( pow(x*x+y*y+z*z,0.5)*cos(theta) );
+}
 

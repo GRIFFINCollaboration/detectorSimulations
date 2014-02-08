@@ -49,7 +49,7 @@ class DetectionSystemLanthanumBromide
     ~DetectionSystemLanthanumBromide();
     
     G4int Build() ; //G4SDManager* mySDman);
-    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number); 
+    G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number);
     G4double const GetDetectorLengthOfUnitsCM() {return this->detector_length_z;};
 
   private:
@@ -107,6 +107,7 @@ class DetectionSystemLanthanumBromide
     G4double can_back_lid_thickness;
 
     G4double detector_length_z;
+    G4double detectorAngles[8][5];
 
     G4Tubs* BuildCrystal();
     G4Tubs* BuildAluminumCan();
@@ -125,6 +126,10 @@ class DetectionSystemLanthanumBromide
     G4int BuildOneDetector();    
 
     G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
+
+    G4double transX(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transY(G4double x, G4double y, G4double z, G4double theta, G4double phi);
+    G4double transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi);
 };
 
 #endif
