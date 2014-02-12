@@ -222,7 +222,7 @@ G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_l
 
   G4RotationMatrix* rotate = new G4RotationMatrix;    // rotation matrix corresponding to direction vector
   rotate->rotateY(M_PI);
-  rotate->rotateY(beta);
+  rotate->rotateY(M_PI+beta);
   rotate->rotateZ(gamma);
 
   G4ThreeVector move(transX(x,y,z,theta,phi), transY(x,y,z,theta,phi), transZ(x,y,z,theta,phi));
@@ -231,23 +231,6 @@ G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_l
 
   return 1;
 }
-/* G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4RotationMatrix* rotate, G4int detector_number)
-{
-  G4int detector_copy_ID = 0;
-
-  G4cout << "LanthanumBromide Detector Number = " << detector_number << G4endl;
-  G4double theta  = this->detectorAngles[detector_number][0];
-  G4double phi    = this->detectorAngles[detector_number][1];
-  G4double alpha  = this->detectorAngles[detector_number][2]; // yaw
-  G4double beta   = this->detectorAngles[detector_number][3]; // pitch
-  G4double gamma  = this->detectorAngles[detector_number][4]; // roll
-
-  G4int copy_number = detector_copy_ID + detector_number;
-
-  assembly->MakeImprint(exp_hall_log, move, rotate, copy_number);
-
-  return 1;
-} */                   // old lanthanum bromide placement code
 
 G4int DetectionSystemLanthanumBromide::BuildCrystalVolume()
 {
@@ -272,7 +255,7 @@ G4int DetectionSystemLanthanumBromide::BuildCrystalVolume()
   //logical volume
   if( crystal_block_log == NULL )
   {
-    crystal_block_log = new G4LogicalVolume(crystal_block, material, "sodium_iodide_crystal_block_log", 0, 0, 0);
+    crystal_block_log = new G4LogicalVolume(crystal_block, material, "lanthanum_bromide_crystal_block_log", 0, 0, 0);
     crystal_block_log->SetVisAttributes(vis_att);
   }
 
