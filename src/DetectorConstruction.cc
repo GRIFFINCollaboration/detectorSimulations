@@ -63,7 +63,6 @@
 #include "G4TransportationManager.hh"
 
 #include "DetectionSystemGammaTracking.hh"
-#include "DetectionSystemBrillance380V1.hh"
 #include "DetectionSystem8pi.hh"
 #include "DetectionSystemGriffin.hh"
 #include "DetectionSystemSceptar.hh"
@@ -400,17 +399,6 @@ void DetectorConstruction::AddDetectionSystemGammaTracking(G4int ndet)
 	pGammaTracking->Build() ;	
 	
   pGammaTracking->PlaceDetector( logicWorld, move, rotate, detector_number );
-}
-
-void DetectorConstruction::AddDetectionSystemBrillance380V1(G4int ndet)
-{
-    DetectionSystemBrillance380V1* pDetectionSystemBrillance380V1 = new DetectionSystemBrillance380V1();
-    pDetectionSystemBrillance380V1->Build();
-
-  for(G4int detector_number = 0; detector_number < ndet; detector_number++)
-  { 
-    pDetectionSystemBrillance380V1->PlaceDetector(logicWorld, detector_number);
-  }
 }
 
 void DetectorConstruction::AddDetectionSystemSodiumIodide(G4int ndet)

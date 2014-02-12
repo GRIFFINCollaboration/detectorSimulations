@@ -47,7 +47,6 @@ class G4Material;
 
 class DetectorMessenger;
 //class SensitiveDetector;
-class DetectionSystemBrillance380V1;
 class DetectionSystemGammaTracking;
 class DetectionSystemGriffin;
 class DetectionSystem8pi;
@@ -115,7 +114,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void UpdateGeometry();
 
     void AddDetectionSystemGammaTracking(G4int ndet);
-    void AddDetectionSystemBrillance380V1(G4int ndet);
     void AddDetectionSystemSodiumIodide(G4int ndet);
     void AddDetectionSystemLanthanumBromide(G4int ndet);
     void AddDetectionSystem8pi(G4int ndet);
