@@ -195,7 +195,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   }
 
   // LaBr
-  found = volname.find("brillance380_crystal_block");
+  found = volname.find("lanthanum_bromide_crystal_block");
   if (edep != 0 && found!=G4String::npos) {
       SetDetNumberForGenericDetector(volname);
       eventaction->AddLaBrCrystDet(edep,stepl,det-1);
@@ -227,7 +227,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetNumberForGenericDetector(volname);
       eventaction->AddPacesCrystDet(edep,stepl,det-1);
   }
-
 }
 
 void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)

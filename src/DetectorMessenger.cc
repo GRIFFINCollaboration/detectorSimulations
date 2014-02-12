@@ -188,10 +188,6 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemGammaTrackingCmd->SetGuidance("Add Detection System GammaTracking");
   AddDetectionSystemGammaTrackingCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  AddDetectionSystemBrillance380V1Cmd = new G4UIcmdWithAnInteger("/DetSys/det/addBrillance380V1",this);
-  AddDetectionSystemBrillance380V1Cmd->SetGuidance("Add Detection System Brillance380V1");
-  AddDetectionSystemBrillance380V1Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
   AddDetectionSystemSodiumIodideCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSodiumIodide",this);
   AddDetectionSystemSodiumIodideCmd->SetGuidance("Add Detection System SodiumIodide");
   AddDetectionSystemSodiumIodideCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -314,7 +310,6 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystemGammaTrackingCmd;
   delete AddApparatus8piVacuumChamberCmd;
   delete AddApparatus8piVacuumChamberAuxMatShellCmd;
-  delete AddDetectionSystemBrillance380V1Cmd;
   delete AddDetectionSystemSodiumIodideCmd;
   delete AddDetectionSystemLanthanumBromideCmd;
   delete AddDetectionSystem8piCmd;
@@ -424,9 +419,6 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }
   if( command == AddDetectionSystemGammaTrackingCmd ) {
     Detector->AddDetectionSystemGammaTracking(AddDetectionSystemGammaTrackingCmd->GetNewIntValue(newValue)); 
-  }
-  if( command == AddDetectionSystemBrillance380V1Cmd ) { 
-    Detector->AddDetectionSystemBrillance380V1(AddDetectionSystemBrillance380V1Cmd->GetNewIntValue(newValue)); 
   }
   if( command == AddDetectionSystemSodiumIodideCmd ) {
     Detector->AddDetectionSystemSodiumIodide(AddDetectionSystemSodiumIodideCmd->GetNewIntValue(newValue));
