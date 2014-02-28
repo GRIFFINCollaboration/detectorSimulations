@@ -17,8 +17,8 @@ set(myROOTclass TSpiceData.cpp)   # comment if none (please see http://root.cern
 # http://www.cmake.org/Wiki/CMake_FAQ
 
 set(mymain ${mytarget}.cc)
-set(myexe  ${mytarget}.exe)
-set(myproj ${mytarget})  # any name as long as it is different from myexe
+set(myexe  ${mytarget})
+set(myproj ${mytarget}.proj)  # any name as long as it is different from myexe
 
 project($myproj)
 
