@@ -51,6 +51,11 @@ class DetectionSystemLanthanumBromide
     G4int Build() ; //G4SDManager* mySDman);
     G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number);
     G4double const GetDetectorLengthOfUnitsCM() {return this->detector_length_z;};
+    G4double GetCrystalRadius() {return this->crystal_outer_radius;};
+    G4double GetCrystalLength() {return this->crystal_length_z;};
+    G4double GetR();
+    G4double GetTheta(G4int i);
+    G4double GetPhi(G4int i);
 
   private:
     // Logical volumes        

@@ -21,8 +21,8 @@
 #include "DetectionSystemLanthanumBromide.hh"
 
 DetectionSystemLanthanumBromide::DetectionSystemLanthanumBromide() :
-    // LogicalVolumes 
-    detector_volume_log(0),    
+    // LogicalVolumes
+    detector_volume_log(0),
     crystal_block_log(0),
     can_cylinder_log(0),
     can_front_lid_log(0),
@@ -31,8 +31,8 @@ DetectionSystemLanthanumBromide::DetectionSystemLanthanumBromide() :
     disc_front_lid_log(0),
     packing_cylinder_log(0),
     packing_front_lid_log(0)
-{ 
-  
+{
+
   // NaI Crystal and Can Physical Properties
   // From: Scintillation Spectrometry gamma-ray catalogue - R. L. Heath, 1964
 
@@ -64,7 +64,7 @@ DetectionSystemLanthanumBromide::DetectionSystemLanthanumBromide() :
   //
 
 
-  this->detail_view_end_angle	 	= 360.0*deg;     
+  this->detail_view_end_angle	 	= 360.0*deg;
   this->crystal_material            = "Cerium_Doped_Lanthanum_Bromide";
 
   this->can_material                = "G4_Al";
@@ -165,8 +165,8 @@ DetectionSystemLanthanumBromide::DetectionSystemLanthanumBromide() :
 
 DetectionSystemLanthanumBromide::~DetectionSystemLanthanumBromide()
 {
-    // LogicalVolumes 
-    delete detector_volume_log;    
+    // LogicalVolumes
+    delete detector_volume_log;
     delete crystal_block_log;
     delete can_cylinder_log;
     delete can_front_lid_log;
@@ -187,9 +187,9 @@ G4int DetectionSystemLanthanumBromide::Build()//G4SDManager* mySDman)
   this->assembly = myAssembly;
 
   G4cout << "BuildCrystalVolume" << G4endl;
-  BuildCrystalVolume();      
+  BuildCrystalVolume();
   G4cout << "BuildAluminumCanVolume" << G4endl;
-  BuildAluminumCanVolume(); 
+  BuildAluminumCanVolume();
   G4cout << "BuildPackingVolume" << G4endl;
   BuildPackingVolume();
   G4cout << "BuildDiscVolume" << G4endl;
@@ -198,6 +198,31 @@ G4int DetectionSystemLanthanumBromide::Build()//G4SDManager* mySDman)
   BuildSealVolume();
 
   return 1;
+}
+
+G4double DetectionSystemLanthanumBromide::GetR()
+{
+    // to crystal face
+
+    G4double position = 12.5*cm - (packing_front_lid_thickness + disc_front_lid_thickness + can_front_lid_thickness - can_back_lid_thickness);
+    return position;
+}
+
+G4double DetectionSystemLanthanumBromide::GetTheta(G4int i)
+{
+    // to crystal face
+
+    G4double theta  = this->detectorAngles[i][0];
+
+    return theta;
+}
+
+G4double DetectionSystemLanthanumBromide::GetPhi(G4int i)
+{
+    // to crystal face
+
+    G4double phi    = this->detectorAngles[i][1];
+    return phi;
 }
 
 G4int DetectionSystemLanthanumBromide::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int detector_number)
@@ -251,7 +276,7 @@ G4int DetectionSystemLanthanumBromide::BuildCrystalVolume()
   G4double z_position		= ( (can_front_lid_thickness + seal_front_lid_thickness + disc_front_lid_thickness + packing_front_lid_thickness) - (can_back_lid_thickness) )/2.0;
   G4ThreeVector move 		= z_position * direction;
   G4RotationMatrix* rotate = new G4RotationMatrix;
-  
+
   //logical volume
   if( crystal_block_log == NULL )
   {
@@ -271,20 +296,20 @@ G4int DetectionSystemLanthanumBromide::BuildAluminumCanVolume()
     G4cout << " ----> Material " << this->can_material << " not found, cannot build the detector shell! " << G4endl;
     return 0;
   }
-  
+
   // Set visualization attributes
   G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(0.6,0.6,0.6));
-  vis_att->SetVisibility(true);  
+  vis_att->SetVisibility(true);
 
   G4ThreeVector direction =  G4ThreeVector(0,0,1);
   G4double z_position;
-  G4ThreeVector move; 
+  G4ThreeVector move;
   G4RotationMatrix* rotate = new G4RotationMatrix;
 
   /////////////////////////////////////////////////////////////////////
   // Build and Place Aluminum Can
   /////////////////////////////////////////////////////////////////////
-  G4Tubs* can_cylinder = BuildAluminumCan(); 
+  G4Tubs* can_cylinder = BuildAluminumCan();
 
   //logical volume
   if( can_cylinder_log == NULL )
@@ -296,15 +321,15 @@ G4int DetectionSystemLanthanumBromide::BuildAluminumCanVolume()
   // place front can_lid
   z_position 	= 0;
   move 		= z_position * direction;
-  
+
   //add physical cylinder
   this->assembly->AddPlacedVolume(can_cylinder_log, move, rotate);
 
   /////////////////////////////////////////////////////////////////////
   // Build and Place Aluminum Front Lid
-  /////////////////////////////////////////////////////////////////////  
+  /////////////////////////////////////////////////////////////////////
   G4Tubs* can_front_lid = BuildAluminumCanFrontLid();
-  
+
   // logical volume
   if( can_front_lid_log == NULL )
   {
@@ -316,15 +341,15 @@ G4int DetectionSystemLanthanumBromide::BuildAluminumCanVolume()
 
   z_position 	= -(detector_length_z/2.0) + (can_front_lid_thickness/2.0);
   move 		= z_position * direction;
-  
+
   //add physical front can_lid
   this->assembly->AddPlacedVolume(can_front_lid_log, move, rotate);
-    
+
   /////////////////////////////////////////////////////////////////////
   // Build and Place Aluminum Back Lid
   /////////////////////////////////////////////////////////////////////
   G4Tubs* can_back_lid = BuildAluminumCanBackLid();
-    
+
   // logical volume
   if( can_back_lid_log == NULL )
   {
@@ -338,7 +363,7 @@ G4int DetectionSystemLanthanumBromide::BuildAluminumCanVolume()
 
   // add physical back can_lid
   this->assembly->AddPlacedVolume(can_back_lid_log, move, rotate);
-  
+
   return 1;
 }
 
@@ -501,7 +526,7 @@ G4Tubs* DetectionSystemLanthanumBromide::BuildAluminumCan()
   G4double start_phi = 0.0;
   G4double end_phi = this->detail_view_end_angle;
 
-  G4double inner_radius 	= can_inner_radius;  			
+  G4double inner_radius 	= can_inner_radius;
   G4double outer_radius 	= can_outer_radius;
   G4double half_length_z 	= can_length_z/2.0;
 
@@ -518,7 +543,7 @@ G4Tubs* DetectionSystemLanthanumBromide::BuildAluminumCanFrontLid()
   G4double inner_radius = can_lid_inner_radius;
   G4double outer_radius = can_lid_outer_radius;
   G4double half_length_z = can_front_lid_thickness/2.0;
-  
+
   G4Tubs* can_lid = new G4Tubs("can_lid", inner_radius, outer_radius, half_length_z, start_phi, end_phi);
 
   return can_lid;
@@ -532,7 +557,7 @@ G4Tubs* DetectionSystemLanthanumBromide::BuildAluminumCanBackLid()
   G4double inner_radius = can_lid_inner_radius;
   G4double outer_radius = can_lid_outer_radius;
   G4double half_length_z = can_back_lid_thickness/2.0;
-  
+
   G4Tubs* can_lid = new G4Tubs("can_lid", inner_radius, outer_radius, half_length_z, start_phi, end_phi);
 
   return can_lid;
@@ -601,9 +626,9 @@ G4ThreeVector DetectionSystemLanthanumBromide::GetDirectionXYZ(G4double theta, G
   x = sin(theta) * cos(phi);
   y = sin(theta) * sin(phi);
   z = cos(theta);
-	
+
   G4ThreeVector direction = G4ThreeVector(x,y,z);
-	
+
   return direction;
 }//end ::GetDirection
 
@@ -618,4 +643,3 @@ G4double DetectionSystemLanthanumBromide::transY(G4double x, G4double y, G4doubl
 G4double DetectionSystemLanthanumBromide::transZ(G4double x, G4double y, G4double z, G4double theta, G4double phi){
   return ( pow(x*x+y*y+z*z,0.5)*cos(theta) );
 }
-
