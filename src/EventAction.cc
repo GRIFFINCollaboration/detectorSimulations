@@ -43,13 +43,18 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//G4
 #include "EventAction.hh"
-
 #include "RunAction.hh"
-#include "HistoManager.hh"
 #include "G4Event.hh"
 
+//Root 
+#include "RootManager.hh"
+#include "HistoManager.hh"
+
+//c++
 #include <sstream>
+
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -76,6 +81,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
     printf( " ---> Ev.# %5d\r", evtNb);
     G4cout.flush();
 
+	RootManager::instance()->SetEventNumber(evtNb); 
     ClearVariables();
 }
 
@@ -86,15 +92,21 @@ void EventAction::EndOfEventAction(const G4Event*)
     for(G4int i = 0; i < MAXSTEPS; i++) {
         if(stepTracker[1][i] !=0 && histoManager->GetStepTrackerBool()) {
             histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
+            RootManager::instance()->FillG4Hit(1., 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);	   // this is one hit of a Hit Collection
+            //RootManager::instance()->FillHist(1000/keV);		//optionale
         }
+        
+		if (1) { // if condition satisfied 
+		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
+		}
+		
     }
-
-
+    
   FillParticleType() ; 
   FillGridEkin() ;
   FillGriffinCryst() ;
   FillSodiumIodideCryst() ;
-	FillLaBrCryst() ;	
+  FillLaBrCryst() ;	
   
   // I included 'Cryst' on the following to match your naming convention above. If that 
   // doesn't fit with reality then please do change them. 
@@ -102,7 +114,7 @@ void EventAction::EndOfEventAction(const G4Event*)
   FillSceptarCryst() ;
   FillSpiceCryst() ;
   FillPacesCryst() ; 
-	Fill8piCryst() ;
+  Fill8piCryst() ;
 
 
   //G4int i =0;

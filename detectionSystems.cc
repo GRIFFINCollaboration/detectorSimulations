@@ -40,6 +40,7 @@
 #include "EventAction.hh"
 #include "SteppingAction.hh" 
 #include "HistoManager.hh" 
+#include "RootManager.hh"
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -136,6 +137,10 @@ int main(int argc,char** argv)
   // Free the store: user actions, physics_list and detector_description are
   //                 owned and deleted by the run manager, so they should not
   //                 be deleted in the main() program !
+  
+  //Close the root Manager
+  RootManager::instance()->Close();
+
 #ifdef G4VIS_USE
   delete visManager;
 #endif
