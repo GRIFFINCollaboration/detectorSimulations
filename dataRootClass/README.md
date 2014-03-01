@@ -12,7 +12,9 @@ To add another  "Setter" class for another detector :
 - Change the makefile in dataRootClass/ to compile the new files, 'make clean' and 'make' to create the libraries
 - Finally, in ./src/RootManager.hh,  add the header of the new class and use it 
 
+```
 #include "RawG4Event.hh"
 #include "path/to/dataRootClass/TSpiceData.h" 
 >>> #include "path/to/dataRootClass/TNewData.h" 
+```
 ( or Update the LD_LIBRARY_PATH to avoid writing the full path)
