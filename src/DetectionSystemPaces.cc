@@ -129,11 +129,11 @@ DetectionSystemPaces::DetectionSystemPaces() :
   paces_placement_theta[3] = (180 - 60.0)*deg; //~
   paces_placement_theta[4] = (180 - 60.0)*deg; //~
   
-  paces_orientation_phi[0] = 0.0*deg;
-  paces_orientation_phi[1] = 0.0*deg;
-  paces_orientation_phi[2] = 0.0*deg;
-  paces_orientation_phi[3] = 0.0*deg;
-  paces_orientation_phi[4] = 0.0*deg;
+  paces_orientation_phi[0] = 1.0*deg;  //hackfix to issue 18: rotate the whole detector 1 degree;
+  paces_orientation_phi[1] = 1.0*deg;  //hackfix TODO: can the whole thing be rotated back 1 degree after being built?
+  paces_orientation_phi[2] = 1.0*deg;
+  paces_orientation_phi[3] = 1.0*deg;
+  paces_orientation_phi[4] = 1.0*deg;
 
   paces_orientation_theta[0] = 0.1780*deg; //OK
   paces_orientation_theta[1] = 0.8275*deg; //OK
@@ -206,18 +206,28 @@ G4int DetectionSystemPaces::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int n
   G4double* ptr_ot = this->paces_orientation_phi;
   G4double* ptr_op = this->paces_orientation_theta;
   if (ndet > 5 || ndet < 0) ndet = 5;
+  G4double d_dist, d_phi, d_theta, ori_phi, ori_theta;
+  G4RotationMatrix* Ra;
+  G4ThreeVector Ta, yprimeaxis;
   for (G4int i=0; i<ndet; i++)
   {
     d_i = i;
-    G4double d_dist = ptr_pd[d_i], d_phi = ptr_pt[d_i], d_theta = ptr_pp[d_i];
-    G4RotationMatrix* Ra = new G4RotationMatrix; G4ThreeVector Ta;
+    d_dist = ptr_pd[d_i]; 
+    d_phi = ptr_pt[d_i]; 
+    d_theta = ptr_pp[d_i];
+    Ra = new G4RotationMatrix;
     Ta.setX( d_dist * cos(d_phi) * sin(d_theta) );
     Ta.setY( d_dist * sin(d_phi) * sin(d_theta) );
     Ta.setZ( d_dist *      1.0     * cos(d_theta) );
-    G4double ori_phi = d_phi + ptr_ot[d_i] + pi/2; //plus 90 deg
-    G4double ori_theta = d_theta + ptr_op[d_i];
-    G4ThreeVector yprimeaxis = G4ThreeVector(cos(ori_phi), sin(ori_phi), 0);
+    
+    ori_phi = d_phi + ptr_ot[d_i] + pi/2; //plus 90 deg
+    ori_theta = d_theta + ptr_op[d_i];
+    yprimeaxis = G4ThreeVector(cos(ori_phi), sin(ori_phi), 0);
+    //if(d_i == 0){
+        //yprimeaxis = G4ThreeVector(0.001,0.999,0);  //alternative hackfix to issue #18
+    //}
     Ra->set(yprimeaxis, ori_theta);
+
     //G4cout << "----------- d_i = " << d_i << G4endl;
     this->assemblySilicon->MakeImprint(exp_hall_log, Ta, Ra, d_i+1);
     this->assemblyDetector->MakeImprint(exp_hall_log, Ta, Ra, d_i*20);
