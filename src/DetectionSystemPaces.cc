@@ -129,11 +129,11 @@ DetectionSystemPaces::DetectionSystemPaces() :
   paces_placement_theta[3] = (180 - 60.0)*deg; //~
   paces_placement_theta[4] = (180 - 60.0)*deg; //~
   
-  paces_orientation_phi[0] = 1.0*deg;  //hackfix to issue 18: rotate the whole detector 1 degree;
-  paces_orientation_phi[1] = 1.0*deg;  //hackfix TODO: can the whole thing be rotated back 1 degree after being built?
-  paces_orientation_phi[2] = 1.0*deg;
-  paces_orientation_phi[3] = 1.0*deg;
-  paces_orientation_phi[4] = 1.0*deg;
+  paces_orientation_phi[0] = 0.0*deg;
+  paces_orientation_phi[1] = 0.0*deg;
+  paces_orientation_phi[2] = 0.0*deg;
+  paces_orientation_phi[3] = 0.0*deg;
+  paces_orientation_phi[4] = 0.0*deg;
 
   paces_orientation_theta[0] = 0.1780*deg; //OK
   paces_orientation_theta[1] = 0.8275*deg; //OK
@@ -223,9 +223,6 @@ G4int DetectionSystemPaces::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int n
     ori_phi = d_phi + ptr_ot[d_i] + pi/2; //plus 90 deg
     ori_theta = d_theta + ptr_op[d_i];
     yprimeaxis = G4ThreeVector(cos(ori_phi), sin(ori_phi), 0);
-    //if(d_i == 0){
-        //yprimeaxis = G4ThreeVector(0.001,0.999,0);  //alternative hackfix to issue #18
-    //}
     Ra->set(yprimeaxis, ori_theta);
 
     //G4cout << "----------- d_i = " << d_i << G4endl;
