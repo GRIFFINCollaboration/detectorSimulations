@@ -2,41 +2,13 @@
 #define _RAWEVENT_CLASS
 
 //Root
-#include "Riostream.h"
-#include "TAxis.h"
-#include "TCanvas.h"
-#include "TFile.h"
-#include "TGraph2D.h"
-#include "TGraph2DErrors.h"
-#include "TGraphErrors.h"
-#include "TH1.h" 
-#include "TH3D.h"
-#include "TMath.h"
-#include "TMultiGraph.h"
-#include "TRandom.h"
-#include "TStyle.h"
-#include "TString.h"
-#include "TTree.h"
 #include "TVector3.h"
 
-#include "Math/InterpolationTypes.h"
-#include "Math/Interpolator.h"
-using namespace ROOT::Math;
-
 //c++
-#include "string"
 #include "vector"
 #include "iostream"
-#include "fstream"
-#include "sstream"
-#include "math.h"
 #include "map"
 #include "utility"
-#include "algorithm"
-#include "stdexcept"
-#include "exception"
-#include "stdio.h"
-#include "stdlib.h"
 using namespace std;
 
 //g4              

@@ -36,8 +36,6 @@ RootManager::RootManager()
 	fHist = new TH1F("h","h",500,0,1800);
 
 
-
-
 	//Creating the tree ;
 	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
 	if(!fOutputTree)
@@ -64,7 +62,7 @@ void RootManager::SetTree()
  
  /*
 
-Other detector banches goes here
+Other detector branches goes here
 
 */
 
