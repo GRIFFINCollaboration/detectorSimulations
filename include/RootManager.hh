@@ -12,10 +12,11 @@ using namespace std ;
 //ROOT
 #include<TFile.h>
 #include<TH1.h>
+#include "TTree.h"
 
 //User
 #include "RawG4Event.hh"
-#include "/opt/DetectorSimulations/detectorSimulations/dataRootClass/TSpiceData.h"
+#include "../dataRootClass/TSpiceData.h"
 
 class RootManager   {
     
