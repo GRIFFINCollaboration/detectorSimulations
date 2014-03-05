@@ -1,5 +1,5 @@
 use :
- ./detectionSystems.exe run.mac to run the simulation
+ ./detectionSystems run.mac to run the simulation
 
 Notes :
 The code is modular, we should keep it this way, A detector <=> separate writing class 
@@ -14,7 +14,7 @@ To add another  "Setter" class for another detector :
 
 ```
 #include "RawG4Event.hh"
-#include "path/to/dataRootClass/TSpiceData.h" 
->>> #include "path/to/dataRootClass/TNewData.h" 
+#include "relative/path/to/dataRootClass/TSpiceData.h" 
+>>> #include "relative/path/to/dataRootClass/TNewData.h" 
 ```
-( or Update the LD_LIBRARY_PATH to avoid writing the full path)
+
