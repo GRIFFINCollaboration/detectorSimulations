@@ -16,7 +16,7 @@ using namespace std ;
 
 //User
 #include "RawG4Event.hh"
-#include "/opt/DetectorSimulations/detectorSimulations/dataRootClass/TSpiceData.h"
+#include "../dataRootClass/TSpiceData.h"
 
 class RootManager   {
     
