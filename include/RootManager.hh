@@ -1,5 +1,5 @@
-#ifndef ROOTMANAGER_CLASS 
-#define ROOTMANAGER_CLASS 1
+#ifndef ROOTMANAGER_H 
+#define ROOTMANAGER_H 1
 
 
 //c++
@@ -10,13 +10,12 @@
 using namespace std ;
 
 //ROOT
-#include "TFile.h"
-#include "TH1.h"
-#include "TTree.h"
+#include<TFile.h>
+#include<TH1.h>
 
 //User
 #include "RawG4Event.hh"
-#include "../dataRootClass/TSpiceData.h"
+#include "/opt/DetectorSimulations/detectorSimulations/dataRootClass/TSpiceData.h"
 
 class RootManager   {
     
