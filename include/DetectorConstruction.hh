@@ -46,13 +46,13 @@ class G4VPhysicalVolume;
 class G4Material;
 
 class DetectorMessenger;
-//class SensitiveDetector;
+class SensitiveDetector;
 class DetectionSystemGammaTracking;
 class DetectionSystemGriffin;
 class DetectionSystem8pi;
 class DetectionSystemSceptar;
 class DetectionSystemSpice;
-class DetectionSystemSpiceV02;
+class DetectionSystemS3;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
 class DetectionSystemLanthanumBromide;
@@ -76,6 +76,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldDimensions( G4ThreeVector );
     void SetWorldVis( G4bool );
     void SetWorldMagneticField( G4ThreeVector );
+    void SetTabMagneticField(G4String);
 
     void SetGenericTargetMaterial( G4String );
     void SetGenericTargetDimensions( G4ThreeVector );
@@ -133,8 +134,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
-    void AddDetectionSystemSpice(G4int ndet);
-    void AddDetectionSystemSpiceV02(G4int ndet);
+    void AddDetectionSystemSpice(G4int nRings);
+    void AddDetectionSystemS3(G4int nRings);
 
     void UseTIGRESSPositions( G4bool input )                  {useTigressPositions = input;};
   private:

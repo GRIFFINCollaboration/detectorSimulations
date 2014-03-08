@@ -44,6 +44,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //G4
+#include "SensitiveDetector.hh"
 #include "EventAction.hh"
 #include "RunAction.hh"
 #include "G4Event.hh"

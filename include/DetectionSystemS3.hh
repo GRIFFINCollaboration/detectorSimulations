@@ -32,46 +32,73 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef DetectionSystemSpice_h
-#define DetectionSystemSpice_h 1
+#ifndef DetectionSystemS3_h
+#define DetectionSystemS3_h 1
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
 #define AL_COL 0.5,0.5,0.5
 
-class DetectionSystemSpice
+class DetectionSystemS3
 {
 public:
-  DetectionSystemSpice();
-  ~DetectionSystemSpice();
+  DetectionSystemS3();
+  ~DetectionSystemS3();
   
   //------------------------------------------------//
   // logical and physical volumes
   //------------------------------------------------//
 private:
   G4AssemblyVolume* assembly;
-  G4AssemblyVolume* assemblySiRing01;
-  G4AssemblyVolume* assemblySiRing02;
-  G4AssemblyVolume* assemblySiRing03;
-  G4AssemblyVolume* assemblySiRing04;
-  G4AssemblyVolume* assemblySiRing05;
-  G4AssemblyVolume* assemblySiRing06;
-  G4AssemblyVolume* assemblySiRing07;
-  G4AssemblyVolume* assemblySiRing08;
-  G4AssemblyVolume* assemblySiRing09;
-  G4AssemblyVolume* assemblySiRing10;
-  
-  SensitiveDetector* siDetSpiceRing01_SD;
-  SensitiveDetector* siDetSpiceRing02_SD;
-  SensitiveDetector* siDetSpiceRing03_SD;
-  SensitiveDetector* siDetSpiceRing04_SD;
-  SensitiveDetector* siDetSpiceRing05_SD;
-  SensitiveDetector* siDetSpiceRing06_SD;
-  SensitiveDetector* siDetSpiceRing07_SD;
-  SensitiveDetector* siDetSpiceRing08_SD;
-  SensitiveDetector* siDetSpiceRing09_SD;
-  SensitiveDetector* siDetSpiceRing10_SD;
+  G4AssemblyVolume* assemblyS3Ring01;
+  G4AssemblyVolume* assemblyS3Ring02;
+  G4AssemblyVolume* assemblyS3Ring03;
+  G4AssemblyVolume* assemblyS3Ring04;
+  G4AssemblyVolume* assemblyS3Ring05;
+  G4AssemblyVolume* assemblyS3Ring06;
+  G4AssemblyVolume* assemblyS3Ring07;
+  G4AssemblyVolume* assemblyS3Ring08;
+  G4AssemblyVolume* assemblyS3Ring09;
+  G4AssemblyVolume* assemblyS3Ring10;
+  G4AssemblyVolume* assemblyS3Ring11;
+  G4AssemblyVolume* assemblyS3Ring12;
+  G4AssemblyVolume* assemblyS3Ring13;
+  G4AssemblyVolume* assemblyS3Ring14;
+  G4AssemblyVolume* assemblyS3Ring15;
+  G4AssemblyVolume* assemblyS3Ring16;
+  G4AssemblyVolume* assemblyS3Ring17;
+  G4AssemblyVolume* assemblyS3Ring18;
+  G4AssemblyVolume* assemblyS3Ring19;
+  G4AssemblyVolume* assemblyS3Ring20;
+  G4AssemblyVolume* assemblyS3Ring21;
+  G4AssemblyVolume* assemblyS3Ring22;
+  G4AssemblyVolume* assemblyS3Ring23;
+  G4AssemblyVolume* assemblyS3Ring24;
+  SensitiveDetector* siDetS3Ring01_SD;
+  SensitiveDetector* siDetS3Ring02_SD;
+  SensitiveDetector* siDetS3Ring03_SD;
+  SensitiveDetector* siDetS3Ring04_SD;
+  SensitiveDetector* siDetS3Ring05_SD;
+  SensitiveDetector* siDetS3Ring06_SD;
+  SensitiveDetector* siDetS3Ring07_SD;
+  SensitiveDetector* siDetS3Ring08_SD;
+  SensitiveDetector* siDetS3Ring09_SD;
+  SensitiveDetector* siDetS3Ring10_SD;
+  SensitiveDetector* siDetS3Ring11_SD;
+  SensitiveDetector* siDetS3Ring12_SD;
+  SensitiveDetector* siDetS3Ring13_SD;
+  SensitiveDetector* siDetS3Ring14_SD;
+  SensitiveDetector* siDetS3Ring15_SD;
+  SensitiveDetector* siDetS3Ring16_SD;
+  SensitiveDetector* siDetS3Ring17_SD;
+  SensitiveDetector* siDetS3Ring18_SD;
+  SensitiveDetector* siDetS3Ring19_SD;
+  SensitiveDetector* siDetS3Ring20_SD;
+  SensitiveDetector* siDetS3Ring21_SD;
+  SensitiveDetector* siDetS3Ring22_SD;
+  SensitiveDetector* siDetS3Ring23_SD;
+  SensitiveDetector* siDetS3Ring24_SD;
   
 public:
   G4int Build(G4SDManager* mySDman);
@@ -82,18 +109,32 @@ public:
 private:
   G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
   
-  G4LogicalVolume* siInnerGuardRing_log;
-  G4LogicalVolume* siOuterGuardRing_log;
-  G4LogicalVolume* siDetSpiceRing01_log;
-  G4LogicalVolume* siDetSpiceRing02_log;
-  G4LogicalVolume* siDetSpiceRing03_log;
-  G4LogicalVolume* siDetSpiceRing04_log;
-  G4LogicalVolume* siDetSpiceRing05_log;
-  G4LogicalVolume* siDetSpiceRing06_log;
-  G4LogicalVolume* siDetSpiceRing07_log;
-  G4LogicalVolume* siDetSpiceRing08_log;
-  G4LogicalVolume* siDetSpiceRing09_log;
-  G4LogicalVolume* siDetSpiceRing10_log;
+  G4LogicalVolume* S3InnerGuardRing_log;
+  G4LogicalVolume* S3OuterGuardRing_log;
+  G4LogicalVolume* siDetS3Ring01_log;
+  G4LogicalVolume* siDetS3Ring02_log;
+  G4LogicalVolume* siDetS3Ring03_log;
+  G4LogicalVolume* siDetS3Ring04_log;
+  G4LogicalVolume* siDetS3Ring05_log;
+  G4LogicalVolume* siDetS3Ring06_log;
+  G4LogicalVolume* siDetS3Ring07_log;
+  G4LogicalVolume* siDetS3Ring08_log;
+  G4LogicalVolume* siDetS3Ring09_log;
+  G4LogicalVolume* siDetS3Ring10_log;
+  G4LogicalVolume* siDetS3Ring11_log;
+  G4LogicalVolume* siDetS3Ring12_log;
+  G4LogicalVolume* siDetS3Ring13_log;
+  G4LogicalVolume* siDetS3Ring14_log;
+  G4LogicalVolume* siDetS3Ring15_log;
+  G4LogicalVolume* siDetS3Ring16_log;
+  G4LogicalVolume* siDetS3Ring17_log;
+  G4LogicalVolume* siDetS3Ring18_log;
+  G4LogicalVolume* siDetS3Ring19_log;
+  G4LogicalVolume* siDetS3Ring20_log;
+  G4LogicalVolume* siDetS3Ring21_log;
+  G4LogicalVolume* siDetS3Ring22_log;
+  G4LogicalVolume* siDetS3Ring23_log;
+  G4LogicalVolume* siDetS3Ring24_log;
   
   //--------------------------------------------------------//
   // SPICE physical properties
@@ -107,18 +148,18 @@ private:
   // planar detector crystal     //
   //-----------------------------//
 public:
-  G4double siDetCrystalThickness;
-  G4double siDetCrystalOuterDiameter;
-  G4double siDetCrystalInnerDiameter;
-  G4double siDetRadialSegments;
-  G4double siDetPhiSegments;
+  G4double S3DetCrystalThickness;
+  G4double S3DetCrystalOuterDiameter;
+  G4double S3DetCrystalInnerDiameter;
+  G4double S3DetRadialSegments;
+  G4double S3DetPhiSegments;
 
   //-------------------------------//
   // parameters for the guard ring //
   //-------------------------------//
 private:
-  G4double siDetGuardRingInnerDiameter;
-  G4double siDetGuardRingOuterDiameter;
+  G4double S3DetGuardRingInnerDiameter;
+  G4double S3DetGuardRingOuterDiameter;
    
     //------------------------------------------------//
     // internal methods in Build()

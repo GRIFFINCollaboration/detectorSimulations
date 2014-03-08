@@ -34,6 +34,7 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
+#include "SensitiveDetector.hh"
 #include "G4RunManager.hh"
 
 #include "G4Material.hh"
@@ -52,6 +53,8 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
+#include "G4SDManager.hh"
+
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
@@ -61,13 +64,14 @@
 //#include "Field.hh"
 #include "GlobalField.hh"
 #include "G4TransportationManager.hh"
+#include "nonUniformMagneticField.hh"
 
 #include "DetectionSystemGammaTracking.hh"
 #include "DetectionSystem8pi.hh"
 #include "DetectionSystemGriffin.hh"
 #include "DetectionSystemSceptar.hh"
 #include "DetectionSystemSpice.hh"
-#include "DetectionSystemSpiceV02.hh"
+#include "DetectionSystemS3.hh"
 #include "DetectionSystemPaces.hh"
 #include "DetectionSystemSodiumIodide.hh"
 #include "DetectionSystemLanthanumBromide.hh"
@@ -239,6 +243,11 @@ void DetectorConstruction::SetWorldVis( G4bool vis )
 void DetectorConstruction::SetWorldMagneticField( G4ThreeVector vec )
 {
     //expHallMagField->SetFieldValue(G4ThreeVector(vec.x(),vec.y(),vec.z()));
+}
+
+void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName)
+{
+  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,0);
 }
 
 void DetectorConstruction::UpdateGeometry()
@@ -717,35 +726,47 @@ void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
   pSceptar->PlaceDetector( logicWorld, ndet ) ;
 }
 
-void DetectorConstruction::AddDetectionSystemSpice(G4int ndet)
+
+void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
 {
+	G4SDManager* mySDman = G4SDManager::GetSDMpointer();
 	DetectionSystemSpice* pSpice = new DetectionSystemSpice() ;
-	pSpice->Build() ; 
+	pSpice->Build(mySDman); 
 	
-  pSpice->PlaceDetector( logicWorld, ndet ) ;
+  G4int nPhiSeg = 12;
+  G4int detID=0;
+  G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
+  G4ThreeVector pos(0,0,-annularDetectorDistance); 
+  pSpice->PlaceGuardRing(logicWorld, pos);
+  for(int ring = 0; ring<nRings; ring++)
+    {
+      for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+		{
+		  pSpice->PlaceDetector(logicWorld, pos, ring+1, radSeg, detID);
+		  detID++;
+		} // end for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+    } // end for(int ring = 0; ring<nRings; ring++)
 }
 
-void DetectorConstruction::AddDetectionSystemSpiceV02(G4int ndet)
-{  
-
-	DetectionSystemSpiceV02* pSpiceV02 = new DetectionSystemSpiceV02() ;
-	pSpiceV02->Build() ;
+void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
+{
+	G4SDManager* mySDman = G4SDManager::GetSDMpointer();
+	DetectionSystemS3* pS3 = new DetectionSystemS3();
+	pS3->Build(mySDman);
 	
-  // Place in world !
-  G4double phi = 0.0*deg;
-  G4double theta = 0.0*deg;
-
-  G4ThreeVector direction = G4ThreeVector( sin(theta)*cos(phi) , sin(theta)*sin(phi) , cos(theta) ) ;
-  G4double position = 0.0*mm;
-  G4ThreeVector move = position * direction;
-
-  G4RotationMatrix* rotate = new G4RotationMatrix; 		//rotation matrix corresponding to direction vector
-  rotate->rotateX(0);
-  rotate->rotateY(0);
-  rotate->rotateZ(0);
-
-  pSpiceV02->PlaceDetector( logicWorld, move, rotate, ndet ) ;
-
+  G4int nPhiSeg = 32;
+  G4int detID=0;
+  G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
+  G4ThreeVector pos(0,0,S3DetectorDistance); 
+  pS3->PlaceGuardRing(logicWorld, pos);
+  for(int ring = 0; ring<nRings; ring++)
+	{
+		for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+		{
+			pS3->PlaceDetector(logicWorld, pos, ring+1, radSeg, detID);
+			detID++;
+		} // end for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+	} // end for(int ring = 0; ring<nRings; ring++)
 }
 
 void DetectorConstruction::AddDetectionSystemPaces(G4int ndet)

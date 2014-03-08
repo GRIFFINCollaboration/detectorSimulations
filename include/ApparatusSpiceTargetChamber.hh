@@ -41,209 +41,409 @@ class G4Material;
 class DetectorMessenger;
 //class MagneticField;
 
-#define DELRIN_COL 0.4,0.2,1.0
-#define AL_COL 0.5,0.5,0.5
-#define PB_COL 0.3,0.3,0.3
+#define SN_COL 1.0, 1.0, 1.0
+#define CU_COL 1.0, 1.0, 0.0
+//#define PEEK_COL 0.0, 1.0, 0.0
+#define PEEK_COL 0.5, 0.5, 0.0
+#define KAPTON_COL 0.2, 0.7, 0.1
+#define PB_COL 0.0, 0.0, 0.0
 #define NDFEB_COL 0.7,0.3,0.3
+#define DELRIN_COL 0.0, 0.0, 1.0
+#define AL_COL 0.5, 0.5, 0.5
 
-///////////////////////////////////////////////////////////////////////
-// ApparatusSpiceTargetChamber
-///////////////////////////////////////////////////////////////////////
+// define custom colours for visualisation
+#define TARGET_CHAMBER_COL 0.15,0.15,0.15
+#define ELECTROBOX_COL 0.15,0.15,0.15
+
 class ApparatusSpiceTargetChamber
 {
-  public:
-    ApparatusSpiceTargetChamber();
-    ~ApparatusSpiceTargetChamber();
+public:
+  ApparatusSpiceTargetChamber();
+  ~ApparatusSpiceTargetChamber();
+    
+public:
+  void Build(G4LogicalVolume*);
 
-  public:
-    void Build(G4LogicalVolume*);
+private:
+  G4LogicalVolume* expHallLog;
+
+private:
+  ////////////////////////////////////////////
+  // Logical Volumes used in ApparatusSpiceTargetChamber
+  ////////////////////////////////////////////
+  G4LogicalVolume* target_chamber_front_ring_log;
+  G4LogicalVolume* target_chamber_front_cone_log;
+  G4LogicalVolume* target_chamber_sphere_log;
+  G4LogicalVolume* target_chamber_cylinder_down_log;
+  G4LogicalVolume* target_wheel_log;
+  G4LogicalVolume* first_gear_log;
+  G4LogicalVolume* second_gear_log;
+  G4LogicalVolume* third_gear_log;
+  G4LogicalVolume* gear_plate_one_log;
+  G4LogicalVolume* gear_plate_two_log;
+  G4LogicalVolume* gear_stick_log;
+  G4LogicalVolume* target_mount_plate_log;
+  G4LogicalVolume* bias_plate_log;
+  G4LogicalVolume* photon_shield_layer_one_log;
+  G4LogicalVolume* photon_shield_layer_two_log;
+  G4LogicalVolume* photon_shield_layer_three_log;
+  G4LogicalVolume* ps_target_clamp_log;
+  G4LogicalVolume* ps_detector_clamp_log;
+  G4LogicalVolume* target_bolt_log;
+  G4LogicalVolume* detector_bolt_log;
+  G4LogicalVolume* magnet_log;
+  G4LogicalVolume* magnet_cover_log;
+  G4LogicalVolume* mclamp_chamber_log;
+  G4LogicalVolume* mclamp_shield_log;
+  G4LogicalVolume* electro_box_log;
+  G4LogicalVolume* s3_mount_log;
+  G4LogicalVolume* shield_cover_log;
+  G4LogicalVolume* detector_mount_log;
+  G4LogicalVolume* annular_clamp_log;
+
+private:
+  ////////////////////////////////////////////
+  // Physical Volumes used in ApparatusSpiceTargetChamber
+  ////////////////////////////////////////////
+  G4VPhysicalVolume* target_chamber_front_ring_phys;
+  G4VPhysicalVolume* target_chamber_front_cone_phys;
+  G4VPhysicalVolume* target_chamber_sphere_phys;
+  G4VPhysicalVolume* target_chamber_cylinder_down_phys;
+  G4VPhysicalVolume* target_wheel_phys;
+  G4VPhysicalVolume* first_gear_phys;
+  G4VPhysicalVolume* second_gear_phys;
+  G4VPhysicalVolume* third_gear_phys;
+  G4VPhysicalVolume* gear_plate_one_phys;
+  G4VPhysicalVolume* gear_plate_two_phys;
+  G4VPhysicalVolume* gear_stick_phys;
+  G4VPhysicalVolume* target_mount_plate_phys;
+  G4VPhysicalVolume* bias_plate_phys;
+  G4VPhysicalVolume* photon_shield_layer_one_phys;
+  G4VPhysicalVolume* photon_shield_layer_two_phys;
+  G4VPhysicalVolume* photon_shield_layer_three_phys;
+  G4VPhysicalVolume* ps_target_clamp_phys;
+  G4VPhysicalVolume* ps_detector_clamp_phys;
+  G4VPhysicalVolume* target_bolt_phys;
+  G4VPhysicalVolume* detector_bolt_phys;
+  G4VPhysicalVolume* magnet_phys;
+  G4VPhysicalVolume* magnet_cover_phys;
+  G4VPhysicalVolume* mclamp_chamber_phys;
+  G4VPhysicalVolume* mclamp_shield_phys;
+  G4VPhysicalVolume* electro_box_phys;
+  G4VPhysicalVolume* s3_mount_phys;
+  G4VPhysicalVolume* shield_cover_phys;
+  G4VPhysicalVolume* detector_mount_phys;
+  G4VPhysicalVolume* annular_clamp_phys;
+
+private:
+  ////////////////////////////////////////////
+  // Properties used in ApparatusSpiceTargetChamber
+  ////////////////////////////////////////////
+
+  //-------------------------
+  // Magnet properties:
+  //-------------------------
+  G4int NUMBER_OF_MAGNETS;
+  G4double zOffset;
+
+  //-------------------------
+  // Materials:
+  //-------------------------
+  G4String magnet_material;
+  G4String target_chamber_material;
+  G4String downstream_cone_material;
+  G4String mount_lead;
+  G4String photon_shield_layer_one_material;
+  G4String photon_shield_layer_two_material;
+  G4String photon_shield_layer_three_material;
+  G4String ps_clamp_material;
+  G4String magnet_clamp_material;
+  G4String target_wheel_material;
+  G4String gear_stick_material;
+  G4String bias_plate_material;
+  G4String target_wheel_gear_material_a;
+  G4String target_wheel_gear_material_b;
+  G4String gear_plate_material;
+  G4String target_mount_plate_material;
+  G4String electro_box_material;
+  G4String s3_mount_material;
+  G4String small_bolt_material;
+  G4String large_bolt_material;
+  G4String shield_cover_material;
+  G4String magnet_cover_material;
+  G4String detector_mount_material;
+  G4String annular_clamp_material;
+
+
+  //-------------------------
+  // Dimensions:
+  //-------------------------
+
+  //-----------------------------
+  // Dimensions of Target Chamber
+  //-----------------------------
+  G4double target_chamber_cylinder_inner_radius;
+  G4double target_chamber_cylinder_outer_radius;
+  G4double target_chamber_cylinder_length;
+  G4double target_chamber_distance_from_target;
+  G4double target_chamber_cylinder_lip_inner_radius;
+  G4double target_chamber_cylinder_lip_thickness;
+  G4double target_chamber_cylinder_det_outer_radius;
+  G4double target_chamber_cylinder_det_thickness;
+  G4double target_chamber_cylinder_hole_length;
+  G4double target_chamber_cylinder_hole_breadth;
+  G4double target_chamber_cylinder_hole_distance_x;
+  G4double target_chamber_cylinder_hole_distance_y;
   
-  private:
-    G4LogicalVolume* expHallLog;
+  G4double target_chamber_sphere_inner_radius;
+  G4double target_chamber_sphere_outer_radius;
+  G4double target_chamber_sphere_centre;
+  G4double target_chamber_sphere_cutting_outer_radius;
+  G4double target_chamber_sphere_cut_off_point;
+  G4double front_ring_inner_radius;
+  G4double front_ring_outer_radius;
+  G4double front_ring_length;
+  G4double front_ring_cylinder_outer_radius;
+  G4double front_ring_cylinder_length;
+  
+  G4double cone_front_inner_rad;
+  G4double cone_front_outer_rad;
+  G4double cone_length;
 
-  private:
-//    MagneticField* solMagField;   	// pointer to the magnetic field
+  
+  // --------------------------
+  // Dimensions of Target Wheel
+  // --------------------------
+  G4double target_wheel_radius;
+  G4double target_wheel_thickness;
+  G4double target_wheel_offset;
+  G4double target_radius;
+  G4double target_offset;
+  G4double collimator_radius;
+  // Bias Plate
+  G4double bias_plate_outer_radius;
+  G4double bias_plate_thickness;
+  G4double bias_plate_offset_z;
+  G4double bias_plate_cut;
+  // Gears
+  G4double first_gear_radius;
+  G4double first_gear_plane_offset;
+  G4double second_gear_radius;
+  G4double second_gear_plane_offset;
+  G4double third_gear_radius;
+  G4double third_gear_plane_offset;
+  G4double all_gear_thickness;
+  G4double all_gear_z_offset;
+  // Gear Plates
+  G4double gear_plate_one_radius;
+  G4double gear_plate_two_radius;
+  G4double gear_plate_thickness;
+  // Mount Plate
+  G4double target_mount_plate_radius;
+  G4double target_mount_plate_thickness;
+  G4double target_mount_plate_z_offset;
+  // Gear Stick
+  G4double gear_stick_length;
+  G4double gear_stick_radius;
+  G4double gear_stick_z_offset;
 
-  private:
-    // LogicalVolumes used in ApparatusSpiceTargetChamber()
+  //----------------------------
+  // Dimensions of Photon Shield
+  //----------------------------
+  G4double photon_shield_front_radius;
+  G4double photon_shield_back_radius;
+  G4double photon_shield_inner_radius;
+  G4double photon_shield_length;
+  G4double photon_shield_back_face_pos;
 
-    G4LogicalVolume* target_chamber_cylinder_log;
-    G4LogicalVolume* target_chamber_sphere_log;
-    G4LogicalVolume* transport_chamber_al_plate_log;
-    G4LogicalVolume* transport_chamber_wide_cylinder_log;
-    G4LogicalVolume* transport_chamber_narrow_cylinder_log;
-    G4LogicalVolume* photon_shield_log;
-    G4LogicalVolume* transport_magnet_log;
-    G4LogicalVolume* inner_transport_magnet_log;
-    G4LogicalVolume* inner_transport_magnet_cover_log;
-    G4LogicalVolume* collector_magnet_log;
+  G4double photon_shield_layer_one_thickness;
+  G4double photon_shield_layer_two_thickness;
+  G4double photon_shield_layer_three_thickness;
+  
+  // ----------------------------------
+  // Dimensions of Photon Shield Clamps
+  // ----------------------------------
+  G4double ps_target_clamp_radius;
+  G4double ps_target_clamp_thickness;
+  G4double ps_target_clamp_extension;
+  G4double ps_det_clamp_radius;
+  G4double ps_det_clamp_thickness;
+  
+  // ---------------------------------
+  // Dimensions of Photon Shield Bolts
+  // ---------------------------------
+  G4double ps_target_bolt_length;
+  G4double ps_target_bolt_radius;
+  G4double ps_target_bolt_plane_offset;
+  G4double ps_target_bolt_head_radius;
+  G4double ps_target_bolt_head_length;
+  G4double ps_det_bolt_length;
+  G4double ps_det_bolt_radius;
+  G4double ps_det_bolt_plane_offset;
+  G4double ps_det_bolt_head_radius;
+  G4double ps_det_bolt_head_length;
+  
+  //---------------------
+  // Dimensions of Magnet
+  //---------------------
+  G4double plate_one_thickness;
+  G4double plate_one_length;
+  G4double plate_one_height;
+  G4double plate_one_lower_height;
+  
+  G4double plate_one_edge_x;
+  
+  G4double plate_two_thickness;
+  G4double plate_two_length;
+  G4double plate_two_height;
+  
+  G4double distance_from_target;
+  G4double cutting_box_angle;
+  
+  // ------------------------------------
+  // Dimensions of Magnet Clamp (Chamber)
+  // ------------------------------------
+  G4double mclamp_chamber_thickness;
+  G4double mclamp_chamber_length;
+  G4double mclamp_chamber_height;
+  
+  // ------------------------------------------
+  // Dimensions of Magnet Clamp (Photon Shield)
+  // ------------------------------------------
+  G4double psclamp_psbuffer;
+  G4double psclamp_chamber_buffer;
+  G4double psclamp_thickness_buffer;
+  G4double psclamp_length;
+	
+	// -------------------------
+  // Dimensions of ElectroBox
+  // -------------------------
+  G4double electrobox_outer_box_length;
+  G4double electrobox_inner_box_length;
+  G4double electrobox_mid_length;
+  G4double electrobox_lip_length;
+  G4double electrobox_lip_inner_radius;
+  G4double electrobox_z_offset;
+  
+  // -------------------------
+  // Dimensions of Si-CD Mount
+  // -------------------------
+  G4double s3_mount_length;
+  G4double s3_mount_thickness;
+  G4double s3_active_radius;
+  G4double s3_mount_chamfer;
+  G4double s3_mount_centre_to_chamfer;
+  G4double s3_mount_angular_offset;
+  G4double s3_mount_z_offset;
+  
+  // ------------------------------
+  // Dimensions of Plastic Coatings
+  // ------------------------------
+  G4double magnet_coating_thickness;
+  G4double shield_coating_thickness;
+  
+  // ----------------------------
+  // Dimensions of Detector Mount
+  // ----------------------------
+  G4double detector_mount_length;
+  G4double detector_mount_width;
+  G4double detector_mount_thickness;
+  G4double detector_mount_inner_radius;
+  G4double detector_mount_lip_radius;
+  G4double detector_mount_lip_thickness;
+  G4double detector_mount_angular_offset;
+  G4double detector_to_target_distance;
+  G4double detector_thickness;
+  
+  // ---------------------------
+  // Dimensions of Annular Clamp
+  // ---------------------------
+  G4double annular_clamp_thickness;
+  G4double annular_clamp_length;
+  G4double annular_clamp_width;
+  G4double annular_clamp_plane_offset;
 
-    G4LogicalVolume* det_cham_end_plate_log;
-    G4LogicalVolume* det_cham_plate_log;
-    G4LogicalVolume* det_cham_tube_log;
+  // ---------------------------
+  // individual offsets for visualisation
+  // ---------------------------
+  G4double frontDomeOffset;
+  G4double targetWheelOffset;
+  G4double middleRingOffset;
+  G4double backDetAndAlBoxOffset;
 
-    G4LogicalVolume* target_chamber_vacuum_log;
-    G4LogicalVolume* target_chamber_sph_vacuum_log;
-    G4LogicalVolume* transport_wide_vacuum_log;
-    G4LogicalVolume* transport_narrow_vacuum_log;
-    G4LogicalVolume* al_plate_vacuum_log;
-    G4LogicalVolume* det_cham_plate_vacuum_log;
-    G4LogicalVolume* det_cham_tube_vacuum_log;
+  //-----------------------------
+  // copy numbers
+  //-----------------------------
+  G4int targetChamberDownstreamCopyNumber;
+  G4int photonShieldCopyNumber;
+  G4int photonShieldClampCopyNumber;
+  G4int magnetsCopyNumber;
+  G4int magnetClampCopyNumber;
+  G4int targetWheelCopyNumber;
+  G4int biasPlateCopyNumber;
+  G4int gearCopyNumber;
+  G4int targetMountCopyNumber;
+  G4int gearStickCopyNumber;
+  G4int electroBoxCopyNumber;
+  G4int s3MountCopyNumber;
+  G4int photonShieldClampBoltCopyNumber;
+  G4int shieldCoveringCopyNumber;
+  G4int magnetCoveringCopyNumber;
+  G4int detectorMountCopyNumber;
+  G4int annularClampCopyNumber;
 
+private:
+  //////////////////////////////////////////////////////
+  // internal methods and functions in ApparatusSpiceTargetChamber::Build()
+  //////////////////////////////////////////////////////
 
+  // methods
+  void BuildTargetChamberFrontRing();
+  void BuildTargetChamberSphere();
+  void BuildTargetChamberCylinderDownstream();
+  void BuildTargetWheel();
+  void BuildTargetWheelGears();
+  void BuildTargetWheelGearPlates();
+  void BuildGearStick();
+  void BuildTargetMountPlate();
+  void BuildBiasPlate();
+  void BuildPhotonShield();
+  void BuildPhotonShieldClamps();
+  void BuildPhotonShieldClampBolts();
+  void BuildCollectorMagnet();
+  void BuildMagnetCovering();
+  void BuildMagnetClampChamber();
+  void BuildMagnetClampPhotonShield();
+  void BuildElectroBox();
+  void BuildS3Mount();
+  void BuildShieldCovering();
+  void BuildDetectorMount();
+  void BuildAnnularClamps();
+  void PlaceTargetChamberFrontRing();
+  void PlaceTargetChamberSphere();
+  void PlaceTargetChamberCylinderDownstream();
+  void PlaceTargetWheel();
+  void PlaceTargetWheelGears();
+  void PlaceTargetWheelGearPlates();
+  void PlaceGearStick();
+  void PlaceTargetMountPlate();
+  void PlaceBiasPlate();
+  void PlacePhotonShield();
+  void PlacePhotonShieldClamps();
+  void PlacePhotonShieldClampBolts(G4int);
+  void PlaceCollectorMagnet(G4int);
+  void PlaceMagnetCovering(G4int);
+  void PlaceMagnetClampChamber(G4int);
+  void PlaceMagnetClampPhotonShield(G4int);
+  void PlaceElectroBox();
+  void PlaceS3Mount();
+  void PlaceShieldCovering();
+  void PlaceDetectorMount();
+  void PlaceAnnularClamps();
     
-  private:
-    // Physical Volumes used in ApparatusSpiceTargetChamber()
-
-    G4VPhysicalVolume* target_chamber_cylinder_phys;
-    G4VPhysicalVolume* target_chamber_sphere_phys;
-    G4VPhysicalVolume* transport_chamber_al_plate_phys;
-    G4VPhysicalVolume* transport_chamber_wide_cylinder_phys;
-    G4VPhysicalVolume* transport_chamber_narrow_cylinder_phys;
-    G4VPhysicalVolume* photon_shield_phys;
-    G4VPhysicalVolume* transport_magnet_phys;
-    G4VPhysicalVolume* inner_transport_magnet_phys;
-    G4VPhysicalVolume* inner_transport_magnet_cover_phys;
-    G4VPhysicalVolume* collector_magnet_phys;
-
-    G4VPhysicalVolume* det_cham_end_plate_phys;
-    G4VPhysicalVolume* det_cham_plate_phys;
-    G4VPhysicalVolume* det_cham_tube_phys;
-
-    G4VPhysicalVolume* target_chamber_vacuum_phys;
-    G4VPhysicalVolume* target_chamber_sph_vacuum_phys;
-    G4VPhysicalVolume* transport_wide_vacuum_phys;
-    G4VPhysicalVolume* transport_narrow_vacuum_phys;
-    G4VPhysicalVolume* al_plate_vacuum_phys;
-    G4VPhysicalVolume* det_cham_plate_vacuum_phys;
-    G4VPhysicalVolume* det_cham_tube_vacuum_phys;
-
-  private: 
-    ///////////////////////////////////////////////////////////////////
-    // ApparatusSpiceTargetChamberCylinder Properties 
-    ///////////////////////////////////////////////////////////////////
-
-    // Materials
-    G4String target_chamber_cylinder_material;
-    G4String target_chamber_sphere_material;
-    G4String transport_chamber_al_plate_material;
-    G4String transport_chamber_wide_cylinder_material;
-    G4String transport_chamber_narrow_cylinder_material;
-    G4String photon_shield_material;
-    G4String transport_magnet_material;
-    G4String inner_transport_magnet_material;
-    G4String inner_transport_magnet_cover_material;
-    G4String collector_magnet_material;
-    G4String vacuum_material;
-    G4String det_cham_end_plate_material;
-    G4String det_cham_plate_material;
-    G4String det_cham_tube_material;
-
-    // Dimensions
-    G4double target_chamber_cylinder_length;
-    G4double target_chamber_inner_radius;
-    G4double target_chamber_outer_radius;
-    G4double Al_plate_thickness;
-    G4double Al_plate_inner_radius;
-    G4double Al_plate_outer_radius;
-    G4double trans_chamber_wide_cylinder_length;
-    G4double trans_chamber_wide_cylinder_inner_radius;   
-    G4double trans_chamber_wide_cylinder_outer_radius;
-    G4double trans_chamber_narrow_cylinder_length;           
-    G4double trans_chamber_narrow_cylinder_inner_radius;    
-    G4double trans_chamber_narrow_cylinder_outer_radius;
-    G4double photon_shield_inner_radius;   
-    G4double photon_shield_tip_outer_radius;
-    G4double photon_shield_base_outer_radius;
-    G4double photon_shield_length;
-    G4double transport_magnet_length;
-    G4double transport_magnet_inner_radius;
-    G4double transport_magnet_outer_radius;
-    G4double inner_transport_magnet_length;
-    G4double inner_transport_magnet_inner_radius;
-    G4double inner_transport_magnet_outer_radius;
-    G4double inner_transport_magnet_cover_length;
-    G4double inner_transport_magnet_cover_outer_radius;
-    G4double inner_transport_magnet_cover_inner_radius;
-    G4double collector_magnet_length_x;
-    G4double collector_magnet_length_y_inner;
-    G4double collector_magnet_length_y_outer;
-    G4double collector_magnet_length_z;
-    G4double det_cham_end_plate_thickness;
-    G4double det_cham_end_plate_inner_radius;
-    G4double det_cham_end_plate_outer_radius;
-    G4double det_cham_plate_thickness;
-    G4double det_cham_plate_inner_radius;
-    G4double det_cham_plate_outer_radius;
-    G4double det_cham_tube_thickness;
-    G4double det_cham_tube_inner_radius;
-    G4double det_cham_tube_outer_radius;
-
-    // Positions
-    G4double target_chamber_start_position;
-    G4double al_plate_position;
-    G4double trans_chamber_wide_cylinder_position;
-    G4double trans_chamber_narrow_cylinder_position;
-    G4double photon_shield_position;
-    G4double transport_magnet_position;
-    G4double inner_transport_magnet_position;
-    G4double inner_transport_magnet_cover_position;
-    G4double collector_magnet_position_z;
-    G4double collector_magnet_position_y;
-    G4double collector_magnet_axial_separation;
-
-    G4double det_cham_end_plate_position;
-    G4double det_cham_plate_position;
-    G4double det_cham_tube_position;
-
-
-    //Cross Section
-    G4double target_chamber_cross_section;
-    
-    // Field Strengths
-    G4double solMagFieldStrength;
-
-
-  private: 
-    // internal methods for ConstructApparatusSpiceTargetChamber() for Building
-    void BuildApparatusSpiceTargetChamberCylinder();
-    void BuildApparatusSpiceTargetChamberSphere();
-    void BuildTransportChamberAlPlate();
-    void BuildTransportChamberWideCylinder();
-    void BuildTransportChamberNarrowCylinder();
-    void BuildPhotonShield();
-    void BuildTransportMagnets();
-    void BuildInnerTransportMagnets();
-    void BuildInnerTransportMagnetsCover();
-    void BuildCollectorMagnet();
-
-    void BuildDetectorChamberAlEndPlate();
-    void BuildDetectorChamberAlPlate();
-    void BuildDetectorChamberAlTube();   
-
-  private:
-    // Internal Functions 
-    G4RotationMatrix* RotateMagnets(G4int);
-    G4ThreeVector TranslateMagnets(G4int, G4double, G4double);
-    
-  private: 
-    // internal methods for ConstructApparatusSpiceTargetChamber() for Placing 
-    void PlaceApparatusSpiceTargetChamberCylinder();   
-    void PlaceApparatusSpiceTargetChamberSphere();
-    void PlaceTransportChamberAlPlate();
-    void PlaceTransportChamberWideCylinder();
-    void PlaceTransportChamberNarrowCylinder();
-    void PlacePhotonShield();
-    void PlaceTransportMagnets();
-    void PlaceInnerTransportMagnets();
-    void PlaceInnerTransportMagnetsCover();
-    void PlaceCollectorMagnet(G4int);
-
-    void PlaceDetectorChamberAlEndPlate();
-    void PlaceDetectorChamberAlPlate();
-    void PlaceDetectorChamberAlTube();
-
-    
+  // functions
+  G4RotationMatrix* RotateMagnets(G4int);
+  G4ThreeVector TranslateMagnets(G4int,G4double,G4double);
 };
 
 #endif

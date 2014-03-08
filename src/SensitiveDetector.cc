@@ -6,6 +6,8 @@
 #include "G4ThreeVector.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
+#include "TrackInformation.hh" // MHD 18 April 2013
+#include "TrackingAction.hh" // MHD 19 April 2013
 #include <string>
 #include <cmath>
 #include "globals.hh"
@@ -30,15 +32,17 @@ void SensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 
 G4bool SensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory* /*ROhist*/)
 {
-  G4int detNum, segNum, bufferCopyID;
+  G4int detNum, segNum, repNum, bufferCopyID, trackID, density, pdg;
+  G4double edep, time;
+  G4ThreeVector position;
+  G4String volname, creator_process;
 
-  G4double edep = aStep->GetTotalEnergyDeposit();
-  if(edep==0.)
-    return false;
+  edep = aStep->GetTotalEnergyDeposit();
+  if(edep==0.) return false;
 
-  G4double time = aStep->GetTrack()->GetGlobalTime();
+  time = aStep->GetTrack()->GetGlobalTime();
 
-  G4String creator_process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+  creator_process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
 //  G4ThreeVector preStepPosition = aStep->GetPreStepPoint()->GetPosition();
 //  G4String name1 = aStep->GetTrack()->GetVolume()->GetName();
@@ -47,8 +51,14 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory* /*ROhist
 //  G4cout << "--> " << name1 << " to " << name2 << G4endl;
 
   // position of interaction point
-  G4ThreeVector position  = aStep->GetPostStepPoint()->GetPosition();
-//  G4String volname        = aStep->GetTrack()->GetVolume()->GetName();
+  position  = aStep->GetPostStepPoint()->GetPosition();
+  volname        = aStep->GetTrack()->GetVolume()->GetName();
+  density        = aStep->GetPreStepPoint()->GetMaterial()->GetDensity();   // MHD 02 May 2013 CHECK take out 
+     
+// type of the interaction particle
+   pdg = aStep->GetTrack()->GetDefinition()->GetPDGEncoding() ;  // MHD 18 April 2013
+// type of the interaction particle  
+   trackID = aStep->GetTrack()->GetTrackID() ;  // MHD 23 April 2013
 
   // The following code could be done a better way.
   // Instead of looking for copyIDs (and keeping track of them), 
@@ -57,8 +67,27 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory* /*ROhist
   G4String findstr("Griffin");
   size_t found;
   found=collectionName[0].find(findstr);
-  if (found!=string::npos)
-  {  // GRIFFIN // G4cout << "found at: " << int(found) << endl;
+  
+  G4String spice("Spice");
+  size_t foundSpice;
+  foundSpice=collectionName[0].find(spice);
+  
+  if(foundSpice!=string::npos)
+	{
+		ofstream bidule ;
+		bidule.open("bidule.txt",std::fstream::app);	
+        
+		repNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(depth);
+		detNum=(G4int)((repNum-1)/12) + 1; // ring number
+		segNum=(G4int)((repNum-1)%12) + 1; // segment number 
+
+		//cout << " repNum : " << repNum << " det : " << detNum << " seg : " << segNum << endl;
+		bidule  << foundSpice << " ; "<< string::npos << " ; " <<depth << " ; " << repNum << " ; " << detNum << " ; " << segNum << endl; 
+		bidule.close();
+		if(repNum==1) cin.get();
+	}
+	else if (found!=string::npos)
+	{  // GRIFFIN // G4cout << "found at: " << int(found) << endl;
     
     detNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(depth);
 
@@ -125,17 +154,32 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory* /*ROhist
     segNum = mod + 1;
   }
   else
-  { // Not GRIFFFIN, so just count
+  { // Neither GRIFFFIN nor SPICE, so just count
     detNum = aStep->GetPreStepPoint()->GetTouchable()->GetReplicaNumber(depth);
     segNum = 1;
   }
 
+
 //  G4cout << "--> " << volname << "\t" << "det num = " << detNum << "\t" << "bufferCopyID = " << bufferCopyID << "\t" << G4endl;
+
+	// Get the track information  
+  TrackInformation* info = (TrackInformation*)(aStep->GetTrack()->GetUserInformation()); // MHD 18 April 2013 
+  //info->Print();
 
   DetectorHit* newHit = new DetectorHit();
   
+  newHit->SetOriginID( info->GetOriginalTrackID() );   // MHD 19 April 2013
+  newHit->SetOriginEnergy( info->GetOriginalEnergy() );     // MHD 19 April 2013                          
+  newHit->SetOriginPdg( info->GetOriginalPdg() );       // MHD 19 April 2013                 
+  newHit->SetOriginMoment( info->GetOriginalMomentum() );        // MHD 19 April 2013
+  
+  newHit->SetAncestorsBirthVolume( info->GetAncestorsBirthVolume() );        // MHD 02 May 2013
+  newHit->SetAncestorsDeathVolume( info->GetAncestorsDeathVolume() );        // MHD 02 May 2013
+  newHit->SetAncestorsPdg( info->GetAncestorsPdg() );        				// MHD 02 May 2013    
+  
   newHit->SetDetNb( detNum ); 
   newHit->SetSegNb( segNum );                             // segment number 
+  newHit->SetPdg ( pdg );                         // particle definition
   newHit->SetEdep( edep );                                // energy release
   newHit->SetTime( time );                                // global time
   newHit->SetProcess( creator_process );                  // the process

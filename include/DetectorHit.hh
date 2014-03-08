@@ -40,7 +40,7 @@
 #include "G4Allocator.hh"
 #include "G4ThreeVector.hh"
 #include <string>
-
+#include <vector>
 #include "G4Types.hh"
 
 using namespace std;
@@ -61,8 +61,19 @@ class DetectorHit : public G4VHit
       void Print();
 
   public:
+  		// Setters 
+      void SetOriginID     	  (const G4int Id)          		{  OriginID = Id; 		}; // MHD 19 April 2012
+      void SetOriginEnergy    (const G4double energy)       	{  OriginEnergy = energy ; 	}; // MHD 19 April 2012
+      void SetOriginPdg       (const G4int pdg)       	        {  OriginPdg = pdg;  }; // MHD 19 April 2012
+      void SetOriginMoment    (const G4ThreeVector moment)  	{  OriginMoment = moment;	}; // MHD 19 April 2012
+    
+      void SetAncestorsBirthVolume	(const vector<G4String> ancestorsBirthVolume)     { AncestorsBirthVolume = ancestorsBirthVolume; 	}; // MHD 01 May 2013
+      void SetAncestorsDeathVolume	(const vector<G4String> ancestorsDeathVolume )    { AncestorsDeathVolume = ancestorsDeathVolume; 	}; // MHD 01 May 2013
+      void SetAncestorsPdg      	(const vector<G4int>    ancestorsPdg )            { AncestorsPdg 		 = ancestorsPdg;        	}; // MHD 01 May 2013
+    
       void SetDetNb     (const G4int det)          { detNb = det;       };  
       void SetSegNb     (const G4int seg)          { segNb = seg;       };
+      void SetPdg       (const G4int p)            { pdg = p;           };
       void SetEdep      (const G4double de)        { edep = de;         };
       void SetTime      (const G4double ti)        { time = ti;         };
       void SetProcess   (const G4String pr)        { process = pr;      };
@@ -70,8 +81,20 @@ class DetectorHit : public G4VHit
       void SetPos       (const G4ThreeVector &xyz) { pos = xyz;         }; // position in the frame of the world
       
   public:
+  
+  		// Getters
+      inline G4int         		GetOriginID()     	 const    { return OriginID; 		}; // MHD 19 April 2012
+      inline G4double          	GetOriginEnergy()    const    { return OriginEnergy; 	}; // MHD 19 April 2012
+      inline G4int      		GetOriginPdg()       const    { return OriginPdg;        }; // MHD 19 April 2012
+      inline G4ThreeVector      GetOriginMoment()    const    { return OriginMoment;	 }; // MHD 19 April 2012
+     
+      inline vector<G4String>   GetAncestorsBirthVolume()   const    { return AncestorsBirthVolume; 	}; // MHD 01 May 2013
+      inline vector<G4String>   GetAncestorsDeathVolume()   const    { return AncestorsDeathVolume; 	}; // MHD 01 May 2013
+      inline vector<G4int>      GetAncestorsPdg()       	const    { return AncestorsPdg;        		}; // MHD 01 May 2013
+      
       inline G4int         GetDetNb()     const    { return detNb;      };
       inline G4int         GetSegNb()     const    { return segNb;      };
+      inline G4int         GetPdg()       const    { return pdg;    	};
       inline G4double      GetEdep()      const    { return edep;       };
       inline G4double      GetTime()      const    { return time;       };  
       inline G4String      GetProcess()   const    { return process;    };
@@ -79,8 +102,19 @@ class DetectorHit : public G4VHit
       inline G4ThreeVector GetPos()       const    { return pos;        };
       
   private:
+  
+  		G4int         OriginID;   // MHD 19 April 2012
+      G4double      OriginEnergy; // MHD 19 April 2012
+      G4int         OriginPdg; // MHD 19 April 2012
+      G4ThreeVector OriginMoment; // MHD 19 April 2012
+      
+      vector<G4String> AncestorsBirthVolume;  // MHD 01 May 2013
+      vector<G4String> AncestorsDeathVolume;  // MHD 01 May 2013
+      vector<G4int>    AncestorsPdg;          // MHD 01 May 2013
+      
       G4int         detNb;
       G4int         segNb;
+      G4int		    	pdg;
       G4double      edep;
       G4double      time;
       G4String      process;
