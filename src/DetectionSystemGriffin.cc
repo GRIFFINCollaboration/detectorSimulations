@@ -2438,7 +2438,7 @@ void DetectionSystemGriffin::ConstructNewHeavyMet()
   G4SubtractionSolid* hevimet = this->newHeavyMet();
     
   G4RotationMatrix* rotate_hevimet = new G4RotationMatrix;
-  rotate_hevimet->rotateY(M_PI/2.0);
+  rotate_hevimet->rotateY(-1.0*M_PI/2.0);
  
   G4ThreeVector move_hevimet( (( this->hevimet_tip_thickness / cos( this->hevimet_tip_angle ) ) * cos( this->bent_end_angle -this->hevimet_tip_angle ) 
                               + this->suppressor_forward_radius* tan(this->hevimet_tip_angle)*sin(this->bent_end_angle))/2.0 
