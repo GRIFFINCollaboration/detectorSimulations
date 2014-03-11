@@ -51,27 +51,9 @@ public:
   //------------------------------------------------//
 private:
   G4AssemblyVolume* assembly;
-  G4AssemblyVolume* assemblySiRing01;
-  G4AssemblyVolume* assemblySiRing02;
-  G4AssemblyVolume* assemblySiRing03;
-  G4AssemblyVolume* assemblySiRing04;
-  G4AssemblyVolume* assemblySiRing05;
-  G4AssemblyVolume* assemblySiRing06;
-  G4AssemblyVolume* assemblySiRing07;
-  G4AssemblyVolume* assemblySiRing08;
-  G4AssemblyVolume* assemblySiRing09;
-  G4AssemblyVolume* assemblySiRing10;
-  
-  SensitiveDetector* siDetSpiceRing01_SD;
-  SensitiveDetector* siDetSpiceRing02_SD;
-  SensitiveDetector* siDetSpiceRing03_SD;
-  SensitiveDetector* siDetSpiceRing04_SD;
-  SensitiveDetector* siDetSpiceRing05_SD;
-  SensitiveDetector* siDetSpiceRing06_SD;
-  SensitiveDetector* siDetSpiceRing07_SD;
-  SensitiveDetector* siDetSpiceRing08_SD;
-  SensitiveDetector* siDetSpiceRing09_SD;
-  SensitiveDetector* siDetSpiceRing10_SD;
+  G4AssemblyVolume* assemblySiRing[10];
+  SensitiveDetector* siDetSpiceRing_SD[10];
+
   
 public:
   G4int Build(G4SDManager* mySDman);
@@ -84,16 +66,8 @@ private:
   
   G4LogicalVolume* siInnerGuardRing_log;
   G4LogicalVolume* siOuterGuardRing_log;
-  G4LogicalVolume* siDetSpiceRing01_log;
-  G4LogicalVolume* siDetSpiceRing02_log;
-  G4LogicalVolume* siDetSpiceRing03_log;
-  G4LogicalVolume* siDetSpiceRing04_log;
-  G4LogicalVolume* siDetSpiceRing05_log;
-  G4LogicalVolume* siDetSpiceRing06_log;
-  G4LogicalVolume* siDetSpiceRing07_log;
-  G4LogicalVolume* siDetSpiceRing08_log;
-  G4LogicalVolume* siDetSpiceRing09_log;
-  G4LogicalVolume* siDetSpiceRing10_log;
+  G4LogicalVolume* siDetSpiceRing_log[10];
+
   
   //--------------------------------------------------------//
   // SPICE physical properties

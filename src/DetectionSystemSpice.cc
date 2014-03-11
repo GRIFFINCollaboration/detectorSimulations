@@ -27,17 +27,7 @@
 DetectionSystemSpice::DetectionSystemSpice() :
   // LogicalVolumes
   siInnerGuardRing_log(0),
-  siOuterGuardRing_log(0),
-  siDetSpiceRing01_log(0),
-  siDetSpiceRing02_log(0),
-  siDetSpiceRing03_log(0),
-  siDetSpiceRing04_log(0),
-  siDetSpiceRing05_log(0),
-  siDetSpiceRing06_log(0),
-  siDetSpiceRing07_log(0),
-  siDetSpiceRing08_log(0),
-  siDetSpiceRing09_log(0),
-  siDetSpiceRing10_log(0)
+  siOuterGuardRing_log(0)
 {
     /////////////////////////////////////////////////////////////////////
     // SPICE Physical Properties
@@ -64,29 +54,13 @@ DetectionSystemSpice::DetectionSystemSpice() :
 
 DetectionSystemSpice::~DetectionSystemSpice()
 {    // LogicalVolumes in ConstructSPICEDetectionSystem
-    delete siDetSpiceRing01_log;
-    delete siDetSpiceRing02_log;
-    delete siDetSpiceRing03_log;
-    delete siDetSpiceRing04_log;
-    delete siDetSpiceRing05_log;
-    delete siDetSpiceRing06_log;
-    delete siDetSpiceRing07_log;
-    delete siDetSpiceRing08_log;
-    delete siDetSpiceRing09_log;
-    delete siDetSpiceRing10_log;
+    delete [] siDetSpiceRing_log;
+
     delete siInnerGuardRing_log;
     delete siOuterGuardRing_log;
 
-		delete siDetSpiceRing01_SD;
-    delete siDetSpiceRing02_SD;
-    delete siDetSpiceRing03_SD;
-    delete siDetSpiceRing04_SD;
-    delete siDetSpiceRing05_SD;
-    delete siDetSpiceRing06_SD;
-    delete siDetSpiceRing07_SD;
-    delete siDetSpiceRing08_SD;
-    delete siDetSpiceRing09_SD;
-    delete siDetSpiceRing10_SD;
+		delete [] siDetSpiceRing_SD;
+
 }
 
 //---------------------------------------------------------//
@@ -95,97 +69,38 @@ DetectionSystemSpice::~DetectionSystemSpice()
 //---------------------------------------------------------//
 G4int DetectionSystemSpice::Build(G4SDManager* mySDman)
 {
- 	if( !siDetSpiceRing01_SD ) {
-    siDetSpiceRing01_SD = new SensitiveDetector("/sd/allSpiceRing01", "CollectionSpiceRing01");
-    mySDman->AddNewDetector( siDetSpiceRing01_SD );
-  }
-
-  if( !siDetSpiceRing02_SD ) {
-    siDetSpiceRing02_SD = new SensitiveDetector("/sd/allSpiceRing02", "CollectionSpiceRing02");
-    mySDman->AddNewDetector( siDetSpiceRing02_SD );
-  }
-
-  if( !siDetSpiceRing03_SD ) {
-    siDetSpiceRing03_SD = new SensitiveDetector("/sd/allSpiceRing03", "CollectionSpiceRing03");
-    mySDman->AddNewDetector( siDetSpiceRing03_SD );
-  }
-
-  if( !siDetSpiceRing04_SD ) {
-    siDetSpiceRing04_SD = new SensitiveDetector("/sd/allSpiceRing04", "CollectionSpiceRing04");
-    mySDman->AddNewDetector( siDetSpiceRing04_SD );
-  }
-
-  if( !siDetSpiceRing05_SD ) {
-    siDetSpiceRing05_SD = new SensitiveDetector("/sd/allSpiceRing05", "CollectionSpiceRing05");
-    mySDman->AddNewDetector( siDetSpiceRing05_SD );
-  }
-
-  if( !siDetSpiceRing06_SD ) {
-    siDetSpiceRing06_SD = new SensitiveDetector("/sd/allSpiceRing06", "CollectionSpiceRing06");
-    mySDman->AddNewDetector( siDetSpiceRing06_SD );
-  }
-
-  if( !siDetSpiceRing07_SD ) {
-    siDetSpiceRing07_SD = new SensitiveDetector("/sd/allSpiceRing07", "CollectionSpiceRing07");
-    mySDman->AddNewDetector( siDetSpiceRing07_SD );
-  }
-
-  if( !siDetSpiceRing08_SD ) {
-    siDetSpiceRing08_SD = new SensitiveDetector("/sd/allSpiceRing08", "CollectionSpiceRing08");
-    mySDman->AddNewDetector( siDetSpiceRing08_SD );
-  }
-
-  if( !siDetSpiceRing09_SD ) {
-    siDetSpiceRing09_SD = new SensitiveDetector("/sd/allSpiceRing09", "CollectionSpiceRing09");
-    mySDman->AddNewDetector( siDetSpiceRing09_SD );
-  }
-
-  if( !siDetSpiceRing10_SD ) {
-    siDetSpiceRing10_SD = new SensitiveDetector("/sd/allSpiceRing10", "CollectionSpiceRing10");
-    mySDman->AddNewDetector( siDetSpiceRing10_SD );
-  }
-  
-  // Build assembly volumes
-  G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
+	
+	G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
   this->assembly = myAssembly;
-  G4AssemblyVolume* myAssemblySiRing01 = new G4AssemblyVolume();    
-  this->assemblySiRing01 = myAssemblySiRing01;
-  G4AssemblyVolume* myAssemblySiRing02 = new G4AssemblyVolume();
-  this->assemblySiRing02 = myAssemblySiRing02;
-  G4AssemblyVolume* myAssemblySiRing03 = new G4AssemblyVolume();
-  this->assemblySiRing03 = myAssemblySiRing03;
-  G4AssemblyVolume* myAssemblySiRing04 = new G4AssemblyVolume();
-  this->assemblySiRing04 = myAssemblySiRing04;
-  G4AssemblyVolume* myAssemblySiRing05 = new G4AssemblyVolume();
-  this->assemblySiRing05 = myAssemblySiRing05;
-  G4AssemblyVolume* myAssemblySiRing06 = new G4AssemblyVolume();
-  this->assemblySiRing06 = myAssemblySiRing06;
-  G4AssemblyVolume* myAssemblySiRing07 = new G4AssemblyVolume();
-  this->assemblySiRing07 = myAssemblySiRing07;
-  G4AssemblyVolume* myAssemblySiRing08 = new G4AssemblyVolume();
-  this->assemblySiRing08 = myAssemblySiRing08;
-  G4AssemblyVolume* myAssemblySiRing09 = new G4AssemblyVolume();
-  this->assemblySiRing09 = myAssemblySiRing09;
-  G4AssemblyVolume* myAssemblySiRing10 = new G4AssemblyVolume();
-  this->assemblySiRing10 = myAssemblySiRing10;
+   
+	// Loop through each ring ...
+	for(int ringID=0; ringID<10; ringID++) {
+		
+		// ... if the sensitive detector does not exist, create it and add to sd manager
+		if( !siDetSpiceRing_SD[ringID] ) {
+			G4String ringName = "/sd/allSpiceRing";
+			ringName += ringID+1;
+			G4String HCname = "CollectionSpiceRing";
+			HCname += ringID+1;
+    	siDetSpiceRing_SD[ringID] = new SensitiveDetector(ringName, HCname);
+    	mySDman->AddNewDetector( siDetSpiceRing_SD[ringID] );
+    } // end if( !siDetSpiceRing_SD[ringID] )
+    
+    // Build assembly volumes
+    G4AssemblyVolume* myAssemblySiRing = new G4AssemblyVolume();    
+  	this->assemblySiRing[ringID] = myAssemblySiRing;
 
-  G4cout << "BuildSiliconWafer" << G4endl;
-  for(int ringID=0; ringID<10; ringID++)
-    BuildSiliconWafer(ringID+1);
+		// Build Silicon Ring
+  	BuildSiliconWafer(ringID+1);
+  	
+  	// Set Sensitive Detector
+  	siDetSpiceRing_log[ringID]->SetSensitiveDetector( siDetSpiceRing_SD[ringID] );
+  	
+  	
+  } // end for(int ringID)
+  
   BuildInnerGuardRing();
   BuildOuterGuardRing();
-  
-  // Sensitive Detector
-  siDetSpiceRing01_log->SetSensitiveDetector( siDetSpiceRing01_SD );
-  siDetSpiceRing02_log->SetSensitiveDetector( siDetSpiceRing02_SD );
-  siDetSpiceRing03_log->SetSensitiveDetector( siDetSpiceRing03_SD );
-  siDetSpiceRing04_log->SetSensitiveDetector( siDetSpiceRing04_SD );
-  siDetSpiceRing05_log->SetSensitiveDetector( siDetSpiceRing05_SD );
-  siDetSpiceRing06_log->SetSensitiveDetector( siDetSpiceRing06_SD );
-  siDetSpiceRing07_log->SetSensitiveDetector( siDetSpiceRing07_SD );
-  siDetSpiceRing08_log->SetSensitiveDetector( siDetSpiceRing08_SD );
-  siDetSpiceRing09_log->SetSensitiveDetector( siDetSpiceRing09_SD );
-  siDetSpiceRing10_log->SetSensitiveDetector( siDetSpiceRing10_SD );
 
   return 1;
 } // end Build
@@ -200,26 +115,8 @@ G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Three
   G4int nRadSegTot = (G4int)this->siDetPhiSegments;
   G4double angle = (360./nRadSegTot)*(nRadSeg-0.5)*deg;
   rotate->rotateZ(angle);
-  if(ringNumber == 1)
-    assemblySiRing01->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 2)
-    assemblySiRing02->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 3)
-    assemblySiRing03->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 4)
-    assemblySiRing04->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 5)
-    assemblySiRing05->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 6)
-    assemblySiRing06->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 7)
-    assemblySiRing07->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 8)
-    assemblySiRing08->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 9)
-    assemblySiRing09->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
-  if(ringNumber == 10)
-    assemblySiRing10->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
+  
+  assemblySiRing[ringNumber-1]->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
 
   return 1;
 }
@@ -239,9 +136,11 @@ G4int DetectionSystemSpice::PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4Thre
 //---------------------------------------------------------//
 G4int DetectionSystemSpice::BuildSiliconWafer(G4int myRingID)
 {
+	// Define the material, return error if not found
   G4Material* material = G4Material::GetMaterial(this->wafer_material);
   if( !material ) {
-    G4cout << " ----> Material " << this->wafer_material << " not found, cannot build the detector shell! " << G4endl;
+  	G4cout << " ----> Material " << this->wafer_material 
+  				 << " not found, cannot build the detector shell! " << G4endl;
     return 0;
   }
 
@@ -256,127 +155,19 @@ G4int DetectionSystemSpice::BuildSiliconWafer(G4int myRingID)
   G4RotationMatrix* rotate = new G4RotationMatrix;
   rotate->rotateZ(0*deg);
 
-  if(myRingID == 1)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing01Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing01_log == NULL )
-		{
-		  siDetSpiceRing01_log = new G4LogicalVolume(siDetSpiceRing01Sec, material, "siDetSpiceRing01", 0, 0, 0);
-		  siDetSpiceRing01_log->SetVisAttributes(vis_att);
-		}
-      this->assemblySiRing01->AddPlacedVolume(siDetSpiceRing01_log, move, rotate);
-    } // end if(myRingID == 1)
-    
-  if(myRingID == 2)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing02Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing02_log == NULL )
-		{
-		  siDetSpiceRing02_log = new G4LogicalVolume(siDetSpiceRing02Sec, material, "siDetSpiceRing02", 0, 0, 0);
-		  siDetSpiceRing02_log->SetVisAttributes(vis_att);
-		}
-      this->assemblySiRing02->AddPlacedVolume(siDetSpiceRing02_log, move, rotate);
-    } // end if(myRingID == 2)
-  if(myRingID == 3)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing03Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing03_log == NULL )
-		{
-		  siDetSpiceRing03_log = new G4LogicalVolume(siDetSpiceRing03Sec, material, "siDetSpiceRing03", 0, 0, 0);
-		  siDetSpiceRing03_log->SetVisAttributes(vis_att);
-		}
-      this->assemblySiRing03->AddPlacedVolume(siDetSpiceRing03_log, move, rotate);
-    } // end if(myRingID == 3)
-  if(myRingID == 4)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing04Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing04_log == NULL )
+  // construct solid
+  G4Tubs* siDetSpiceRingSec = BuildCrystal(myRingID);
+  // construct logical volume
+  if( !siDetSpiceRing_log[myRingID-1] )
 	{
-	  siDetSpiceRing04_log = new G4LogicalVolume(siDetSpiceRing04Sec, material, "siDetSpiceRing04", 0, 0, 0);
-	  siDetSpiceRing04_log->SetVisAttributes(vis_att);
+		G4String ringName = "siDetSpiceRing";
+		ringName += myRingID;
+		
+		siDetSpiceRing_log[myRingID-1] = new G4LogicalVolume(siDetSpiceRingSec, material, ringName, 0, 0, 0);
+		siDetSpiceRing_log[myRingID-1]->SetVisAttributes(vis_att);
 	}
-      this->assemblySiRing04->AddPlacedVolume(siDetSpiceRing04_log, move, rotate);
-    } // end if(myRingID == 4)
-  if(myRingID == 5)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing05Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing05_log == NULL )
-	{
-	  siDetSpiceRing05_log = new G4LogicalVolume(siDetSpiceRing05Sec, material, "siDetSpiceRing05", 0, 0, 0);
-	  siDetSpiceRing05_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing05->AddPlacedVolume(siDetSpiceRing05_log, move, rotate);
-    } // end if(myRingID == 5)
-  if(myRingID == 6)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing06Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing06_log == NULL )
-	{
-	  siDetSpiceRing06_log = new G4LogicalVolume(siDetSpiceRing06Sec, material, "siDetSpiceRing06", 0, 0, 0);
-	  siDetSpiceRing06_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing06->AddPlacedVolume(siDetSpiceRing06_log, move, rotate);
-    } // end if(myRingID == 6)
-  if(myRingID == 7)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing07Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing07_log == NULL )
-	{
-	  siDetSpiceRing07_log = new G4LogicalVolume(siDetSpiceRing07Sec, material, "siDetSpiceRing07", 0, 0, 0);
-	  siDetSpiceRing07_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing07->AddPlacedVolume(siDetSpiceRing07_log, move, rotate);
-    } // end if(myRingID == 7)
-  if(myRingID == 8)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing08Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing08_log == NULL )
-	{
-	  siDetSpiceRing08_log = new G4LogicalVolume(siDetSpiceRing08Sec, material, "siDetSpiceRing08", 0, 0, 0);
-	  siDetSpiceRing08_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing08->AddPlacedVolume(siDetSpiceRing08_log, move, rotate);
-    } // end if(myRingID == 8)
-  if(myRingID == 9)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing09Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing09_log == NULL )
-	{
-	  siDetSpiceRing09_log = new G4LogicalVolume(siDetSpiceRing09Sec, material, "siDetSpiceRing09", 0, 0, 0);
-	  siDetSpiceRing09_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing09->AddPlacedVolume(siDetSpiceRing09_log, move, rotate);
-    } // end if(myRingID == 9)
-  if(myRingID == 10)
-    {
-      // construct solid
-      G4Tubs* siDetSpiceRing10Sec = BuildCrystal(myRingID);
-      // construct logical volume
-      if( siDetSpiceRing10_log == NULL )
-	{
-	  siDetSpiceRing10_log = new G4LogicalVolume(siDetSpiceRing10Sec, material, "siDetSpiceRing10", 0, 0, 0);
-	  siDetSpiceRing10_log->SetVisAttributes(vis_att);
-	}
-      this->assemblySiRing10->AddPlacedVolume(siDetSpiceRing10_log, move, rotate);
-    } // end if(myRingID == 10)
+	this->assemblySiRing[myRingID-1]->AddPlacedVolume(siDetSpiceRing_log[myRingID-1], move, rotate);
+
 
   return 1;
 }
