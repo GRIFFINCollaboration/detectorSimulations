@@ -39,6 +39,7 @@
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh" 
+#include "TrackingAction.hh"
 #include "HistoManager.hh" 
 #include "RootManager.hh"
 
@@ -70,6 +71,9 @@ int main(int argc,char** argv)
   //
   PhysicsList* physics = new PhysicsList;
   runManager->SetUserInitialization(physics);
+  //
+  TrackingAction* tracking_action = new TrackingAction(); // MHD 19 April 2013
+  runManager->SetUserAction(tracking_action); // MHD 19 April 2013
     
   HistoManager*  histo = new HistoManager(); // Included in new system
     

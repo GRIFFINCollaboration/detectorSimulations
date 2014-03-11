@@ -32,28 +32,27 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef DetectionSystemSpice_h
-#define DetectionSystemSpice_h 1
+#ifndef DetectionSystemS3_h
+#define DetectionSystemS3_h 1
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
 #define AL_COL 0.5,0.5,0.5
 
-class DetectionSystemSpice
+class DetectionSystemS3
 {
 public:
-  DetectionSystemSpice();
-  ~DetectionSystemSpice();
+  DetectionSystemS3();
+  ~DetectionSystemS3();
   
   //------------------------------------------------//
   // logical and physical volumes
   //------------------------------------------------//
 private:
   G4AssemblyVolume* assembly;
-  G4AssemblyVolume* assemblySiRing[10];
-  SensitiveDetector* siDetSpiceRing_SD[10];
-
+	G4AssemblyVolume* assemblyS3Ring[24];
+  SensitiveDetector* siDetS3_SD[24];
   
 public:
   G4int Build(G4SDManager* mySDman);
@@ -64,10 +63,9 @@ public:
 private:
   G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
   
-  G4LogicalVolume* siInnerGuardRing_log;
-  G4LogicalVolume* siOuterGuardRing_log;
-  G4LogicalVolume* siDetSpiceRing_log[10];
-
+  G4LogicalVolume* S3InnerGuardRing_log;
+  G4LogicalVolume* S3OuterGuardRing_log;
+  G4LogicalVolume* siDetS3Ring_log[24];
   
   //--------------------------------------------------------//
   // SPICE physical properties
@@ -81,18 +79,18 @@ private:
   // planar detector crystal     //
   //-----------------------------//
 public:
-  G4double siDetCrystalThickness;
-  G4double siDetCrystalOuterDiameter;
-  G4double siDetCrystalInnerDiameter;
-  G4double siDetRadialSegments;
-  G4double siDetPhiSegments;
+  G4double S3DetCrystalThickness;
+  G4double S3DetCrystalOuterDiameter;
+  G4double S3DetCrystalInnerDiameter;
+  G4double S3DetRadialSegments;
+  G4double S3DetPhiSegments;
 
   //-------------------------------//
   // parameters for the guard ring //
   //-------------------------------//
 private:
-  G4double siDetGuardRingInnerDiameter;
-  G4double siDetGuardRingOuterDiameter;
+  G4double S3DetGuardRingInnerDiameter;
+  G4double S3DetGuardRingOuterDiameter;
    
     //------------------------------------------------//
     // internal methods in Build()

@@ -90,6 +90,11 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun
   radioactiveBetaDecayCmd->SetGuidance("Simulate a complete radioactive beta negative decay with a simulation directory");
   radioactiveBetaDecayCmd->SetParameterName("choice",false);
   radioactiveBetaDecayCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  radioactiveSourceDecayCmd = new G4UIcmdWithAString("/DetSys/gun/radioactiveSourceDecay",this);
+  radioactiveSourceDecayCmd->SetGuidance("Simulate a radioactive source decay with a file containing the decay data");
+  radioactiveSourceDecayCmd->SetParameterName("choice",false);
+  radioactiveSourceDecayCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   polarizationCmd = new G4UIcmdWithADouble("/DetSys/gun/polarization",this);
   polarizationCmd->SetGuidance("Set Polarization of Nuclei");
@@ -129,6 +134,22 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun
   positionCmd->SetGuidance("Set particle position.");
   positionCmd->SetUnitCategory("Length");
   positionCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  radiusCmd = new G4UIcmdWithADoubleAndUnit("/DetSys/gun/radius",this);
+  radiusCmd->SetGuidance("Set source active radius.");
+  radiusCmd->SetUnitCategory("Length");
+  radiusCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  rangeCmd = new G4UIcommand("/DetSys/gun/energyrange",this);
+  rangeCmd->SetGuidance("Set energy range - minimum, maximum, step size (all in keV)");
+  G4UIparameter *parameter4, *parameter5, *parameter6;
+	parameter4 = new G4UIparameter ("minimum", 'd', omitable = false);
+  rangeCmd->SetParameter(parameter4);
+  parameter5 = new G4UIparameter ("maximum", 'd', omitable = false);
+  rangeCmd->SetParameter(parameter5);
+  parameter6 = new G4UIparameter ("step", 'd', omitable = false);
+  rangeCmd->SetParameter(parameter6);
+  rangeCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
 }
 
@@ -139,12 +160,15 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete energyCmd;
   delete directionCmd;
   delete positionCmd;
+  delete radiusCmd;
+  delete rangeCmd;
   delete particleCmd;
   delete ionCmd;
   delete gunDir;
   delete betaPlusEmissionCmd;
   delete betaMinusEmissionCmd;
   delete radioactiveBetaDecayCmd;
+  delete radioactiveSourceDecayCmd;
   delete polarizationCmd;
   delete emitBetaParticleCmd;
   delete includeXRayInputFileKShellCmd;
@@ -178,6 +202,9 @@ void PrimaryGeneratorMessenger::SetNewValue( G4UIcommand* command, G4String newV
   if( command == betaMinusEmissionCmd ) { 
     Action->SetBetaMinusEmission(newValue);
   }
+  if( command == radioactiveSourceDecayCmd ) {
+    Action->SetRadioactiveSourceDecay(newValue);
+  }
   if( command == radioactiveBetaDecayCmd ) {
     Action->SetRadioactiveBetaDecay(newValue);
   }
@@ -208,7 +235,16 @@ void PrimaryGeneratorMessenger::SetNewValue( G4UIcommand* command, G4String newV
   if( command == positionCmd ) { 
     Action->SetPosition(positionCmd->GetNew3VectorValue(newValue));
   }
-
+	if( command == radiusCmd ) { 
+    Action->SetSourceRadius(radiusCmd->GetNewDoubleValue(newValue));
+  }
+  if( command == rangeCmd ) { 
+    G4double minimum, maximum, step;
+    const char* s = newValue;
+    std::istringstream is ((char*)s);
+    is>>minimum>>maximum>>step;
+    Action->SetEnergyRange(minimum,maximum,step);
+  }
 
 }
 

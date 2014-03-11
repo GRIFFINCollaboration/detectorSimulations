@@ -82,6 +82,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   WorldMagneticFieldCmd->SetGuidance("Set world magnetic field - x y z unit.");
   WorldMagneticFieldCmd->SetUnitCategory("Magnetic flux density");
   WorldMagneticFieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  WorldTabMagneticFieldCmd = new G4UIcmdWithAString("/DetSys/world/tabMagneticField",this);
+  WorldTabMagneticFieldCmd->SetGuidance("Set tabulated magnetic field.");
+  WorldTabMagneticFieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   GenericTargetCmd = new G4UIcmdWithAString("/DetSys/app/genericTarget",this);
   GenericTargetCmd->SetGuidance("Select material of the target.");
@@ -261,10 +265,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemSpiceCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSpice",this);
   AddDetectionSystemSpiceCmd->SetGuidance("Add Detection System Spice");
   AddDetectionSystemSpiceCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  AddDetectionSystemSpiceV02Cmd = new G4UIcmdWithAnInteger("/DetSys/det/addSpiceV02",this);
-  AddDetectionSystemSpiceV02Cmd->SetGuidance("Add Detection System SpiceV02");
-  AddDetectionSystemSpiceV02Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  AddDetectionSystemS3Cmd = new G4UIcmdWithAnInteger("/DetSys/det/addS3",this);
+  AddDetectionSystemS3Cmd->SetGuidance("Add Detection System S3");
+  AddDetectionSystemS3Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   AddDetectionSystemPacesCmd = new G4UIcmdWithAnInteger("/DetSys/det/addPaces",this);
   AddDetectionSystemPacesCmd->SetGuidance("Add Detection System Paces");
@@ -287,6 +291,7 @@ DetectorMessenger::~DetectorMessenger()
   delete WorldDimensionsCmd;
   delete WorldVisCmd;
   delete WorldMagneticFieldCmd;
+  delete WorldTabMagneticFieldCmd;
   delete DetSysDir; 
   delete UpdateCmd;
   delete GenericTargetCmd;
@@ -316,7 +321,7 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystem8piDetectorCmd;
   delete AddDetectionSystemSceptarCmd;
   delete AddDetectionSystemSpiceCmd;
-  delete AddDetectionSystemSpiceV02Cmd;
+  delete AddDetectionSystemS3Cmd;
   delete AddDetectionSystemPacesCmd;
   
   delete AddDetectionSystemGriffinForwardCmd;
@@ -353,6 +358,9 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }
   if( command == WorldMagneticFieldCmd ) {
     Detector->SetWorldMagneticField(WorldMagneticFieldCmd->GetNew3VectorValue(newValue));
+  }
+  if( command == WorldTabMagneticFieldCmd ) {
+    Detector->SetTabMagneticField(newValue);
   }
   if( command == UpdateCmd ) { 
     Detector->UpdateGeometry(); 
@@ -474,8 +482,8 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == AddDetectionSystemSpiceCmd ) { 
     Detector->AddDetectionSystemSpice(AddDetectionSystemSpiceCmd->GetNewIntValue(newValue)); 
   }
-  if( command == AddDetectionSystemSpiceV02Cmd ) {
-    Detector->AddDetectionSystemSpiceV02(AddDetectionSystemSpiceV02Cmd->GetNewIntValue(newValue));
+  if( command == AddDetectionSystemS3Cmd ) { 
+    Detector->AddDetectionSystemS3(AddDetectionSystemS3Cmd->GetNewIntValue(newValue)); 
   }
   if( command == AddDetectionSystemPacesCmd ) {
     Detector->AddDetectionSystemPaces(AddDetectionSystemPacesCmd->GetNewIntValue(newValue));

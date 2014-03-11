@@ -69,6 +69,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWith3VectorAndUnit* WorldDimensionsCmd; 
     G4UIcmdWithABool*          WorldVisCmd;
     G4UIcmdWith3VectorAndUnit* WorldMagneticFieldCmd;
+    G4UIcmdWithAString*        WorldTabMagneticFieldCmd;
     G4UIcmdWithoutParameter*   UpdateCmd;
 
     // Generic Target Apparatus
@@ -111,7 +112,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinBackDetectorCmd;
     //G4UIcmdWith3Vector*     AddDetectionSystemGriffinPositionConfigCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceCmd;
-    G4UIcmdWithAnInteger*   AddDetectionSystemSpiceV02Cmd;
+    G4UIcmdWithAnInteger*   AddDetectionSystemS3Cmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemPacesCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinHevimetCmd ; 
 

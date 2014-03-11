@@ -67,11 +67,14 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit*     energyCmd;
     G4UIcmdWith3Vector*            directionCmd;
     G4UIcmdWith3VectorAndUnit*     positionCmd;
+    G4UIcmdWithADoubleAndUnit*     radiusCmd;
     G4UIcmdWithAString*            particleCmd;
     G4UIcommand*                   ionCmd;
+    G4UIcommand*									 rangeCmd;
     G4UIcmdWithAString*            betaPlusEmissionCmd;
     G4UIcmdWithAString*            betaMinusEmissionCmd;
     G4UIcmdWithAString*            radioactiveBetaDecayCmd;
+    G4UIcmdWithAString*            radioactiveSourceDecayCmd;
     G4UIcmdWithADouble*            polarizationCmd;
     G4UIcmdWithABool*              emitBetaParticleCmd;
     G4UIcmdWithABool*              includeXRayInputFileKShellCmd;
