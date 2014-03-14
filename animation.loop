@@ -1,0 +1,3 @@
+/vis/ogl/set/startTime {startTime} ns {timeRange} ns
+# Print eps file (uncomment to print each timeslice to eps file)
+# /vis/ogl/printEPS

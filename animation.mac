@@ -1,0 +1,92 @@
+################################################
+# Macro file for allowing on-screen animations 
+# or have each timeslice printing to eps file
+# (from which you can create a gif).
+#
+# Add in detector/particle gun as usual.
+#################################################
+
+# Verbose is the screen output
+/control/verbose 2
+/vis/verbose confirmations
+
+# Type of viewer, display limit will need to be increased if adding a lot more tracks
+/vis/open OGLSX 600x600-0+0
+/vis/ogl/set/displayListLimit 500000
+
+# Disable auto refresh and quieten vis messages whilst scene and
+# trajectories are established:
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+
+# Draw the objects and trajectories (rich for extra data, smooth for curved trajectories)
+/vis/drawVolume
+/vis/scene/add/eventID
+/vis/scene/add/trajectories rich smooth 
+
+# Viewing angle, zooming, camera position, background colour
+/vis/viewer/set/viewpointThetaPhi -45 0
+/vis/viewer/zoomTo 1.2
+/vis/viewer/panTo 2 0 cm
+/vis/viewer/set/background white
+
+# Surface style (opposed to wireframe), hide edges and markers so that objects behind are hidden appropriately
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenEdge 1
+/vis/viewer/set/hiddenMarker 1
+/vis/viewer/set/globalLineWidthScale 2
+
+# Cut down the middle
+/vis/viewer/addCutawayPlane 0 0 0 m 1 1 0
+
+# First controls colour by particle charge
+# Second defines by energy range.  Each must have time slicing and can only have one active.
+
+#/vis/modeling/trajectories/create/drawByCharge TimeSliceByCharge
+#/vis/modeling/trajectories/TimeSliceByCharge/default/setDrawStepPts true
+#/vis/modeling/trajectories/TimeSliceByCharge/default/setStepPtsSize 5
+#/vis/modeling/trajectories/TimeSliceByCharge/set 0 blue
+#/vis/modeling/trajectories/TimeSliceByCharge/default/setDrawAuxPts true
+#/vis/modeling/trajectories/TimeSliceByCharge/default/setAuxPtsSize 5
+#/vis/modeling/trajectories/TimeSliceByCharge/default/setTimeSliceInterval 0.001 ns
+
+/vis/modeling/trajectories/create/drawByAttribute
+/vis/modeling/trajectories/drawByAttribute-0/setAttribute IKE
+/vis/modeling/trajectories/drawByAttribute-0/addInterval interval1 0 keV 599 keV 
+/vis/modeling/trajectories/drawByAttribute-0/addInterval interval2 1 MeV 4 GeV 
+/vis/modeling/trajectories/drawByAttribute-0/addInterval interval3 900 keV 1 MeV 
+/vis/modeling/trajectories/drawByAttribute-0/interval1/setLineColourRGBA 0.5 0.0 0.5 1
+/vis/modeling/trajectories/drawByAttribute-0/interval2/setLineColourRGBA 0.0 0.0 1.0 1
+/vis/modeling/trajectories/drawByAttribute-0/interval3/setLineColourRGBA 0.0 1.0 0.0 1
+/vis/modeling/trajectories/drawByAttribute-0/default/setLineColour red
+/vis/modeling/trajectories/drawByAttribute-0/default/setTimeSliceInterval 0.001 ns
+/vis/modeling/trajectories/drawByAttribute-0/interval1/setTimeSliceInterval 0.001 ns
+/vis/modeling/trajectories/drawByAttribute-0/interval2/setTimeSliceInterval 0.001 ns
+/vis/modeling/trajectories/drawByAttribute-0/interval3/setTimeSliceInterval 0.001 ns
+
+
+/vis/modeling/trajectories/list
+
+# Re-establish auto refreshing and verbosity:
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+# Draw event
+/run/beamOn
+
+# fade gives it a tail, timeRange is the frequency
+/vis/ogl/set/fade 1
+/vis/ogl/set/displayHeadTime true
+/control/alias timeRange 0.06
+#/control/alias halfInterval 0.00005
+#/vis/ogl/set/displayLightFront true -90 0 0 mm -{halfInterval} ns
+
+# Display time slices
+# the loop file is called every time slice
+# uncomment in the loop file to save animation to eps
+/vis/verbose warnings
+/control/verbose 0
+/control/alias dx 1
+/control/loop animation.loop startTime -{timeRange} 0.6 0.01
+#/control/shell sleep 10
+/vis/verbose confirmations
