@@ -76,6 +76,7 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
+
   G4int particleType = 0;
   G4int volNameOver9;
   G4int evntNb;
@@ -90,7 +91,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
 
   G4String volname = volume->GetName();
-
+   
+   
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit();
   G4double ekin = aStep->GetPreStepPoint()->GetKineticEnergy();
@@ -223,10 +225,20 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   // Paces
   found = volname.find("paces_silicon_block_log");
-  if (edep != 0 && found!=G4String::npos) {
+  if (edep != 0 && found!=G4String::npos) {   
       SetDetNumberForGenericDetector(volname);
       eventaction->AddPacesCrystDet(edep,stepl,det-1);
   }
+  
+  //SPICE  
+    found = volname.find("siDetSpiceRing");
+  if (edep != 0 && found!=G4String::npos) {
+      SetDetAndCryNumberForSpiceDetector(volname);
+      eventaction->AddSpiceCrystDet(edep,stepl,det);
+      eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2);
+  }
+  
+
 }
 
 void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)
@@ -285,6 +297,30 @@ void SteppingAction::SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4Stri
     //G4cout << "Found Edep in " << volname <<  " cry = " << cry << " det = " << det << " av = " << av << G4endl;
 }
 
+void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
+{
+    G4String dummy="";
+
+    // the volume name contains five underscrores : av_xxx_impr_SegmentID_siDetSpiceRing_RingID_etc...
+                                          
+    size_t UnderScoreIndex[6];
+    size_t old = -1 ;  
+    for (int i = 0 ; i < 6 ; i++ ){
+    UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+    old = UnderScoreIndex[i] ;
+    }
+
+   dummy = volname.substr (UnderScoreIndex[2]+1,UnderScoreIndex[3]-UnderScoreIndex[2]-1); // select the substring between the underscores 
+   cry = atoi(dummy.c_str()) - 1; // subtract one : In spice we start counting ring or sectors from zero 
+   
+   dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
+   det = atoi(dummy.c_str()); // ring 
+
+    //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+    //G4cin.get();
+}
+
+
 void SteppingAction::SetDetNumberForGenericDetector(G4String volname)
 {
     const char *cstr = volname.c_str();
@@ -319,7 +355,7 @@ void SteppingAction::SetDetNumberForGenericDetector(G4String volname)
         }
     }
 
-    //G4cout << "Found electron ekin in " << volname << " det = " << det << G4endl;
+    G4cout << "Stepping Action :: Found electron ekin in " << volname << " det = " << det << G4endl;
 }
 
 G4int SteppingAction::FindTrueGriffinDetector(G4int det)

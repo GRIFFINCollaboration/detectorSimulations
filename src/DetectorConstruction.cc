@@ -34,7 +34,6 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
 #include "G4RunManager.hh"
 
 #include "G4Material.hh"
@@ -729,22 +728,22 @@ void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 
 void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
 {
-	G4SDManager* mySDman = G4SDManager::GetSDMpointer();
+
 	DetectionSystemSpice* pSpice = new DetectionSystemSpice() ;
-	pSpice->Build(mySDman); 
+	pSpice->Build(); 
 	
-  G4int nPhiSeg = 12;
-  G4int detID=0;
+  G4int NumberSeg = 12; // Segments in Phi
+  G4int segmentID=0;
   G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,-annularDetectorDistance); 
   pSpice->PlaceGuardRing(logicWorld, pos);
   for(int ring = 0; ring<nRings; ring++)
     {
-      for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+      for(int Seg=0; Seg<NumberSeg; Seg++)
 		{
-		  pSpice->PlaceDetector(logicWorld, pos, ring+1, radSeg, detID);
-		  detID++;
-		} // end for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+		  pSpice->PlaceDetector(logicWorld, pos, ring, Seg, segmentID);
+		  segmentID++;
+		} // end for(int Seg=0; Seg<NumberSeg; Seg++)
     } // end for(int ring = 0; ring<nRings; ring++)
 }
 
@@ -754,18 +753,18 @@ void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
 	DetectionSystemS3* pS3 = new DetectionSystemS3();
 	pS3->Build(mySDman);
 	
-  G4int nPhiSeg = 32;
+  G4int NumberSeg = 32;
   G4int detID=0;
   G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,S3DetectorDistance); 
   pS3->PlaceGuardRing(logicWorld, pos);
   for(int ring = 0; ring<nRings; ring++)
 	{
-		for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+		for(int Seg=0; Seg<NumberSeg; Seg++)
 		{
-			pS3->PlaceDetector(logicWorld, pos, ring+1, radSeg, detID);
+			pS3->PlaceDetector(logicWorld, pos, ring+1, Seg, detID);
 			detID++;
-		} // end for(int radSeg=0; radSeg<nPhiSeg; radSeg++)
+		} // end for(int Seg=0; Seg<NumberSeg; Seg++)
 	} // end for(int ring = 0; ring<nRings; ring++)
 }
 

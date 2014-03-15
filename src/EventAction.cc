@@ -44,7 +44,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //G4
-#include "SensitiveDetector.hh"
 #include "EventAction.hh"
 #include "RunAction.hh"
 #include "G4Event.hh"
@@ -90,14 +89,44 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 
 void EventAction::EndOfEventAction(const G4Event*)
 {
+        G4double eventNumber = 0 ;
+        G4double stepNumber = 0;
+        G4double cryNumber  = 0;
+        G4double detNumber  = 0;
+        G4double depEnergy  = 0;
+        G4double posx       = 0;
+        G4double posy       = 0;
+        G4double posz       = 0;
+        G4double time       = 0;
+                
     for(G4int i = 0; i < MAXSTEPS; i++) {
-        if(stepTracker[1][i] !=0 && histoManager->GetStepTrackerBool()) {
-            histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
-            RootManager::instance()->FillG4Hit(1., 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);	   // this is one hit of a Hit Collection
-            //RootManager::instance()->FillHist(1000/keV);		//optionale
+       
+        if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
+
+        eventNumber = stepTracker[0][i] ;
+        stepNumber = stepTracker[1][i];
+        cryNumber  = stepTracker[2][i];
+        detNumber  = stepTracker[3][i];
+        depEnergy  = stepTracker[4][i];
+        posx       = stepTracker[5][i]/mm;
+        posy       = stepTracker[6][i]/mm;
+        posz       = stepTracker[7][i]/mm;
+        time       = stepTracker[8][i]/second;
+            
+        histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
+        /*    
+		detnum*100+segnum = key, // detnum = radius Segnum = phi     
+		pdg,
+		edep,
+		posA.x()/mm, posA.y()/mm, posA.z()/mm,
+		OriginID, OriginPdg, OriginEnergy,                  
+		OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
+        */
+        RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, 0, 11, 0, 0, 0, 0);	   // this is one hit of a Hit Collection
+        //RootManager::instance()->FillHist(1000/keV);		//optionale
         }
-        
-		if (1) { // if condition satisfied 
+
+		if (depEnergy>0 &&  detNumber<12) { // if condition satisfied 
 		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
 		}
 		

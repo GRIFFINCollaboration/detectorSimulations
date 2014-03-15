@@ -43,7 +43,7 @@ HistoManager::HistoManager()
   fileName[0] = "g4out";
   factoryOn = false;
 
-  stepTrackerBool = false;
+  stepTrackerBool = true;
 
   makeHistoIndex = 0;
 

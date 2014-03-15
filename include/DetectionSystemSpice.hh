@@ -52,11 +52,10 @@ public:
 private:
   G4AssemblyVolume* assembly;
   G4AssemblyVolume* assemblySiRing[10];
-  SensitiveDetector* siDetSpiceRing_SD[10];
 
   
 public:
-  G4int Build(G4SDManager* mySDman);
+  G4int Build();
   G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,
 		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
   G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
@@ -74,35 +73,35 @@ private:
   // OBS: crystal properties are public, others are private
   //--------------------------------------------------------//
 private:
-  G4String wafer_material;
+  G4String 	wafer_material;
   
   //-----------------------------//
   // parameters for the annular  //
   // planar detector crystal     //
   //-----------------------------//
 public:
-  G4double siDetCrystalThickness;
-  G4double siDetCrystalOuterDiameter;
-  G4double siDetCrystalInnerDiameter;
-  G4double siDetRadialSegments;
-  G4double siDetPhiSegments;
+  G4double 	siDetCrystalThickness;
+  G4double 	siDetCrystalOuterDiameter;
+  G4double 	siDetCrystalInnerDiameter;
+  G4double 	siDetRadialSegments;
+  G4double 	siDetPhiSegments;
 
   //-------------------------------//
   // parameters for the guard ring //
   //-------------------------------//
 private:
-  G4double siDetGuardRingInnerDiameter;
-  G4double siDetGuardRingOuterDiameter;
+  G4double 	siDetGuardRingInnerDiameter;
+  G4double 	siDetGuardRingOuterDiameter;
    
     //------------------------------------------------//
     // internal methods in Build()
     //------------------------------------------------//
 private:
-  G4int BuildSiliconWafer(G4int ringID);
-  G4int BuildInnerGuardRing();
-  G4int BuildOuterGuardRing();
+  G4int 	BuildSiliconWafer(G4int ringID);
+  G4int 	BuildInnerGuardRing();
+  G4int 	BuildOuterGuardRing();
   
-  G4Tubs*             BuildCrystal(G4int myRingID);
+  G4Tubs*	BuildCrystal(G4int myRingID);
 };
 
 #endif
