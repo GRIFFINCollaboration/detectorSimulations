@@ -1,6 +1,5 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "SensitiveDetector.hh"
 
 #include "G4Material.hh"
 
@@ -19,8 +18,6 @@
 
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
-
-#include "G4SDManager.hh"
 
 #include "DetectionSystemSpice.hh"
 
@@ -59,44 +56,25 @@ DetectionSystemSpice::~DetectionSystemSpice()
     delete siInnerGuardRing_log;
     delete siOuterGuardRing_log;
 
-		delete [] siDetSpiceRing_SD;
-
 }
 
 //---------------------------------------------------------//
 // main build function called in DetectorConstruction      //
 // when detector is constructed                            //
 //---------------------------------------------------------//
-G4int DetectionSystemSpice::Build(G4SDManager* mySDman)
+G4int DetectionSystemSpice::Build()
 {
 	
-	G4AssemblyVolume* myAssembly = new G4AssemblyVolume();
-  this->assembly = myAssembly;
+    this->assembly = new G4AssemblyVolume();
    
 	// Loop through each ring ...
 	for(int ringID=0; ringID<10; ringID++) {
-		
-		// ... if the sensitive detector does not exist, create it and add to sd manager
-		if( !siDetSpiceRing_SD[ringID] ) {
-			G4String ringName = "/sd/allSpiceRing";
-			ringName += ringID+1;
-			G4String HCname = "CollectionSpiceRing";
-			HCname += ringID+1;
-    	siDetSpiceRing_SD[ringID] = new SensitiveDetector(ringName, HCname);
-    	mySDman->AddNewDetector( siDetSpiceRing_SD[ringID] );
-    } // end if( !siDetSpiceRing_SD[ringID] )
-    
-    // Build assembly volumes
-    G4AssemblyVolume* myAssemblySiRing = new G4AssemblyVolume();    
-  	this->assemblySiRing[ringID] = myAssemblySiRing;
-
-		// Build Silicon Ring
-  	BuildSiliconWafer(ringID+1);
-  	
-  	// Set Sensitive Detector
-  	siDetSpiceRing_log[ringID]->SetSensitiveDetector( siDetSpiceRing_SD[ringID] );
-  	
-  	
+				
+		// Build assembly volumes
+	  	this->assemblySiRing[ringID] = new G4AssemblyVolume();
+		// Build the logical segment of the Silicon Ring
+	  	BuildSiliconWafer(ringID);  
+	  	
   } // end for(int ringID)
   
   BuildInnerGuardRing();
@@ -109,14 +87,17 @@ G4int DetectionSystemSpice::Build(G4SDManager* mySDman)
 // "place" function called in DetectorMessenger            //
 // if detector is added                                    //
 //---------------------------------------------------------//
-G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4int ringNumber, G4int nRadSeg, G4int detectorNumber)
+G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4int ringNumber, G4int Seg, G4int SegmentNumber)
 {
+
+  //G4cout << "DetectionSystemSpice :: Ring number : "<< ringNumber <<  " SegNumber in ring : "<< Seg << " SegmentNumber in detector : " <<SegmentNumber << G4endl;
+  //G4cin.get();
+  G4int NumberSeg = (G4int)this->siDetPhiSegments; // total number of segments = 12
+  G4double angle = (360.*deg/NumberSeg)*(Seg+0.5); // Seg = {0, ...,11} 
   G4RotationMatrix* rotate = new G4RotationMatrix;
-  G4int nRadSegTot = (G4int)this->siDetPhiSegments;
-  G4double angle = (360./nRadSegTot)*(nRadSeg-0.5)*deg;
   rotate->rotateZ(angle);
   
-  assemblySiRing[ringNumber-1]->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
+  assemblySiRing[ringNumber]->MakeImprint(exp_hall_log, move, rotate, SegmentNumber);
 
   return 1;
 }
@@ -134,7 +115,7 @@ G4int DetectionSystemSpice::PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4Thre
 // build functions for different parts                     //
 // called in main build function                           //
 //---------------------------------------------------------//
-G4int DetectionSystemSpice::BuildSiliconWafer(G4int myRingID)
+G4int DetectionSystemSpice::BuildSiliconWafer(G4int RingID)  // RingID = { 0, 9 }
 {
 	// Define the material, return error if not found
   G4Material* material = G4Material::GetMaterial(this->wafer_material);
@@ -156,17 +137,22 @@ G4int DetectionSystemSpice::BuildSiliconWafer(G4int myRingID)
   rotate->rotateZ(0*deg);
 
   // construct solid
-  G4Tubs* siDetSpiceRingSec = BuildCrystal(myRingID);
+  G4Tubs* siDetSpiceRingSec = BuildCrystal(RingID);
   // construct logical volume
-  if( !siDetSpiceRing_log[myRingID-1] )
-	{
-		G4String ringName = "siDetSpiceRing";
-		ringName += myRingID;
+  if( !siDetSpiceRing_log[RingID] ) {
+		G4String ringName = "siDetSpiceRing_";
+		G4String ringID = G4UIcommand::ConvertToString(RingID);
+		ringName += ringID;
+		ringName += "_Log";
 		
-		siDetSpiceRing_log[myRingID-1] = new G4LogicalVolume(siDetSpiceRingSec, material, ringName, 0, 0, 0);
-		siDetSpiceRing_log[myRingID-1]->SetVisAttributes(vis_att);
+		//G4cout << "DetectionSystemSpice : ringName "<< ringName <<" RingID" <<  RingID<< G4endl ; 
+		//G4cin.get();
+		
+		siDetSpiceRing_log[RingID] = new G4LogicalVolume(siDetSpiceRingSec, material, ringName, 0, 0, 0);
+		siDetSpiceRing_log[RingID]->SetVisAttributes(vis_att);
 	}
-	this->assemblySiRing[myRingID-1]->AddPlacedVolume(siDetSpiceRing_log[myRingID-1], move, rotate);
+	
+	this->assemblySiRing[RingID]->AddPlacedVolume(siDetSpiceRing_log[RingID], move, rotate);
 
 
   return 1;
@@ -244,17 +230,18 @@ G4int DetectionSystemSpice::BuildOuterGuardRing()
   return 1;
 }
 
-///////////////////////////////////////////////////////////////////////
-// Methods used to build shapes
-///////////////////////////////////////////////////////////////////////
-G4Tubs* DetectionSystemSpice::BuildCrystal(G4int myRingID)
+///////////////////////////////////////////////////////
+// Build one segment of Spice, 
+// the geometry depends on the distance from the center
+///////////////////////////////////////////////////////
+G4Tubs* DetectionSystemSpice::BuildCrystal(G4int RingID)
 {
   // define angle, length, thickness, and inner and outer diameter
   // of silicon detector segment
   G4double tube_element_length = (this->siDetCrystalOuterDiameter - this->siDetCrystalInnerDiameter)/(2*(this->siDetRadialSegments));
   G4double tube_element_angular_width = (360./this->siDetPhiSegments)*deg;
-  G4double tube_element_outer_radius = ((G4double)this->siDetCrystalInnerDiameter)/2.0 + tube_element_length*(myRingID);
-  G4double tube_element_inner_radius = (this->siDetCrystalInnerDiameter)/2.0 + tube_element_length*(myRingID-1);
+  G4double tube_element_inner_radius = (this->siDetCrystalInnerDiameter)/2.0 + tube_element_length*(RingID);
+  G4double tube_element_outer_radius = ((G4double)this->siDetCrystalInnerDiameter)/2.0 + tube_element_length*(RingID+1);
   G4double tube_element_half_thickness = (this->siDetCrystalThickness)/2.0;
 
   // establish solid

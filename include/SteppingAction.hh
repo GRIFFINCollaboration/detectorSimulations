@@ -55,10 +55,14 @@ private:
   DetectorConstruction* detector;
   EventAction*          eventaction;  
 
+  // Griffin
   void SetDetAndCryNumberForGriffinComponent( G4String );
   void SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4String);
   void SetDetNumberForGenericDetector( G4String );
-
+  
+  //Spice
+  void SetDetAndCryNumberForSpiceDetector( G4String ) ;
+  
   G4int FindTrueGriffinDetector(G4int);
 
   G4int stepNumber;
