@@ -80,22 +80,24 @@ public:
 	// please correct them if they are wrong. 
   void Add8piCrystDet(G4double de, G4double dl, G4int det) {EightPiCrystEnergyDet[det] += de; EightPiCrystTrackDet[det] += dl;} ;  
   void AddSpiceCrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
+  void AddS3CrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
   void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
 
 
 
 private:
 
-  void ClearVariables();
+	void ClearVariables();
 
-  void FillParticleType();
-  void FillGridEkin();
-  void FillGriffinCryst();
-  void FillLaBrCryst();
-  void FillSodiumIodideCryst();
+	void FillParticleType();
+	void FillGridEkin();
+	void FillGriffinCryst();
+	void FillLaBrCryst();
+	void FillSodiumIodideCryst();
 	void FillSceptarCryst() ;
- 	void FillSpiceCryst() ;
- 	void FillPacesCryst() ; 
+	void FillSpiceCryst() ;
+	void FillS3Cryst();
+	void FillPacesCryst() ; 
 	void Fill8piCryst() ;
 
 	RunAction*    runAct;
@@ -155,6 +157,9 @@ private:
 
 	G4double SpiceCrystEnergyDet[MAXNUMDET] ;
 	G4double SpiceCrystTrackDet[MAXNUMDET] ;	
+	
+	G4double S3CrystEnergyDet[MAXNUMDET] ;
+	G4double S3CrystTrackDet[MAXNUMDET] ;	
 	
 	G4double PacesCrystEnergyDet[MAXNUMDET] ;
 	G4double PacesCrystTrackDet[MAXNUMDET] ;

@@ -238,6 +238,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2);
   }
   
+  //S3 of SPICE
+    found = volname.find("siDetS3Ring");
+  if (edep != 0 && found!=G4String::npos) {
+	SetDetAndCryNumberForSpiceDetector(volname); // it uses the same parser as for spice
+	eventaction->AddS3CrystDet(edep,stepl,det);
+	eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2);
+}
+  
 
 }
 
@@ -299,10 +307,8 @@ void SteppingAction::SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4Stri
 
 void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
 {
-    G4String dummy="";
-
     // the volume name contains five underscrores : av_xxx_impr_SegmentID_siDetSpiceRing_RingID_etc...
-                                          
+    G4String dummy="";                          
     size_t UnderScoreIndex[6];
     size_t old = -1 ;  
     for (int i = 0 ; i < 6 ; i++ ){
@@ -316,8 +322,8 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
    det = atoi(dummy.c_str()); // ring 
 
-    //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
-    //G4cin.get();
+    G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+    G4cin.get();
 }
 
 

@@ -432,6 +432,11 @@ void EventAction::FillSpiceCryst()
 
 }
 
+void EventAction::FillS3Cryst() 
+{
+
+}
+
 void EventAction::FillPacesCryst() 
 {
 		G4double  energySum = 0, trackSum = 0;
