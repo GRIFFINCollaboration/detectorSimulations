@@ -52,8 +52,6 @@
 #include "G4SolidStore.hh"
 #include "G4AssemblyVolume.hh"
 
-#include "G4SDManager.hh"
-
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
@@ -749,11 +747,10 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
 
 void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
 {
-	G4SDManager* mySDman = G4SDManager::GetSDMpointer();
 	DetectionSystemS3* pS3 = new DetectionSystemS3();
-	pS3->Build(mySDman);
+	pS3->Build();
 	
-  G4int NumberSeg = 32;
+  G4int NumberSeg = 32; // Segments in Phi
   G4int detID=0;
   G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,S3DetectorDistance); 
@@ -762,7 +759,7 @@ void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
 	{
 		for(int Seg=0; Seg<NumberSeg; Seg++)
 		{
-			pS3->PlaceDetector(logicWorld, pos, ring+1, Seg, detID);
+			pS3->PlaceDetector(logicWorld, pos, ring, Seg, detID);
 			detID++;
 		} // end for(int Seg=0; Seg<NumberSeg; Seg++)
 	} // end for(int ring = 0; ring<nRings; ring++)

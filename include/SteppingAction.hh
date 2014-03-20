@@ -63,6 +63,9 @@ private:
   //Spice
   void SetDetAndCryNumberForSpiceDetector( G4String ) ;
   
+  //S3
+  void SetDetAndCryNumberForS3Detector( G4String ) ;
+  
   G4int FindTrueGriffinDetector(G4int);
 
   G4int stepNumber;

@@ -52,10 +52,9 @@ public:
 private:
   G4AssemblyVolume* assembly;
 	G4AssemblyVolume* assemblyS3Ring[24];
-  SensitiveDetector* siDetS3_SD[24];
   
 public:
-  G4int Build(G4SDManager* mySDman);
+  G4int Build();
   G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,
 		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
   G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
