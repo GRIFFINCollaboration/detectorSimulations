@@ -236,13 +236,29 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   } //end if(radioactiveSourceDecaySimulation)
   else if(energyRange)
   {
-  	/* Used for a random distribution
-  	G4double randomRange = (maximumEnergy - minimumEnergy);
-  	G4double randomNumb = G4UniformRand() * randomRange/keV + minimumEnergy/keV;
-  	G4int randomInt = static_cast<int>(randomNumb);
-  	energy = (static_cast<int>(randomInt / (stepSizeEnergy/keV) + 0.5)*stepSizeEnergy/keV)*keV;
-		*/
-		
+		if( isoRadOnBox )
+		{
+      posx = position.x();
+      posy = position.y();
+      posz = position.z();
+
+      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
+      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
+      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
+      
+      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
+	  }	
+    else if(!directionSpecified)
+    {
+      // random direction
+      //G4double costheta = 2.*UniformRand48()-1.0;
+      G4double costheta = 2. * ( CLHEP::RandFlat::shoot() ) - 1.0 ;
+      G4double sintheta = sqrt( 1. - costheta*costheta );
+      //G4double phi      = (360.*deg)*UniformRand48();
+      G4double phi      = (360.*deg) * ( CLHEP::RandFlat::shoot() ) ;
+      direction = G4ThreeVector( sintheta * cos(phi) , sintheta * sin(phi) , costheta);
+    }
+	
 		// Stepping
 		if (previousEnergy/keV == 0 || (abs(previousEnergy-maximumEnergy+stepSizeEnergy))/keV < 0.001)
 		{
@@ -254,8 +270,13 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			previousEnergy = energy;
 			energy = energy + stepSizeEnergy;
 		}
-  	particleGun->SetParticleEnergy(energy);
 
+		particleGun->SetParticleDefinition(this->particle);
+    particleGun->SetParticlePosition(position);
+    particleGun->SetParticleMomentumDirection(direction);
+    particleGun->SetParticleEnergy(energy);
+    particleGun->SetParticleTime(randomClock);
+    
   	eventID = anEvent->GetEventID();
   	eventSum++;
   	particleGun->GeneratePrimaryVertex(anEvent);	
@@ -377,7 +398,7 @@ void PrimaryGeneratorAction::SetParticleType( G4String name )
 
   this->particle = this->particleTable->FindParticle(particleType);
   particleGun->SetParticleDefinition(this->particle);
-  G4cout << " --> Particle type has been set to " << particleType << G4endl;
+  //G4cout << " --> Particle type has been set to " << particleType << G4endl;
 }
 
 void PrimaryGeneratorAction::SetIonType( G4int Z, G4int A, G4double E )

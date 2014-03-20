@@ -113,7 +113,7 @@ DetectorConstruction::DetectorConstruction() :
   // ensure the global field is initialized
   (void)GlobalField::getObject();
   
-  this->matWorldName = "G4_AIR";
+  this->matWorldName = "TechVacuum";
 
   // Generic Target Apparatus
   this->setGenericTargetMaterial   = false;
