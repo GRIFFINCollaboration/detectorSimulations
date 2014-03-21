@@ -19,7 +19,11 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
+#include "Randomize.hh"
+
 #include "DetectionSystemSpice.hh"
+
+double DetectionSystemSpice::SpiceResolution[2];
 
 DetectionSystemSpice::DetectionSystemSpice() :
   // LogicalVolumes
@@ -47,6 +51,7 @@ DetectionSystemSpice::DetectionSystemSpice() :
     //-----------------------------//
     this->siDetGuardRingOuterDiameter = 102*mm;
     this->siDetGuardRingInnerDiameter = 10*mm;
+    
 }
 
 DetectionSystemSpice::~DetectionSystemSpice()
@@ -249,4 +254,22 @@ G4Tubs* DetectionSystemSpice::BuildCrystal(G4int RingID)
 
   return crystal_block;
 }//end ::BuildCrystal
+
+G4int DetectionSystemSpice::AssignSpiceResolution(G4double intercept, G4double gradient)
+{
+	DetectionSystemSpice::SpiceResolution[0] = intercept;
+	DetectionSystemSpice::SpiceResolution[1] = gradient;
+	
+	return 1;
+} //end ::SetResolution
+
+G4double DetectionSystemSpice::ApplySpiceResolution(G4double energy)
+{
+	G4double rand01 = G4UniformRand(); 
+	G4double rand02 = G4UniformRand(); 
+	G4double randStdNormal = sqrt(-2.0 * log(rand01)) * sin(2.0 * M_PI * rand02); //random normal(0,1)
+	energy += ((DetectionSystemSpice::SpiceResolution[1] * energy) + DetectionSystemSpice::SpiceResolution[0]) * randStdNormal; 
+	
+	return energy;
+} //end ::ApplySpiceResolution
 

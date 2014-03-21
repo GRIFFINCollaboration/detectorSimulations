@@ -134,6 +134,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
+    
+    void SetSpiceResolutionVariables(G4double intercept, G4double gain);
     void AddDetectionSystemSpice(G4int nRings);
     void AddDetectionSystemS3(G4int nRings);
 
@@ -194,6 +196,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4ThreeVector fieldBoxMagneticField;
 
     G4String matWorldName;
+    
+    G4double 			SpiceResolutionVariables[2];
                  
     DetectorMessenger* detectorMessenger;
 
