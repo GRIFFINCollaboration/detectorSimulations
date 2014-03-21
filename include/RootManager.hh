@@ -14,9 +14,17 @@ using namespace std ;
 #include<TH1.h>
 #include "TTree.h"
 
+//Geant4
+#include "G4LogicalVolume.hh"
+#include "G4AssemblyVolume.hh"
+#include "G4Tubs.hh"
+
 //User
 #include "RawG4Event.hh"
+#include "DetectionSystemSpice.hh"
 #include "../dataRootClass/TSpiceData.h"
+
+class DetectionSystemSpice;
 
 class RootManager   {
     
@@ -42,7 +50,10 @@ class RootManager   {
         
         //Writing Class for detectors goes here
         TSpiceData  *fSpiceData;
-              
+        
+        //Detector Classes
+        DetectionSystemSpice *fDetectorSpice; 
+                     
        
     public:
     // fill the histograms 

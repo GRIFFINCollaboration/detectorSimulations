@@ -60,6 +60,7 @@ public:
 		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
   G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
   
+  
 private:
   G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
   
@@ -85,7 +86,7 @@ public:
   G4double 	siDetCrystalInnerDiameter;
   G4double 	siDetRadialSegments;
   G4double 	siDetPhiSegments;
-
+  
   //-------------------------------//
   // parameters for the guard ring //
   //-------------------------------//
@@ -102,6 +103,13 @@ private:
   G4int 	BuildOuterGuardRing();
   
   G4Tubs*	BuildCrystal(G4int myRingID);
+  
+  // Applying Resolution to SPICE detector
+public:
+	static double SpiceResolution[2];
+	G4int AssignSpiceResolution(G4double intercept, G4double gradient);
+	G4double ApplySpiceResolution(G4double energy);
+	
 };
 
 #endif

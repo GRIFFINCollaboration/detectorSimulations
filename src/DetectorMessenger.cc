@@ -266,6 +266,16 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemSpiceCmd->SetGuidance("Add Detection System Spice");
   AddDetectionSystemSpiceCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
+  SetSpiceResolutionVariablesCmd = new G4UIcommand("/DetSys/Spice/setResolution",this);
+  SetSpiceResolutionVariablesCmd->SetGuidance("Set Resolution of SPICE Detection System");
+  G4UIparameter *parameter1,*parameter2, *parameter3;
+  G4bool omitable;
+  parameter1 = new G4UIparameter ("inter", 'd', omitable = false);
+  SetSpiceResolutionVariablesCmd->SetParameter(parameter1);
+  parameter2 = new G4UIparameter ("gain", 'd', omitable = false);
+  SetSpiceResolutionVariablesCmd->SetParameter(parameter2);
+  SetSpiceResolutionVariablesCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
   AddDetectionSystemS3Cmd = new G4UIcmdWithAnInteger("/DetSys/det/addS3",this);
   AddDetectionSystemS3Cmd->SetGuidance("Add Detection System S3");
   AddDetectionSystemS3Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -320,6 +330,7 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystem8piCmd;
   delete AddDetectionSystem8piDetectorCmd;
   delete AddDetectionSystemSceptarCmd;
+  delete SetSpiceResolutionVariablesCmd;
   delete AddDetectionSystemSpiceCmd;
   delete AddDetectionSystemS3Cmd;
   delete AddDetectionSystemPacesCmd;
@@ -481,6 +492,13 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }  
   if( command == AddDetectionSystemSpiceCmd ) { 
     Detector->AddDetectionSystemSpice(AddDetectionSystemSpiceCmd->GetNewIntValue(newValue)); 
+  }
+  if( command == SetSpiceResolutionVariablesCmd ) { 
+    G4double inter,gain;
+    const char* s = newValue;
+    std::istringstream is ((char*)s);
+    is>>inter>>gain;
+    Detector->SetSpiceResolutionVariables(inter,gain);
   }
   if( command == AddDetectionSystemS3Cmd ) { 
     Detector->AddDetectionSystemS3(AddDetectionSystemS3Cmd->GetNewIntValue(newValue)); 
