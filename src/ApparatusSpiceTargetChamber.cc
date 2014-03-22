@@ -251,7 +251,7 @@ ApparatusSpiceTargetChamber::ApparatusSpiceTargetChamber()
   this->detector_mount_inner_radius = 52.8*mm;
   this->detector_mount_lip_radius = 48.3*mm;
   this->detector_mount_lip_thickness = 1*mm;
-  this->detector_mount_angular_offset = 30*deg;
+  this->detector_mount_angular_offset = 0*deg;
   this->detector_to_target_distance = 115*mm;
   this->detector_thickness = 6*mm;
   
@@ -558,23 +558,30 @@ void ApparatusSpiceTargetChamber::BuildTargetWheel(){
 	G4Tubs* target = new G4Tubs("target", 0, target_radius, target_thickness, 0, 360*deg);
 	G4Tubs* collimator = new G4Tubs("collimator", 0, collimator_radius, target_thickness, 0, 360*deg);
 	
-	G4double plane_offset = this->target_offset / sqrt(2.);
-	G4ThreeVector trans(-plane_offset, -plane_offset, 0);
+	G4ThreeVector trans(0, 0, 0);
+	
+	trans.setX(this->target_offset*cos(-70*deg));
+	trans.setY(this->target_offset*sin(-70*deg));
 	G4SubtractionSolid* target_wheel0 = new G4SubtractionSolid("target_wheel0", target_wheel_pre, target, 0, trans);
-	trans.setX(this->target_offset*cos(170*deg));
-	trans.setY(this->target_offset*sin(170*deg));
+	
+	trans.setX(this->target_offset*cos(-125*deg));
+	trans.setY(this->target_offset*sin(-125*deg));
 	G4SubtractionSolid* target_wheel1 = new G4SubtractionSolid("target_wheel1", target_wheel0, target, 0, trans);
-	trans.setX(this->target_offset*cos(115*deg));
-	trans.setY(this->target_offset*sin(115*deg));
+	
+	trans.setX(this->target_offset*cos(180*deg));
+	trans.setY(this->target_offset*sin(180*deg));
 	G4SubtractionSolid* target_wheel2 = new G4SubtractionSolid("target_wheel2", target_wheel1, target, 0, trans);
-	trans.setX(this->target_offset*cos(60*deg));
-	trans.setY(this->target_offset*sin(60*deg));
+	
+	trans.setX(this->target_offset*cos(125*deg));
+	trans.setY(this->target_offset*sin(125*deg));
 	G4SubtractionSolid* target_wheel3 = new G4SubtractionSolid("target_wheel3", target_wheel2, target, 0, trans);
-	trans.setX(this->target_offset*cos(5*deg));
-	trans.setY(this->target_offset*sin(5*deg));
+	
+	trans.setX(this->target_offset*cos(70*deg));
+	trans.setY(this->target_offset*sin(70*deg));
 	G4SubtractionSolid* target_wheel4 = new G4SubtractionSolid("target_wheel4", target_wheel3, target, 0, trans);
-	trans.setX(this->target_offset*cos(-65*deg));
-	trans.setY(this->target_offset*sin(-65*deg));
+	
+	trans.setX(this->target_offset*cos(0*deg));
+	trans.setY(this->target_offset*sin(0*deg));
 	G4SubtractionSolid* target_wheel = new G4SubtractionSolid("target_wheel", target_wheel4, collimator, 0, trans);
 
 	
@@ -845,12 +852,11 @@ void ApparatusSpiceTargetChamber::BuildShieldCovering()
   vis_att->SetVisibility(true);
   
   // ** Build Photon Shield Solid
-  G4double inner_radius = this->photon_shield_inner_radius;
+  G4double inner_radius = this->photon_shield_inner_radius; 
   G4double front_outer_radius = this->photon_shield_front_radius;
   G4double back_outer_radius = this->photon_shield_back_radius;
   G4double half_length = this->photon_shield_length/2.;  
-  G4Cons* photon_shield = new G4Cons("photon_shield", 0, back_outer_radius, 
-  																							0, front_outer_radius,	half_length, 0, 2*pi);
+  G4Cons* photon_shield = new G4Cons("photon_shield", 0, back_outer_radius, 0, front_outer_radius,	half_length, 0, 2*pi);
 
 	// ------ 																							
 	// Photon Shield Clamps
@@ -1483,12 +1489,14 @@ void ApparatusSpiceTargetChamber::PlaceTargetChamberCylinderDownstream()
 
 void ApparatusSpiceTargetChamber::PlaceTargetWheel()
 {
-  
-  G4double offset = this->target_wheel_offset / sqrt(2.);
+    G4RotationMatrix* rotate = new G4RotationMatrix;  
+    rotate->rotateZ((0)*deg); 
+    
+  G4double offset = this->target_wheel_offset;
   G4double z_position =  this->target_wheel_thickness/2. + this->targetWheelOffset; 
   
-  G4ThreeVector move(offset, offset, z_position);
-  target_wheel_phys = new G4PVPlacement(0, move, target_wheel_log,
+  G4ThreeVector move(offset, 0, z_position);
+  target_wheel_phys = new G4PVPlacement(rotate, move, target_wheel_log,
 					"target_wheel", expHallLog,
 					false,0);
   
@@ -1496,23 +1504,23 @@ void ApparatusSpiceTargetChamber::PlaceTargetWheel()
 
 void ApparatusSpiceTargetChamber::PlaceTargetWheelGears()
 {
-  
+    
   G4double z_offset = this->all_gear_z_offset + this->all_gear_thickness/2. + this->targetWheelOffset;
-  G4double first_gear_offset = this->first_gear_plane_offset / sqrt(2.);
-  G4double second_gear_offset = this->second_gear_plane_offset / sqrt(2.);
-  G4double third_gear_offset = this->third_gear_plane_offset / sqrt(2.);
+  G4double first_gear_offset = this->first_gear_plane_offset;
+  G4double second_gear_offset = this->second_gear_plane_offset;
+  G4double third_gear_offset = this->third_gear_plane_offset;
   
-  G4ThreeVector move(-first_gear_offset, -first_gear_offset, z_offset);
+  G4ThreeVector move(-first_gear_offset, 0, z_offset);
   first_gear_phys = new G4PVPlacement(0, move, first_gear_log,
 				      "first_gear", expHallLog,
 				      false,0);
+				      
   move.setX(-second_gear_offset);
-  move.setY(-second_gear_offset);
   second_gear_phys = new G4PVPlacement(0, move, second_gear_log,
 				       "second_gear", expHallLog,
 				       false,0);
+				       
   move.setX(third_gear_offset);
-  move.setY(third_gear_offset);
   third_gear_phys = new G4PVPlacement(0, move, third_gear_log,
 				      "third_gear", expHallLog,
 				      false,0);
@@ -1521,21 +1529,20 @@ void ApparatusSpiceTargetChamber::PlaceTargetWheelGears()
 
 void ApparatusSpiceTargetChamber::PlaceTargetWheelGearPlates()
 {
-
+    
   G4double z_offset = this->all_gear_z_offset 
     + this->all_gear_thickness 
     + this->gear_plate_thickness/2.
     + this->targetWheelOffset;
   
-  G4double first_gear_offset = this->first_gear_plane_offset / sqrt(2.);
-  G4double second_gear_offset = this->second_gear_plane_offset / sqrt(2.);
+  G4double first_gear_offset = this->first_gear_plane_offset;
+  G4double second_gear_offset = this->second_gear_plane_offset;
   
-  G4ThreeVector move(-first_gear_offset, -first_gear_offset, z_offset);
+  G4ThreeVector move(-first_gear_offset, 0, z_offset);
   gear_plate_one_phys = new G4PVPlacement(0, move, gear_plate_one_log,
 					  "gear_plate_one", expHallLog,
 					  false,0);
   move.setX(-second_gear_offset);
-  move.setY(-second_gear_offset);
   gear_plate_one_phys = new G4PVPlacement(0, move, gear_plate_two_log,
 					  "gear_plate_two", expHallLog,
 					  false,0);	
@@ -1544,11 +1551,11 @@ void ApparatusSpiceTargetChamber::PlaceTargetWheelGearPlates()
 
 void ApparatusSpiceTargetChamber::PlaceGearStick()
 {
-
+         
 	G4double z_offset = -this->gear_stick_length/2. + this->gear_stick_z_offset + this->targetWheelOffset;
-	G4double plane_offset = this->first_gear_plane_offset / sqrt(2.);
+	G4double plane_offset = this->first_gear_plane_offset;
 	
-	G4ThreeVector move(-plane_offset, -plane_offset, z_offset);
+	G4ThreeVector move(-plane_offset, 0 , z_offset);
 	gear_stick_phys = new G4PVPlacement(0, move, gear_stick_log,
 					    "gear_stick", expHallLog,
 					    false,0);
@@ -1558,9 +1565,12 @@ void ApparatusSpiceTargetChamber::PlaceGearStick()
 void ApparatusSpiceTargetChamber::PlaceTargetMountPlate() 
 {
 
+    G4RotationMatrix* rotate = new G4RotationMatrix;  
+    rotate->rotateZ(45*deg); 
+    
 	G4double z_offset = this->target_mount_plate_z_offset + this->target_mount_plate_thickness/2. + this->targetWheelOffset;
 	G4ThreeVector move(0, 0, z_offset);
-	target_mount_plate_phys = new G4PVPlacement(0, move, target_mount_plate_log,
+	target_mount_plate_phys = new G4PVPlacement(rotate, move, target_mount_plate_log,
 						    "target_mount_plate", expHallLog,
 						    false,0);
 
@@ -1568,10 +1578,13 @@ void ApparatusSpiceTargetChamber::PlaceTargetMountPlate()
 
 void ApparatusSpiceTargetChamber::PlaceBiasPlate()
 {
-  
+
+    G4RotationMatrix* rotate = new G4RotationMatrix;  
+    rotate->rotateZ(45*deg); 
+      
   G4double z_offset = this->bias_plate_offset_z - bias_plate_thickness/2. + this->targetWheelOffset;
   G4ThreeVector move(0,0,z_offset);
-  bias_plate_phys = new G4PVPlacement(0, move, bias_plate_log,
+  bias_plate_phys = new G4PVPlacement(rotate, move, bias_plate_log,
 				      "bias_plate", expHallLog, 
 				      false,0);
   
@@ -1581,9 +1594,7 @@ void ApparatusSpiceTargetChamber::PlacePhotonShield()
 {
 
   G4RotationMatrix* rotate = new G4RotationMatrix;
-  rotate->rotateX(0);
-  rotate->rotateY(0);
-  rotate->rotateZ(45*deg);
+  rotate->rotateZ(0*deg);
 
   G4double z_position =  this->photon_shield_back_face_pos
     + this->photon_shield_layer_three_thickness/2.
@@ -1623,7 +1634,7 @@ void ApparatusSpiceTargetChamber::PlaceShieldCovering()
   G4RotationMatrix* rotate = new G4RotationMatrix;
   rotate->rotateX(0);
   rotate->rotateY(0);
-  rotate->rotateZ(45*deg);
+  rotate->rotateZ(0*deg);
  
   shield_cover_phys = new G4PVPlacement(rotate,move,shield_cover_log,
 					"shield_cover",expHallLog,
@@ -1636,15 +1647,18 @@ void ApparatusSpiceTargetChamber::PlaceShieldCovering()
 void ApparatusSpiceTargetChamber::PlacePhotonShieldClamps() 
 {
   
+   G4RotationMatrix* rotate = new G4RotationMatrix;
+  rotate->rotateZ(45*deg);
+  
   G4double z_position = this->photon_shield_back_face_pos + this->middleRingOffset;
   
   G4ThreeVector move(0, 0, z_position - this->ps_det_clamp_thickness/2.);
-  ps_detector_clamp_phys = new G4PVPlacement(0, move, ps_detector_clamp_log,
+  ps_detector_clamp_phys = new G4PVPlacement(rotate, move, ps_detector_clamp_log,
 					     "photon_shield_detector_clamp",expHallLog,
 					     false,0);
   
   move.setZ(z_position + this->photon_shield_length + this->ps_target_clamp_thickness/2.);
-  ps_target_clamp_phys = new G4PVPlacement(0, move, ps_target_clamp_log,
+  ps_target_clamp_phys = new G4PVPlacement(rotate, move, ps_target_clamp_log,
 					   "photon_shield_target_clamp",expHallLog,
 					   false,0);
   
@@ -1652,14 +1666,17 @@ void ApparatusSpiceTargetChamber::PlacePhotonShieldClamps()
 
 void ApparatusSpiceTargetChamber::PlacePhotonShieldClampBolts(G4int copyID)
 {
-  
+ 
+   G4RotationMatrix* rotate = new G4RotationMatrix;
+  rotate->rotateZ(45*deg);
+   
   G4double target_bolt_z_position = this->photon_shield_back_face_pos 
     + this->photon_shield_length + this->ps_target_clamp_thickness 
     - this->ps_target_bolt_length/2. + this->middleRingOffset;
   G4double distance_from_beam_line = this->ps_target_bolt_plane_offset;
   
   G4ThreeVector move = TranslateMagnets(copyID, distance_from_beam_line, target_bolt_z_position);
-  target_bolt_phys = new G4PVPlacement(0, move, target_bolt_log,
+  target_bolt_phys = new G4PVPlacement(rotate, move, target_bolt_log,
 				       "target_bolt", expHallLog, 
 				       false,0);
   
@@ -1667,7 +1684,8 @@ void ApparatusSpiceTargetChamber::PlacePhotonShieldClampBolts(G4int copyID)
     - this->ps_det_clamp_thickness + this->ps_det_bolt_length/2. + this->middleRingOffset;
   distance_from_beam_line = this->ps_det_bolt_plane_offset;
   G4ThreeVector move2 = TranslateMagnets(copyID, distance_from_beam_line, detector_bolt_z_position);
-  detector_bolt_phys = new G4PVPlacement(0, move2, detector_bolt_log,
+
+  detector_bolt_phys = new G4PVPlacement(rotate, move2, detector_bolt_log,
 					 "detector_bolt", expHallLog,
 					 false,0);
   
@@ -1822,9 +1840,9 @@ G4RotationMatrix* ApparatusSpiceTargetChamber::RotateMagnets(G4int copyID)
 
   G4RotationMatrix* rotate = new G4RotationMatrix;
   if(this->NUMBER_OF_MAGNETS == 8) 
-  	rotate->rotateZ(-copyID*45.*deg);
+  	rotate->rotateZ(-(copyID+0.5)*45.*deg);
   else 
-  	rotate->rotateZ(-copyID*90.*deg);
+  	rotate->rotateZ(-(copyID+0.5)*90.*deg);
 
   return rotate;
 }
@@ -1834,12 +1852,12 @@ G4ThreeVector ApparatusSpiceTargetChamber::TranslateMagnets(G4int copyID, G4doub
   G4double x_position(0);
   G4double y_position(0);
   if(this->NUMBER_OF_MAGNETS == 8){
-    x_position = radial_position*cos(copyID*45.*deg);
-    y_position = radial_position*sin(copyID*45.*deg);
+    x_position = radial_position*cos((copyID+0.5)*45.*deg);
+    y_position = radial_position*sin((copyID+0.5)*45.*deg);
   }
   else{
-    x_position = radial_position*cos(copyID*90.*deg);
-    y_position = radial_position*sin(copyID*90.*deg);
+    x_position = radial_position*cos((copyID+0.5)*90.*deg);
+    y_position = radial_position*sin((copyID+0.5)*90.*deg);
   }
   return G4ThreeVector(x_position, y_position, z_position);
 }
