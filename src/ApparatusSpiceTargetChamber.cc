@@ -1822,9 +1822,9 @@ G4RotationMatrix* ApparatusSpiceTargetChamber::RotateMagnets(G4int copyID)
 
   G4RotationMatrix* rotate = new G4RotationMatrix;
   if(this->NUMBER_OF_MAGNETS == 8) 
-  	rotate->rotateZ(-copyID*45.*deg);
+  	rotate->rotateZ(-(copyID+0.5)*45.*deg);
   else 
-  	rotate->rotateZ(-copyID*90.*deg);
+  	rotate->rotateZ(-(copyID+0.5)*90.*deg);
 
   return rotate;
 }
@@ -1834,12 +1834,12 @@ G4ThreeVector ApparatusSpiceTargetChamber::TranslateMagnets(G4int copyID, G4doub
   G4double x_position(0);
   G4double y_position(0);
   if(this->NUMBER_OF_MAGNETS == 8){
-    x_position = radial_position*cos(copyID*45.*deg);
-    y_position = radial_position*sin(copyID*45.*deg);
+    x_position = radial_position*cos((copyID+0.5)*45.*deg);
+    y_position = radial_position*sin((copyID+0.5)*45.*deg);
   }
   else{
-    x_position = radial_position*cos(copyID*90.*deg);
-    y_position = radial_position*sin(copyID*90.*deg);
+    x_position = radial_position*cos((copyID+0.5)*90.*deg);
+    y_position = radial_position*sin((copyID+0.5)*90.*deg);
   }
   return G4ThreeVector(x_position, y_position, z_position);
 }
