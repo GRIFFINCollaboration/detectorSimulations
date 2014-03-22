@@ -38,34 +38,136 @@ Keep in mind that cmake does not regenerate all the files it uses every time it 
 
 #Usage
 
-###SPICE
+###Particle Emission
 
-In order to use SPICE, you must first place/build it with:
+####General
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/gun/energy double unit ``` | Set energy of particle | 1000 keV |
+| ``` /DetSys/gun/particle string ``` | Set particle type (e-, e+, gamma, proton, alpha) | gamma |
+| ``` /DetSys/gun/ion Z A E ``` | Set ion type (excitation energy E in keV) | |
+| ``` /DetSys/gun/direction x y z ``` | Set momentum direction | |
+| ``` /DetSys/gun/position x y z  unit``` | Set particle position | 0.0 0.0 0.0 mm |
+| ``` /DetSys/gun/radius r unit``` | Set source radius | 0.0 mm |
+| ``` /DetSys/gun/energyrange min max step ``` | Set energy (keV) of particle, loops from min to max | |
 
-```
-/DetSys/app/addSpiceTargetChamber
-/DetSys/det/addSpice 10
-/DetSys/det/addS3 24
-```
+####Decay Schemes
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/gun/betaPlusEmission filename ``` | Simulate beta plus decay with energy distribution input file | |
+| ``` /DetSys/gun/betaMinusEmission filename ``` | Simulate beta negative decay with energy distribution input file | |
+| ``` /DetSys/gun/polarization double``` | Set Polarization of Nuclei (before radioactiveBetaDecay) | |
+| ``` /DetSys/gun/radioactiveBetaDecay directory ``` | Simulate complete beta negative decay with simulation directory | |
+| ``` /DetSys/gun/emitBetaParticle 0/1 ``` | Emit Beta Particle? True/False | |
+| ``` /DetSys/gun/includeXRayInputFileKShell 0/1 ``` | Emit X-rays from K-shell vacancies using input file? True/False | |
+| ``` /DetSys/gun/includeXRayInputFileLShell 0/1 ``` | Emit X-rays from L-shell vacancies using input file? True/False | |
+| ``` /DetSys/gun/includeXRayInputFileMShell 0/1 ``` | Emit X-rays from M-shell vacancies using input file? True/False | |
+| ``` /DetSys/gun/radioactiveDecayHalflife double ``` | Half-life of radioactive isotope simulation (seconds) | |
+| ``` /DetSys/gun/numberOfRadioactiveNuclei int ``` | Set the number of radioactive nuclei | |
+| ``` /DetSys/gun/radioactiveSourceDecay filename ``` | Simulate source decay with a file containing the decay data | |
 
-But you also need to define the tabulated magnetic field.  These files are 50Mb each and are different for each lens so until a better solution comes along they will be kept on the network at TRIUMF (email Mohamad or Lee for precise location):
+###Detector Specific
 
-    /DetSys/world/tabMagneticField SPICEField3D.TABLE
+####GRIFFIN
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/det/addGriffinForward int ``` | Add Detection System GriffinForward |  |
+| ``` /DetSys/det/addGriffinForwardDetector int ``` | Add GriffinForward Detector |  |
+| ``` /DetSys/det/addGriffinBack int ``` | Add Detection System GriffinBack |  |
+| ``` /DetSys/det/addGriffinBackDetector int ``` | Add GriffinBack Detector |  |
+| ``` /DetSys/det/UseTIGRESSPositions ``` | Use TIGRESS detector positions rather than GRIFFIN | False |
+| ------ | ---------------- | ------ |
+| ``` /DetSys/det/addGriffinCustomDetector 0 ``` | Adds a detector using the paramaters specified |  |
+| ``` /DetSys/det/SetCustomShieldsPresent 0/1 ``` | Selects whether or not the detector suppressors are included | True |
+| ``` /DetSys/det/SetCustomRadialDistance double unit ``` | Selects the radial distance for the detector from the origin |  |
+| ``` /DetSys/det/SetCustomExtensionSuppressorLocation 0/1 ``` | Selects a position for the extension suppressors. Either forward (0) or back (1) | Forward (0) |
+| ``` /DetSys/det/SetCustomDeadLayer det_num pos_num null ``` | Sets the dead layer and position for the detector placed in the next call to addGriffinCustom |  |
+| ``` /DetSys/det/includeGriffinHevimet 0/1 ``` | Includes the Hevimet for a Griffin detector | False |
+| ``` /DetSys/det/addGriffinCustom int ``` | Adds a detection system using the paramaters specified |  |
 
-Then you can run the simulation as normal.
+####SPICE
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/app/addSpiceTargetChamber ``` | Add SPICE target chamber |  |
+| ``` /DetSys/Spice/setResolution double double ``` |Set resolution of SPICE Si(Li)  |  |
+| ``` /DetSys/det/addSpice int``` | Add Si(Li) detector |  |
+| ``` /DetSys/det/addS3 ``` | Add SPICE S3 detector |  |
 
-There are now additional functions in the PrimaryGeneratorAction (some of which may be merged in the near future):
+####8PI
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/det/add8pi int ``` | Add Detection System 8pi |  |
+| ``` /DetSys/det/add8piDetector int ``` | Add 8pi Detector |  |
+| ``` /DetSys/app/add8piVacuumChamber ``` | Add 8pi vacuum chamber |  |
+| ``` /DetSys/app/add8piVacuumChamberAuxMatShell double unit ``` | Add AuxMat shell around 8pi vacuum chamber with specified thickness |  |
 
-    /DetSys/gun/radioactiveSourceDecay filename
+####Other
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/det/addGammaTracking int ``` | Add Detection System GammaTracking |  |
+| ``` /DetSys/det/addSodiumIodide int ``` | Add Detection System SodiumIodide |  |
+| ``` /DetSys/det/addLanthanumBromide int ``` | Add Detection System LanthanumBromide |  |
+| ``` /DetSys/det/addSceptar int ``` | Add Detection System Sceptar |  |
+| ``` /DetSys/det/addPaces int ``` | Add Detection System Paces |  |
 
-will read in a decay scheme that is written previously by the user
-(not to be confused with the similar /DetSys/gun/radioactiveBetaDecay)
+###Detector General
 
-    /DetSys/gun/radius  2.75 mm
+``` /DetSys/det/update ``` must be called before using ``` beamOn ``` if the geometrical values
+have been altered.
 
- ... sets the radius of the source
- 
-    /DetSys/gun/energyrange 100 2000 50
+####World Volume (i.e. experimental hall)
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/world/material string ``` | Select material for the world | G4_AIR |
+| ``` /DetSys/world/dimensions x y z unit ``` | Set world dimensions | 10m x 10m x 10m |
+| ``` /DetSys/world/vis 0/1``` | Set world visibility (depreciated) | False |
 
-... will emit particles every 50keV between 100 and 2000keV 
-i.e. 100keV, 150keV, 200keV ... 2000keV, 100keV...
+####Generic Target
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/app/genericTarget string ``` | Create a target with specified material |  |
+| ``` /DetSys/app/genericTargetDimensions x y z unit ``` | Set target dimensions |  |
+| ``` /DetSys/app/genericTargetPosition x y z unit ``` | Set target position |  |
+Requires all three commands to build
+
+####Field Box
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/app/fieldBoxMaterial string ``` | Create a field box with specified material |  |
+| ``` /DetSys/app/fieldBoxDimensions x y z unit ``` | Set field box dimensions |  |
+| ``` /DetSys/app/fieldBoxPosition x y z unit ``` | Set field box position |  |
+| ``` /DetSys/app/fieldBoxMagneticField x y z unit ``` | Set field box magnetic field |  |
+Requires all four commands to build
+
+####Box
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/det/boxMat string ``` | Set box material | G4_WATER |
+| ``` /DetSys/det/boxThickness double unit ``` | Set box thickness | 0.0 mm |
+| ``` /DetSys/det/boxInnerDimensions x y z unit ``` | Set box inner dimensions | 0.0 0.0 0.0 mm |
+| ``` /DetSys/det/boxColour r g b``` | Set box colour | 0.0 0.0 1.0 |
+| ``` /DetSys/det/addBox ``` | Build/add box (if thickness is not 0) |  |
+
+####Grid
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/det/gridMat string ``` | Set grid material | G4_WATER |
+| ``` /DetSys/det/gridSize double unit ``` | Set grid size | 0.0 mm |
+| ``` /DetSys/det/gridDimensions x y z unit ``` | Set grid dimensions | 0.0 0.0 0.0 mm |
+| ``` /DetSys/det/gridColour r g b ``` | Set grid colour | 1.0 0.0 0.0 |
+| ``` /DetSys/det/addGrid ``` | Build/add grid (if grid size is not 0) |  |
+
+####Magnetic Fields
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/world/magneticField x y z unit``` | Set world magnetic field (depreciated) | 0, 0, 0 |
+| ``` /DetSys/world/tabMagneticField filename ``` | Set tabulated magnetic field* | Disabled | 
+
+*Used for SPICE: these files are 50Mb each and are different for each lens so until a better solution comes along they will be kept on the network at TRIUMF (email Mohamad or Lee for precise location)
+
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ```  ``` |  |  |
+| ```  ``` |  |  |
+| ```  ``` |  |  |
+| ```  ``` |  |  |
