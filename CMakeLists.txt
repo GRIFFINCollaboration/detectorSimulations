@@ -9,7 +9,8 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 set(mytarget    detectionSystems)  # equivalent to "name := myexample" in G4 GNUmakefiles
 set(useROOT     true            )  # use true or false (or comment to set to false)
 set(myROOTclassDir dataRootClass) 
-set(myROOTclass TSpiceData.cpp)   # comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
+set(mySpiceROOTClass TSpiceData.cpp)   # comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
+set(myGriffinROOTClass TGriffinData.cpp)
 
 
 # http://www.cmake.org/cmake/help/cmake_tutorial.html
@@ -50,10 +51,10 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 # Use root in the project 
 #                   
 if(useROOT)
-	if(myROOTclass)
-		EXECUTE_PROCESS(COMMAND rootcint -f dict.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/linkdef.h)
-	endif(myROOTclass)
-	EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	if(mySpiceROOTClass)
+		EXECUTE_PROCESS(COMMAND rootcint -f spicedict.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${mySpiceROOTClass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/linkdef.h )
+	endif(mySpiceROOTClass)
+	EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE )
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 endif(useROOT) 
                     
@@ -117,11 +118,11 @@ endif()
 add_executable(${myexe} ${mymain} ${sources} ${headers} ${TOOLS_FORTRAN_OBJECTS})
 if(useROOT)
 	EXECUTE_PROCESS(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-	if(myROOTclass)
-		set(CMAKE_EXE_LINKER_FLAGS "${ROOT_LD_FLAGS} dict.cxx")
-	else(myROOTclass)
+	if(mySpiceROOTClass)
+		set(CMAKE_EXE_LINKER_FLAGS "${ROOT_LD_FLAGS} spicedict.cxx " )
+	else(mySpiceROOTClass)
 		set(CMAKE_EXE_LINKER_FLAGS ${ROOT_LD_FLAGS})
-	endif(myROOTclass)
+	endif(mySpiceROOTClass)
 endif(useROOT)
 target_link_libraries(${myexe} ${Geant4_LIBRARIES} ${HBOOK_LIBRARIES})
 

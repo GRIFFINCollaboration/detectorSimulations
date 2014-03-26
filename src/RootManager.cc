@@ -32,6 +32,9 @@ RootManager::RootManager()
     //spice event
 	fSpiceData = new TSpiceData();
 	
+	//GRIFFIN event
+	fGriffinData = new TGriffinData();
+	
 	//histograms 
 	fHist = new TH1F("h","h",500,0,1800);
 
@@ -75,47 +78,47 @@ void RootManager::FillHist(double temp)
 }
 
 
-void RootManager::FillG4Hit(int key,  						// integer representing the key, could be used to identify the detector
-							int pdg,			 				// integer representing the type of particle
-							double Energy, 						// depositid energy in a step
-							double Px, double Py, double Pz, 	// position vector
-							int Id, 							// original(primary) ID
-							int PrimPdg,						// primary particle definition        PDG encoding
-							double PrimEnergy,					// original(primary) energy
-							double Mx, double My, double Mz)	// primary particle momentum vector
-							{
-							/*			
-							Some other functions 
-							*/
-							//Fill the event, calculate the full deposited energy etc...
-							fGeantEvent[key].FillVectors( pdg, Energy,  Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
-							}
+void RootManager::FillG4Hit(int key,  	// integer representing the key, could be used to identify the detector
+int pdg,			 	// integer representing the type of particle
+double Energy, 				// depositid energy in a step
+double Px, double Py, double Pz, 	// position vector
+int Id, 				// original(primary) ID
+int PrimPdg,				// primary particle definition        PDG encoding
+double PrimEnergy,			// original(primary) energy
+double Mx, double My, double Mz)	// primary particle momentum vector
+{
+	/*			
+		Some other functions 
+	*/
+	//Fill the event, calculate the full deposited energy etc...
+	fGeantEvent[key].FillVectors( pdg, Energy,  Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
+}
 		   
 
 
 void RootManager::SortEvent(void)
 {
 
-// Sort Data from the map second element by getters and set them
+	// Sort Data from the map second element by getters and set them
        std::map<Int_t,RawG4Event>::iterator it;
-  for (std::map<Int_t,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it)
-			{
-			int key = it->first ;
+       for (std::map<Int_t,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it)
+	{
+		int key = it->first ;
 			
-			//Spice
-			if (key>1 && key <1000) SetSpiceEvent(key);
+		//SPICE
+		if (key>1 && key <1000) SetSpiceEvent(key);
 			
-			//other
-			//if (key>1 && key <1000) SetOtherDetectorEvent(key);
-			}
+		//other
+		//if (key>1 && key <1000) SetOtherDetectorEvent(key);
+	}
 					
-// fill the tree by SpiceData
+	// fill the tree by SpiceData
 	fOutputTree->Fill();
  
-// clear the map
+	// clear the map
 	fGeantEvent.clear();
 	
-// clear the SpiceData object
+	// clear the SpiceData object
 	fSpiceData->Clear();
 	
 }
@@ -123,50 +126,55 @@ void RootManager::SortEvent(void)
 
 void RootManager::SetSpiceEvent(int RingSeg)
 {	
-			// treat
-			fGeantEvent.at(RingSeg).SortPrimary();			
+	// treat
+	fGeantEvent.at(RingSeg).SortPrimary();			
 			
-			// get the segment and ring
-			int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
-			int Ring = (RingSeg-Seg)/100;
+	//////////////////////////////////////////////////////////////////////////
+	//                          SPICE EVENTS                                //
+	//////////////////////////////////////////////////////////////////////////
 			
-			// get primary
-			// Pdg	
-			int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
-		    for (int i = 0 ; i<mult ;  i++ )
-			fSpiceData->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
+			
+	// get the segment and ring
+	int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
+	int Ring = (RingSeg-Seg)/100;
+			
+	// get primary
+	// Pdg	
+	int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
+	for (int i = 0 ; i<mult ;  i++ )
+		fSpiceData->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
 		  	
-		  	// Energy      
-		    mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
-			for (int i = 0 ; i<mult ;  i++ )
-			{
-			fSpiceData->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
-			}
+	// Energy      
+	mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )
+	{
+		fSpiceData->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
+	}
 			
-			// Momentum
-			    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
-			for (int i = 0 ; i<mult ;  i++ )
-			{
-			fSpiceData->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
-			fSpiceData->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
-			}
+	// Momentum
+	mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )
+	{
+		fSpiceData->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
+		fSpiceData->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
+	}
 
-			// get the energy 			
-			double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
-			TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
+	// get the energy 			
+	double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
+	TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
 				
-			// fill the SpiceData object
-			// (Th,E)
-			fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
-			fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
-			fSpiceData->SetSpiceThetaEEnergy(energy) ;     
+	// fill the SpiceData object
+	// (Th,E)
+	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
+	fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
+	fSpiceData->SetSpiceThetaEEnergy(energy) ;     
 
-			// (Ph,E)
-			fSpiceData->SetSpicePhiEDetectorNbr(1) ;
-			fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
-			fSpiceData->SetSpicePhiEEnergy(energy) ;
+	// (Ph,E)
+	fSpiceData->SetSpicePhiEDetectorNbr(1) ;
+	fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
+	fSpiceData->SetSpicePhiEEnergy(energy) ;
 			
-			fSpiceData->SetPositionFirstHit(pos) ;		
+	fSpiceData->SetPositionFirstHit(pos) ;		
 		
 }
 

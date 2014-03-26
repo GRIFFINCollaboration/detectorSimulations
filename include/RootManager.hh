@@ -17,6 +17,7 @@ using namespace std ;
 //User
 #include "RawG4Event.hh"
 #include "../dataRootClass/TSpiceData.h"
+#include "../dataRootClass/TGriffinData.h"
 
 class RootManager   {
     
@@ -42,6 +43,7 @@ class RootManager   {
         
         //Writing Class for detectors goes here
         TSpiceData  *fSpiceData;
+        TGriffinData *fGriffinData;
               
        
     public:

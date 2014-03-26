@@ -24,7 +24,6 @@
 #include "Math/Interpolator.h"
 using namespace ROOT::Math;
 
-
 //c++
 #include "string"
 #include "vector"

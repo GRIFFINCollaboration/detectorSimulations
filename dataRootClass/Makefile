@@ -37,18 +37,25 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 #		libmyDetector1Data.so libmyDetector1.so \
 #		libmyDetector2Data.so libmyDetector2.so \
 
-SHARELIB      = libSpiceData.so 
+SHARELIB      = libSpiceData.so \
+		 libGriffinData.so
 
 
 all:            $(SHARELIB)
 
 #------------------------------------------------------------------------------
 
-libSpiceData.so:	TSpiceData.o   TSpiceDataDict.o
+libSpiceData.so:	TSpiceData.o   TSpiceDataDict.o 
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TSpiceDataDict.cpp:	TSpiceData.h
 			rootcint -f $@ -c $^
+			
+libGriffinData.so: 	TGriffinData.o TGriffinDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+		
+TGriffinDataDict.cpp:	TGriffinData.h
+			rootcint -f $@ -c $^					
 
 #libmyDetector1Data.so:	TmyDetector1Data.o   TmyDetector1DataDict.o
 #		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
@@ -71,7 +78,6 @@ distclean:
 
 # dependances
 TSpiceData.o:	TSpiceData.cpp	TSpiceData.h
+TGriffinData.o: TGriffinData.cpp TGriffinData.h
 #TmyDetector1Data.o:	TmyDetector1Data.cpp	TmyDetector1Data.h
-#TmyDetector2Data.o:	TmyDetector2Data.cpp	TmyDetector2Data.h
-
-
+#TmyDetector2Data.o:	TmyDetector2Data.cp
