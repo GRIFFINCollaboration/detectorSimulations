@@ -82,6 +82,8 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithABool*              includeXRayInputFileMShellCmd;
     G4UIcmdWithADoubleAndUnit*     radioactiveDecayHalflifeCmd;
     G4UIcmdWithAnInteger*          numberOfRadioactiveNucleiCmd;
+    G4UIcmdWithABool*              simKinematicsCmd;
+    G4UIcmdWithADouble*            simKinematicsBetaValueCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
