@@ -90,6 +90,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
   fBetaHeavyIon               = 0.0;
   fBetaDefinedByUser          = false;
   fSimulateKinematics         = false;
+  fIonEnergyDefinedByUser     = false;
   
 
   this->halflife              = 0.0; //seconds
@@ -164,7 +165,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // broadening, do so.
     if (this->particle->GetParticleName() == "e-" || this->particle->GetParticleName() == "e-") 
       if (fSimulateKinematics) energy = KinematicEnergyBroadening(energy, anEvent);
-
+    
     particleGun->SetParticleDefinition(this->particle);
     particleGun->SetParticlePosition(position);
     particleGun->SetParticleMomentumDirection(direction);
@@ -1349,14 +1350,21 @@ void PrimaryGeneratorAction::SetKinematicsBetaValue( G4double beta )
   fBetaDefinedByUser = true;
 }
 
+// Messenger command to set kinetic energy of ion used in kinematic simulations
+void PrimaryGeneratorAction::SetKinematicsIonEnergy( G4double value )
+{
+  fIonKineticEnergy = value;
+  fIonEnergyDefinedByUser = true;
+}
+
 
 G4double PrimaryGeneratorAction::KinematicEnergyBroadening( G4double energy, G4Event* anEvent )
 {
-  
 	// If the ion has been declared with '/DetSys/gun/ion' ...
 	if ( ionDefined)
 	{
 	  // ... and no ion has been emitted this event, emit one
+	  // At the very least, the direction of the ion is required in order to simulate kinematics
 		if ( !ionEmittedThisEvent ) EmitIon( ionDefinitionZ, ionDefinitionA, ionDefinitionE, anEvent ); 
 	}
 	else 
@@ -1370,7 +1378,7 @@ G4double PrimaryGeneratorAction::KinematicEnergyBroadening( G4double energy, G4E
 	// Retrieve the theta and phi of the emitted particle & ion
   G4double thetaParticleIonFrame = direction.getTheta();
   G4double phiParticleIonFrame = direction.getPhi();
-  if (phiParticleIonFrame < 0) phiParticleIonFrame += 2*3.141592654; 
+  if (phiParticleIonFrame < 0) phiParticleIonFrame += 2*3.141592654; // So that range is 0 to 2pi
   G4double thetaIonLabFrame = ionDirection.getTheta();
   G4double phiIonLabFrame = ionDirection.getPhi();
   if (phiIonLabFrame < 0) phiIonLabFrame += 2*3.141592654;
@@ -1396,7 +1404,7 @@ G4double PrimaryGeneratorAction::KinematicEnergyBroadening( G4double energy, G4E
 	                           /(1 + fBetaHeavyIon * betaIonFrame * cos(thetaParticleIonFrame));
   G4double thetaParticleLabFrame = acos(betaLabThetaLab/betaLabFrame);
    
-  // Beautiful rotation matrices to find the (x,y,z) components of the particle emission
+  // Beautiful rotation matrices to find the new (x,y,z) components of the particle emission
   direction = G4ThreeVector(
                 cos(phiIonLabFrame) * cos(thetaIonLabFrame) * cos(phiParticleIonFrame) * sin(thetaParticleLabFrame) - 
 								sin(phiIonLabFrame) * sin(phiParticleIonFrame) * sin(thetaParticleLabFrame) +
@@ -1413,11 +1421,11 @@ G4double PrimaryGeneratorAction::KinematicEnergyBroadening( G4double energy, G4E
   return kineticEnergyLabFrame;      
 }
 
-// Emit ion for Kinematic Broadening
+// Emit ion for Kinematic Broadening simulation
 void PrimaryGeneratorAction::EmitIon(G4int ionZ, G4int ionA, G4double ionE, G4Event* anEvent)
 {
   // Random generator decides direction of ion
-  // TODO The direction of the ion will actually form a distribution
+  // TODO The direction of the ion will actually form a distribution but for now it's directed at the S3
   G4double theta = 0;
   while (theta < 0.523598775 || theta > 1.047197551)
   {
@@ -1428,19 +1436,23 @@ void PrimaryGeneratorAction::EmitIon(G4int ionZ, G4int ionA, G4double ionE, G4Ev
     theta = ionDirection.getTheta();
   }
   
+  // Create a gun to fire the ion
   G4ParticleGun* ionGun = new G4ParticleGun(1);
-  // Set ion attributes
-  ionGun->SetParticleMomentumDirection(ionDirection);  
-  ionGun->SetParticleDefinition(this->particleTable->GetIon(ionZ,ionA,0.));
   
+  // Set ion attributes (direction, definition, position)
+  ionGun->SetParticleMomentumDirection(ionDirection);  
+  ionGun->SetParticleDefinition(this->particleTable->GetIon(ionZ,ionA,ionE));
 	ionGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
   
-  G4double ionEnergy = 0; // TODO Problem here with units, temp. fix is * 100000
-  if (fBetaDefinedByUser) ionEnergy = 100000 * ionA * fAtomicMassUnit * fBetaHeavyIon * pow(fSpeedOfLight, 2)/2;
-  else ionEnergy = 100*MeV; // TODO Messenger assign then calculate fBetaHeavyIon from that.
-  ionGun->SetParticleEnergy(ionEnergy);
-  ionGun->GeneratePrimaryVertex(anEvent);
+  // If beta has been defined by user, calculate appropriate kinetic energy of ion
+  // or if kinetic energy has been defined by user, calculate beta
+  if (fBetaDefinedByUser) fIonKineticEnergy = 100000 * ionA * fAtomicMassUnit * fBetaHeavyIon * pow(fSpeedOfLight, 2)/2;
+  else if (fIonEnergyDefinedByUser) fBetaHeavyIon = sqrt( 2 * fIonKineticEnergy / (ionA * fAtomicMassUnit * pow(fSpeedOfLight, 2)) ) / 1000;
+  else fIonKineticEnergy = 100*MeV; // Default
   
+  // Fire ion  
+  ionGun->SetParticleEnergy(fIonKineticEnergy);
+  ionGun->GeneratePrimaryVertex(anEvent);
   ionEmittedThisEvent = true;
   delete ionGun;
 }

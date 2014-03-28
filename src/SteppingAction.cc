@@ -117,11 +117,13 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   
   // Get initial momentum direction & energy of particle
   G4int trackID = theTrack->GetTrackID();
+  G4int parentID = theTrack->GetParentID();
   G4double initialDirectionX = theTrack->GetVertexMomentumDirection().getX();
   G4double initialDirectionY = theTrack->GetVertexMomentumDirection().getY();
   G4double initialDirectionZ = theTrack->GetVertexMomentumDirection().getZ();
 	G4double initialEnergy = theTrack->GetVertexKineticEnergy();
-
+	// if (parentID == 0) initialEnergy = theTrack->GetVertexKineticEnergy();
+	
 
   G4StepPoint* point1 = aStep->GetPreStepPoint();
   G4StepPoint* point2 = aStep->GetPostStepPoint();
@@ -249,7 +251,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
     found = volname.find("siDetS3Ring");
   if (edep != 0 && found!=G4String::npos) {
 	SetDetAndCryNumberForS3Detector(volname);
-	eventaction->AddS3CrystDet(edep,stepl,det);
+	eventaction->AddSpiceCrystDet(edep,stepl,det);
 	eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 

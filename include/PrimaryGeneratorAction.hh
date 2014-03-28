@@ -109,6 +109,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   	
   	void SetKinematicsActive( G4bool tf );
   	void SetKinematicsBetaValue( G4double beta );
+  	void SetKinematicsIonEnergy( G4double value );
   	G4double KinematicEnergyBroadening( G4double energy, G4Event* anEvent );
   	void EmitIon(G4int ionZ, G4int ionA, G4double ionE, G4Event* anEvent);
   	
@@ -270,6 +271,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4int											ionDefinitionA;
     G4double									ionDefinitionE;
     G4ThreeVector							ionDirection;
+    G4double									fIonKineticEnergy;
+    G4bool                    fIonEnergyDefinedByUser;
     
     
     

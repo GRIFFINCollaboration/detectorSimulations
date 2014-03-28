@@ -158,7 +158,12 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun
   simKinematicsBetaValueCmd = new G4UIcmdWithADouble("/DetSys/gun/kinematicsBetaValue",this);
   simKinematicsBetaValueCmd->SetGuidance("Set beta value of heavy ion");
   simKinematicsBetaValueCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+  
+  simKinematicsIonEnergyCmd = new G4UIcmdWithADoubleAndUnit("/DetSys/gun/kinematicsIonEnergy",this);
+	simKinematicsIonEnergyCmd->SetGuidance("Sets energy of the ions in kinematic simulation.");
+  simKinematicsIonEnergyCmd->SetUnitCategory("Energy");
+  simKinematicsIonEnergyCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -186,6 +191,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete numberOfRadioactiveNucleiCmd;
   delete simKinematicsCmd;
   delete simKinematicsBetaValueCmd;
+  delete simKinematicsIonEnergyCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -260,6 +266,9 @@ void PrimaryGeneratorMessenger::SetNewValue( G4UIcommand* command, G4String newV
   }
   if( command == simKinematicsBetaValueCmd ) {
   	Action->SetKinematicsBetaValue(simKinematicsBetaValueCmd->GetNewDoubleValue(newValue));
+  }
+  if( command == simKinematicsIonEnergyCmd ) { 
+    Action->SetKinematicsIonEnergy(simKinematicsIonEnergyCmd->GetNewDoubleValue(newValue));
   }
 
 }
