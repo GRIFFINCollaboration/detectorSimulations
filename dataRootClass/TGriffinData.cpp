@@ -1,9 +1,9 @@
 /*****************************************************************************
  * Original Author: N. de Sereville  contact address: deserevi@ipno.in2p3.fr *
- * Modified by    : Mhd Moukaddam  contact address: moukaddam@triumf.ca      *
+ * Modified by    : Ryan Dunlop  contact address: rdunlop@uoguelph.ca        *
  *---------------------------------------------------------------------------*
  * Decription: This class stores the results of the G4 simulation for the    *
- *             Griffin detector. And was adapted from S1 detector Class.        *
+ *             Griffin detector. And was adapted from S1 detector Class.     *
  *             in th NPTOOL project                                          *
  *             This class derives from TObject (ROOT) and its aim is to be   *
  *             stored in the output TTree of the G4 simulation               *

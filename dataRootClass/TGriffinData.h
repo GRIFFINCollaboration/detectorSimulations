@@ -2,10 +2,10 @@
 #define __GriffinDATA__
 /*****************************************************************************
  * Original Author: N. de Sereville  contact address: deserevi@ipno.in2p3.fr *
- * Modified by    : Mhd Moukaddam  contact address: moukaddam@triumf.ca      *
+ * Modified by    : Ryan Dunlop  contact address: rdunlop@uoguelph.ca        *
  *---------------------------------------------------------------------------*
  * Decription: This class stores the results of the G4 simulation for the    *
- *             SiLi detector. And was adapted from S1 detector Class.        *
+ *             GRIFFIN detector. And was adapted from S1 detector Class.     *
  *             The format is the same as the one which is used for the GANIL *
  *             experiments after conversion of the raw data with GRU.        *
  *             This class derives from TObject (ROOT) and its aim is to be   *
