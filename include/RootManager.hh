@@ -17,9 +17,10 @@ using namespace std ;
 //User
 #include "RawG4Event.hh"
 #include "../dataRootClass/TSpiceData.h"
+#include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
 
-class RootManager   {
+class RootManager {
     
     public:
         static RootManager *instance();
@@ -42,9 +43,8 @@ class RootManager   {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
-        TSpiceData  *fSpiceData;
-        TGriffinData *fGriffinData;
-              
+        TSpiceData* fSpiceData;
+        TS3Data*    fS3Data;      
        
     public:
     // fill the histograms 
@@ -59,7 +59,7 @@ class RootManager   {
 					 int,// primary particle pdg encoding
 					 double,//original (primary) particle energy
 					 double, double, double);// primary particle momentum vector
-					 
+
        //Set event number  						 
        void SetEventNumber(int) ;
        
@@ -71,7 +71,7 @@ class RootManager   {
        
        //Set the data in Spice writing Class
        void SetSpiceEvent(int key);
-       
+       void SetS3Event(int key);
        
        // Close the root Manager        							
        void Close();  
