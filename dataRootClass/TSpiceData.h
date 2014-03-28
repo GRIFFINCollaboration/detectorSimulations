@@ -31,11 +31,13 @@ class TSpiceData : public TObject {
    vector<Int_t>   fSpice_Theta_DetNbr;
    vector<Int_t>   fSpice_Theta_StripNbr;
    vector<Double_t>   fSpice_Theta_Energy;
+   vector<Double_t>   fSpice_Theta_ResEnergy;
 
    // Phi strips
    vector<Int_t>   fSpice_Phi_DetNbr;
    vector<Int_t>   fSpice_Phi_StripNbr;
    vector<Double_t>   fSpice_Phi_Energy;
+   vector<Double_t>   fSpice_Phi_ResEnergy;
 
    vector<TVector3> fPositionFirstHit;
 
@@ -62,12 +64,14 @@ class TSpiceData : public TObject {
    Int_t   GetSpiceThetaEDetectorNbr(Int_t i)   {return fSpice_Theta_DetNbr.at(i);}
    Int_t   GetSpiceThetaEStripNbr(Int_t i)      {return fSpice_Theta_StripNbr.at(i);}
    Double_t   GetSpiceThetaEEnergy(Int_t i)     {return fSpice_Theta_Energy.at(i);}
+   Double_t   GetSpiceThetaEResEnergy(Int_t i)     {return fSpice_Theta_ResEnergy.at(i);}
 
    // (Ph,E)
    Int_t   GetSpicePhiEMult()                {return fSpice_Phi_StripNbr.size();}
    Int_t   GetSpicePhiEDetectorNbr(Int_t i)  {return fSpice_Phi_DetNbr.at(i);}
    Int_t   GetSpicePhiEStripNbr(Int_t i)     {return fSpice_Phi_StripNbr.at(i);}
    Double_t   GetSpicePhiEEnergy(Int_t i)       {return fSpice_Phi_Energy.at(i);}
+   Double_t   GetSpicePhiEResEnergy(Int_t i)       {return fSpice_Phi_ResEnergy.at(i);}
 
    TVector3 GetPositionFirstHit(Int_t i)  {return fPositionFirstHit.at(i);}    
    Int_t GetEventNumber(void)             {return fEventNumber;}
@@ -83,11 +87,13 @@ class TSpiceData : public TObject {
    void   SetSpiceThetaEDetectorNbr(Int_t det)  {fSpice_Theta_DetNbr.push_back(det);}
    void   SetSpiceThetaEStripNbr(Int_t Nr)      {fSpice_Theta_StripNbr.push_back(Nr);}
    void   SetSpiceThetaEEnergy(Double_t E)         {fSpice_Theta_Energy.push_back(E);}
+   void   SetSpiceThetaEResEnergy(Double_t E)         {fSpice_Theta_ResEnergy.push_back(E);}
 
    // (Ph,E)
    void   SetSpicePhiEDetectorNbr(Int_t det) {fSpice_Phi_DetNbr.push_back(det);}
    void   SetSpicePhiEStripNbr(Int_t Nr)     {fSpice_Phi_StripNbr.push_back(Nr);}
    void   SetSpicePhiEEnergy(Double_t E)        {fSpice_Phi_Energy.push_back(E);}
+   void   SetSpicePhiEResEnergy(Double_t E)        {fSpice_Phi_ResEnergy.push_back(E);}
    
    void   SetPositionFirstHit(TVector3 position)  {fPositionFirstHit.push_back(position);}
    void   SetEventNumber(Int_t i)          {fEventNumber = i;}
