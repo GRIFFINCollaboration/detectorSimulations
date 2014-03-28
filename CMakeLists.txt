@@ -6,11 +6,14 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 #----------------------------------------------------------------------------
 # Adding a variable to use root through out the G4 project. 
 #
-set(mytarget    detectionSystems)  # equivalent to "name := myexample" in G4 GNUmakefiles
-set(useROOT     true            )  # use true or false (or comment to set to false)
-set(myROOTclassDir dataRootClass) 
-set(myROOTclass TSpiceData.cpp)   # comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
-
+set(mytarget    		detectionSystems)  			# equivalent to "name := myexample" in G4 GNUmakefiles
+set(useROOT     		true            ) 		 	# use true or false (or comment to set to false)
+set(myROOTclassDir 		dataRootClass	) 			# directory of the root classes
+set(myROOTclass 		true			)   		# comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
+set(myROOTS3class 		TS3Data.cpp		)   		# comment if none  
+set(myROOTSpiceclass 	TSpiceData.cpp	)   		# comment if none  
+#set(myROOTGriffinclass TGriffinData.cpp)  			# comment if none  
+#set(myROOTNewclass 	TNewData.cpp) 				# comment if none  
 
 # http://www.cmake.org/cmake/help/cmake_tutorial.html
 # http://www.cmake.org/cmake/help/cmake2.6docs.html
@@ -51,7 +54,27 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 #                   
 if(useROOT)
 	if(myROOTclass)
-		EXECUTE_PROCESS(COMMAND rootcint -f dict.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/linkdef.h)
+		
+		if(myROOTS3class)
+		message(" --- compiling S3 --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictS3.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTS3class} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/S3_linkdef.h )
+		endif(myROOTS3class)
+				
+		if(myROOTSpiceclass)
+		message(" --- compiling Spice --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictSpice.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTSpiceclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Spice_linkdef.h)
+		endif(myROOTSpiceclass)
+
+		if(myROOTGriffinclass)
+		message(" --- compiling Griffin --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictGriffin.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTGriffinclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Griffin_linkdef.h)
+		endif(myROOTGriffinclass)
+		
+		#if(myROOTNewclass)
+		#message(" --- compiling New --- ")
+		#EXECUTE_PROCESS(COMMAND rootcint -f dictNew.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTNewclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/New_linkdef.h)
+		#endif(myROOTNewclass)
+	
 	endif(myROOTclass)
 	EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
@@ -117,8 +140,38 @@ endif()
 add_executable(${myexe} ${mymain} ${sources} ${headers} ${TOOLS_FORTRAN_OBJECTS})
 if(useROOT)
 	EXECUTE_PROCESS(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	
 	if(myROOTclass)
-		set(CMAKE_EXE_LINKER_FLAGS "${ROOT_LD_FLAGS} dict.cxx")
+
+		if(myROOTS3class)
+			message(" --- Linking :  dictS3.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictS3.cxx)
+		endif(myROOTS3class)
+		
+		if(myROOTSpiceclass)
+			message(" --- Linking :  dictSpice.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictSpice.cxx)
+		endif(myROOTSpiceclass)
+		
+		if(myROOTGriffinclass)
+			message(" --- Linking :  dictGriffin.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictGriffin.cxx)
+		endif(myROOTGriffinclass)
+		
+		#if(myROOTNewclass)
+		#	message(" --- Linking :  dictNew.cxx --- ")
+		#set(myROOTDict ${myROOTDict} dictNew.cxx)
+		#endif(myROOTNewclass)
+				
+		# This will replace the semicolons in a cmake list ";" to spaces " "	 
+		foreach(arg ${myROOTDict})
+			set(myROOTDictSPACED "${myROOTDictSPACED} ${arg}")
+		endforeach(arg ${myROOTDict})
+
+		message(" --- Dictionaries linked are : ${myROOTDictSPACED} --- ")
+		
+	  	set(CMAKE_EXE_LINKER_FLAGS "${ROOT_LD_FLAGS} ${myROOTDictSPACED}")
+
 	else(myROOTclass)
 		set(CMAKE_EXE_LINKER_FLAGS ${ROOT_LD_FLAGS})
 	endif(myROOTclass)

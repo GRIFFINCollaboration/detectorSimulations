@@ -1,6 +1,3 @@
-#  Mhd le 26 Feb 2014 : compile TSpiceData.
-
-# Makefile for the ROOT test programs.
 # This Makefile shows nicely how to compile and link applications
 # using the ROOT libraries on all supported platforms.
 #
@@ -32,28 +29,32 @@ CXXFLAGS     += $(ROOTCFLAGS)
 LIBS          = $(ROOTLIBS) $(SYSLIBS) 
 GLIBS         = $(ROOTGLIBS) $(SYSLIBS) 
 
-#------------------------------------------------------------------------------
-#SHARELIB      = libDetector.so \
-#		libmyDetector1Data.so libmyDetector1.so \
-#		libmyDetector2Data.so libmyDetector2.so \
+# Specify Shared libraries
+#-------------------------
+#SHARELIB      = libDetector.so libNewData.so libNew2Data.so
 
-SHARELIB      = libSpiceData.so 
-
+SHARELIB      = libSpiceData.so  libS3Data.so
 
 all:            $(SHARELIB)
 
-#------------------------------------------------------------------------------
-
+# Create dictionaries
+#-------------------------
 libSpiceData.so:	TSpiceData.o   TSpiceDataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TSpiceDataDict.cpp:	TSpiceData.h
 			rootcint -f $@ -c $^
 
-#libmyDetector1Data.so:	TmyDetector1Data.o   TmyDetector1DataDict.o
+libS3Data.so:	TS3Data.o   TS3DataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TS3DataDict.cpp:	TS3Data.h
+			rootcint -f $@ -c $^
+			
+#libNewData.so:	TNewData.o   TNewDataDict.o
 #		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 #
-#TmyDetector1DataDict.cpp:	TmyDetector1Data.h
+#TNewDataDict.cpp:	TNewData.h
 #			rootcint -f $@ -c $^
 			
 #------------------------------------------------------------------------------
@@ -69,9 +70,10 @@ distclean:
 	$(CXX) $(CXXFLAGS) -c $<
 
 
-# dependances
+# Manage dependances
+#-------------------------
 TSpiceData.o:	TSpiceData.cpp	TSpiceData.h
-#TmyDetector1Data.o:	TmyDetector1Data.cpp	TmyDetector1Data.h
-#TmyDetector2Data.o:	TmyDetector2Data.cpp	TmyDetector2Data.h
+TS3Data.o:		TS3Data.cpp		TS3Data.h
+#TNewData.o:	TNewData.cpp	TNewData.h
 
 

@@ -17,8 +17,9 @@ using namespace std ;
 //User
 #include "RawG4Event.hh"
 #include "../dataRootClass/TSpiceData.h"
+#include "../dataRootClass/TS3Data.h"
 
-class RootManager   {
+class RootManager {
     
     public:
         static RootManager *instance();
@@ -41,8 +42,8 @@ class RootManager   {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
-        TSpiceData  *fSpiceData;
-              
+        TSpiceData* fSpiceData;
+        TS3Data*    fS3Data;      
        
     public:
     // fill the histograms 
@@ -69,7 +70,7 @@ class RootManager   {
        
        //Set the data in Spice writing Class
        void SetSpiceEvent(int key);
-       
+       void SetS3Event(int key);
        
        // Close the root Manager        							
        void Close();  
