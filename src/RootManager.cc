@@ -31,19 +31,10 @@ RootManager::RootManager()
     // Create objects to hold the data
     //spice event
 	fSpiceData = new TSpiceData();
-<<<<<<< HEAD
-	fGriffinData = new TGriffinData();
-<<<<<<< HEAD
 	fS3Data = new TS3Data();
-
-=======
-=======
-	fS3Data = new TS3Data();
->>>>>>> griffin/master
 	fDetectorSpice = new DetectionSystemSpice();
 
-	
->>>>>>> griffin/master
+
 	//histograms 
 	fHist = new TH1F("h","h",500,0,1800);
 
@@ -113,11 +104,7 @@ void RootManager::SortEvent(void)
 			//Spice
 			if (key>1 && key <50) SetSpiceEvent(key);
 			if (key>50 && key <1000) SetS3Event(key);
-<<<<<<< HEAD
 
-=======
-			
->>>>>>> griffin/master
 			//other
 			//if (key>1 && key <1000) SetOtherDetectorEvent(key);
 			}
@@ -175,68 +162,14 @@ void RootManager::SetSpiceEvent(int RingSeg)
 			fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
 			fSpiceData->SetSpiceThetaEEnergy(energy) ;     
 			fSpiceData->SetSpiceThetaEResEnergy(applied_resolution) ;
-			
+
 
 			// (Ph,E)
 			fSpiceData->SetSpicePhiEDetectorNbr(1) ;
 			fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
 			fSpiceData->SetSpicePhiEEnergy(energy) ;
-<<<<<<< HEAD
-
-			fSpiceData->SetPositionFirstHit(pos) ;				
-}
-
-
-void RootManager::SetS3Event(int RingSeg)
-{	
-			// treat
-			fGeantEvent.at(RingSeg).SortPrimary();			
-
-			// get the segment and ring
-			int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
-			int Ring = (RingSeg-Seg)/100;
-
-			// get primary
-			// Pdg	
-			int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
-		    for (int i = 0 ; i<mult ;  i++ )
-			fS3Data->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
-
-		  	// Energy      
-		    mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
-			for (int i = 0 ; i<mult ;  i++ )
-			{
-			fS3Data->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
-			}
-
-			// Momentum
-			    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
-			for (int i = 0 ; i<mult ;  i++ )
-			{
-			fS3Data->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
-			fS3Data->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
-			}
-
-			// get the energy 			
-			double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
-			TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
-
-			// fill the S3Data object
-			// (Th,E)
-			fS3Data->SetS3ThetaEDetectorNbr(1) ; 
-			fS3Data->SetS3ThetaEStripNbr(Ring) ;    
-			fS3Data->SetS3ThetaEEnergy(energy) ;     
-
-			// (Ph,E)
-			fS3Data->SetS3PhiEDetectorNbr(1) ;
-			fS3Data->SetS3PhiEStripNbr(Seg)  ;
-			fS3Data->SetS3PhiEEnergy(energy) ;
-
-			fS3Data->SetPositionFirstHit(pos) ;		
-
-=======
 			fSpiceData->SetSpicePhiEResEnergy(applied_resolution) ;
-			
+
 			fSpiceData->SetPositionFirstHit(pos) ;				
 }
 
@@ -245,24 +178,24 @@ void RootManager::SetS3Event(int RingSeg)
 {	
 			// treat
 			fGeantEvent.at(RingSeg).SortPrimary();			
-			
+
 			// get the segment and ring
 			int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
 			int Ring = (RingSeg-Seg)/100;
-			
+
 			// get primary
 			// Pdg	
 			int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
 		    for (int i = 0 ; i<mult ;  i++ )
 			fS3Data->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
-		  	
+
 		  	// Energy      
 		    mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
 			for (int i = 0 ; i<mult ;  i++ )
 			{
 			fS3Data->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
 			}
-			
+
 			// Momentum
 			    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
 			for (int i = 0 ; i<mult ;  i++ )
@@ -274,7 +207,7 @@ void RootManager::SetS3Event(int RingSeg)
 			// get the energy 			
 			double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
 			TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
-				
+
 			// fill the S3Data object
 			// (Th,E)
 			fS3Data->SetS3ThetaEDetectorNbr(1) ; 
@@ -285,10 +218,9 @@ void RootManager::SetS3Event(int RingSeg)
 			fS3Data->SetS3PhiEDetectorNbr(1) ;
 			fS3Data->SetS3PhiEStripNbr(Seg)  ;
 			fS3Data->SetS3PhiEEnergy(energy) ;
-			
+
 			fS3Data->SetPositionFirstHit(pos) ;		
-		
->>>>>>> griffin/master
+
 }
 
 
@@ -306,5 +238,7 @@ void RootManager::Close()
     fRootfile->Write();
     fRootfile->Close();    
 }
+
+
 
 

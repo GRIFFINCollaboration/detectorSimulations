@@ -50,7 +50,7 @@ libS3Data.so:	TS3Data.o   TS3DataDict.o
 
 TS3DataDict.cpp:	TS3Data.h
 			rootcint -f $@ -c $^
-
+			
 libGriffinData.so:	TGriffinData.o   TGriffinDataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
@@ -81,5 +81,3 @@ distclean:
 TSpiceData.o:	TSpiceData.cpp	TSpiceData.h
 TS3Data.o:	TS3Data.cpp	TS3Data.h
 TGriffinData.o:	TGriffinData.cpp	TGriffinData.h
-#TNewData.o:	TNewData.cpp	TNewData.h
-
