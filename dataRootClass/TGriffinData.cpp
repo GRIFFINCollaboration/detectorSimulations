@@ -43,6 +43,6 @@ void TGriffinData::Clear()
 
 void TGriffinData::Dump() const
 {
-
+        cout << "Stuff will go here" << endl;
    
 }

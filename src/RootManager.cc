@@ -2,6 +2,7 @@
 
 #include "RootManager.hh"
 
+
 RootManager *RootManager::fRootManager = NULL;
 
 RootManager *RootManager::instance()    {
@@ -30,8 +31,14 @@ RootManager::RootManager()
     // Create objects to hold the data
     //spice event
 	fSpiceData = new TSpiceData();
+	fGriffinData = new TGriffinData();
+<<<<<<< HEAD
 	fS3Data = new TS3Data();
 
+=======
+	fDetectorSpice = new DetectionSystemSpice();
+	
+>>>>>>> griffin/master
 	//histograms 
 	fHist = new TH1F("h","h",500,0,1800);
 
@@ -150,6 +157,7 @@ void RootManager::SetSpiceEvent(int RingSeg)
 
 			// get the energy 			
 			double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
+			double applied_resolution = fDetectorSpice->ApplySpiceResolution(energy);
 			TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
 
 			// fill the SpiceData object
@@ -157,11 +165,14 @@ void RootManager::SetSpiceEvent(int RingSeg)
 			fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
 			fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
 			fSpiceData->SetSpiceThetaEEnergy(energy) ;     
+			fSpiceData->SetSpiceThetaEResEnergy(applied_resolution) ;
+			
 
 			// (Ph,E)
 			fSpiceData->SetSpicePhiEDetectorNbr(1) ;
 			fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
 			fSpiceData->SetSpicePhiEEnergy(energy) ;
+<<<<<<< HEAD
 
 			fSpiceData->SetPositionFirstHit(pos) ;				
 }
@@ -214,6 +225,12 @@ void RootManager::SetS3Event(int RingSeg)
 
 			fS3Data->SetPositionFirstHit(pos) ;		
 
+=======
+			fSpiceData->SetSpicePhiEResEnergy(applied_resolution) ;
+			
+			fSpiceData->SetPositionFirstHit(pos) ;		
+		
+>>>>>>> griffin/master
 }
 
 

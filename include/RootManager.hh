@@ -14,13 +14,25 @@ using namespace std ;
 #include<TH1.h>
 #include "TTree.h"
 
+//Geant4
+#include "G4LogicalVolume.hh"
+#include "G4AssemblyVolume.hh"
+#include "G4Tubs.hh"
+
 //User
 #include "RawG4Event.hh"
+#include "DetectionSystemSpice.hh"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
 
+<<<<<<< HEAD
 class RootManager {
+=======
+class DetectionSystemSpice;
+
+class RootManager   {
+>>>>>>> griffin/master
     
     public:
         static RootManager *instance();
@@ -43,8 +55,16 @@ class RootManager {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
+<<<<<<< HEAD
         TSpiceData* fSpiceData;
         TS3Data*    fS3Data;      
+=======
+        TSpiceData  *fSpiceData;
+        
+        //Detector Classes
+        DetectionSystemSpice *fDetectorSpice; 
+                     
+>>>>>>> griffin/master
        
     public:
     // fill the histograms 

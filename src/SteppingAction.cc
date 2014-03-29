@@ -265,11 +265,11 @@ void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)
         impr = cstr[11]-'0';
     }
     else { // OVER 100
-        av = (cstr[3]-'0')*100+(cstr[4]-'0')+10+(cstr[5]-'0');
+        av = (cstr[3]-'0')*100+(cstr[4]-'0')*10+(cstr[5]-'0');  // This was fixed
         impr = cstr[12]-'0';
     }
 
-    det = (G4int)(ceil(av/numberOfAssemblyVols));
+    det = (G4int)(ceil(((G4double)(av)-5.0)/(G4double)(numberOfAssemblyVols))); // This was fixed
     cry = impr;
 
     det = FindTrueGriffinDetector(det);
@@ -297,7 +297,7 @@ void SteppingAction::SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4Stri
         impr = cstr[12]-'0';
     }
 
-    det = (G4int)(ceil(av/numberOfAssemblyVols))+1;
+    det = (G4int)(ceil((G4double)(av)/(G4double)(numberOfAssemblyVols)));
     cry = av - numberOfAssemblyVols*(det-1);
 
     det = FindTrueGriffinDetector(det);
@@ -322,7 +322,11 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
    det = atoi(dummy.c_str()); // ring 
 
+<<<<<<< HEAD
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+=======
+    //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+>>>>>>> griffin/master
     //G4cin.get();
 }
 

@@ -100,7 +100,7 @@ void EventAction::EndOfEventAction(const G4Event*)
         G4double time       = 0;
                 
     for(G4int i = 0; i < MAXSTEPS; i++) {
-       
+         
         if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
 
         eventNumber = stepTracker[0][i] ;
@@ -122,15 +122,16 @@ void EventAction::EndOfEventAction(const G4Event*)
 		OriginID, OriginPdg, OriginEnergy,                  
 		OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
         */
+        
         RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, 0, 11, 0, 0, 0, 0);	   // this is one hit of a Hit Collection
         //RootManager::instance()->FillHist(1000/keV);		//optionale
         }
-
-		if (depEnergy>0 &&  detNumber<12) { // if condition satisfied 
-		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
-		}
 		
     }
+    
+    if (depEnergy>0.0 &&  detNumber<12) { // if condition satisfied 
+		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
+		}
     
   FillParticleType() ; 
   FillGridEkin() ;

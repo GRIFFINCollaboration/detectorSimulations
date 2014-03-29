@@ -37,11 +37,13 @@ void TSpiceData::Clear()
    fSpice_Theta_DetNbr.clear();
    fSpice_Theta_StripNbr.clear();
    fSpice_Theta_Energy.clear();
+   fSpice_Theta_ResEnergy.clear();
 
    // (Ph,E)
    fSpice_Phi_DetNbr.clear();
    fSpice_Phi_StripNbr.clear();
    fSpice_Phi_Energy.clear();
+   fSpice_Phi_ResEnergy.clear();
 
    fPrimaryTheta.clear(); 
    fPrimaryPhi.clear();  
@@ -61,12 +63,14 @@ void TSpiceData::Dump() const
    // (Th,E)
    cout << "Spice_MultThE = " << fSpice_Theta_DetNbr.size() << endl;
    for (UShort_t i = 0; i < fSpice_Theta_DetNbr.size(); i++)
-      cout << "DetThE: " << fSpice_Theta_DetNbr[i] << " StripThE: " << fSpice_Theta_StripNbr[i] << " EnergyTh: " << fSpice_Theta_Energy[i] << endl;
+      cout << "DetThE: " << fSpice_Theta_DetNbr[i] << " StripThE: " << fSpice_Theta_StripNbr[i] 
+      		 << " EnergyTh: " << fSpice_Theta_Energy[i] << " ResEnergyTh: " << fSpice_Theta_ResEnergy[i] << endl;
 
    // (Ph,E)
    cout << "Spice_MultPhE = " << fSpice_Phi_DetNbr.size() << endl;
    for (UShort_t i = 0; i < fSpice_Phi_DetNbr.size(); i++)
-      cout << "DetPhE: " << fSpice_Phi_DetNbr[i] << " StripPhE: " << fSpice_Phi_StripNbr[i] << " EnergyPh: " << fSpice_Phi_Energy[i] << endl;
+      cout << "DetPhE: " << fSpice_Phi_DetNbr[i] << " StripPhE: " << fSpice_Phi_StripNbr[i] 
+      		 << " EnergyPh: " << fSpice_Phi_Energy[i] << " ResEnergyPh: " << fSpice_Phi_ResEnergy[i] << endl;
 
    // First hit
    cout << "Position of First Hit Mult = " << fPositionFirstHit.size() << endl;
