@@ -24,23 +24,12 @@ using namespace std ;
 #include "DetectionSystemSpice.hh"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
-<<<<<<< HEAD
 #include "../dataRootClass/TGriffinData.h"
-=======
 
->>>>>>> griffin/master
 
-<<<<<<< HEAD
-class RootManager {
-=======
 class DetectionSystemSpice;
 
 class RootManager   {
-<<<<<<< HEAD
->>>>>>> griffin/master
-=======
-
->>>>>>> griffin/master
     
     public:
         static RootManager *instance();
@@ -63,22 +52,11 @@ class RootManager   {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
-<<<<<<< HEAD
-<<<<<<< HEAD
         TSpiceData* fSpiceData;
         TS3Data*    fS3Data;      
-=======
-        TSpiceData  *fSpiceData;
-        
-=======
-        TSpiceData* fSpiceData;
-        TS3Data*    fS3Data;      
- 
->>>>>>> griffin/master
-        //Detector Classes
+     
         DetectionSystemSpice *fDetectorSpice; 
                      
->>>>>>> griffin/master
        
     public:
     // fill the histograms 
