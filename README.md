@@ -66,6 +66,17 @@ Keep in mind that cmake does not regenerate all the files it uses every time it 
 | ``` /DetSys/gun/numberOfRadioactiveNuclei int ``` | Set the number of radioactive nuclei | |
 | ``` /DetSys/gun/radioactiveSourceDecay filename ``` | Simulate source decay with a file containing the decay data | |
 
+####Kinematics
+Whenever an electron or positron is emitted, you can choose to simulate kinematic effects (i.e. shifting of energy due to relativistic speeds of ions).  You must specify the ion with ``` /DetSys/gun/ion Z A E ``` first.
+
+| Command | Brief Description | Default |
+| :------ | :---------------- | :------ |
+| ``` /DetSys/gun/simulateKinematics 0/1 ``` | Choose to simulate kinematic effects | False |
+| ``` /DetSys/gun/kinematicsBetaValue double ```* | Specify beta value of incident ion | 0 |
+| ``` /DetSys/gun/kinematicsIonEnergy double unit ```* | Specify energy of heavy ion | 0 MeV |
+
+*Only one of these should be specified
+
 ###Detector Specific
 
 ####GRIFFIN

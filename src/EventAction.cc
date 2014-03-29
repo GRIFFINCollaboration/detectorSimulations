@@ -98,6 +98,11 @@ void EventAction::EndOfEventAction(const G4Event*)
         G4double posy       = 0;
         G4double posz       = 0;
         G4double time       = 0;
+        G4double initialDirectionX       = 0;
+        G4double initialDirectionY       = 0;
+        G4double initialDirectionZ       = 0;
+        G4double initialEnergy       = 0;
+        G4int trackID       = 0;
                 
     for(G4int i = 0; i < MAXSTEPS; i++) {
          
@@ -112,6 +117,11 @@ void EventAction::EndOfEventAction(const G4Event*)
         posy       = stepTracker[6][i]/mm;
         posz       = stepTracker[7][i]/mm;
         time       = stepTracker[8][i]/second;
+        initialDirectionX = stepTracker[9][i];
+        initialDirectionY = stepTracker[10][i];
+        initialDirectionZ = stepTracker[11][i];
+        initialEnergy = stepTracker[12][i];
+        trackID    = stepTracker[13][i];
             
         histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
         /*    
@@ -123,7 +133,7 @@ void EventAction::EndOfEventAction(const G4Event*)
 		OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
         */
         
-        RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, 0, 11, 0, 0, 0, 0);	   // this is one hit of a Hit Collection
+        RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	   // this is one hit of a Hit Collection
         //RootManager::instance()->FillHist(1000/keV);		//optionale
         }
 		
