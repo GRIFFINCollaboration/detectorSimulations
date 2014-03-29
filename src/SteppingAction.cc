@@ -323,8 +323,12 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    det = atoi(dummy.c_str()); // ring 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
 =======
+=======
+    //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+>>>>>>> griffin/master
     //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
 >>>>>>> griffin/master
     //G4cin.get();
