@@ -53,7 +53,8 @@ class RootManager   {
         
         //Writing Class for detectors goes here
         TSpiceData* fSpiceData;
-        TS3Data*    fS3Data;      
+        TS3Data*    fS3Data;   
+        TGriffinData* fGriffinData;   
      
         DetectionSystemSpice *fDetectorSpice; 
                      
@@ -84,6 +85,7 @@ class RootManager   {
        //Set the data in Spice writing Class
        void SetSpiceEvent(int key);
        void SetS3Event(int key);
+       void SetGriffinEvent(int key);
        
        // Close the root Manager        							
        void Close();  
