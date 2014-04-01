@@ -69,11 +69,13 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     virtual ~PrimaryGeneratorAction();
 
     void GeneratePrimaries( G4Event* ) ;
+    void GetRandomDirection();
 
     inline G4double GetParticleEnergy() {return energy;};
     
     G4int GetPrimaryParticleType(); // MHD : 12 April 2013
   
+  	
     void SetEnergy( G4double );
     void SetParticleType( G4String );
     void SetIonType( G4int Z, G4int A, G4double E );
@@ -102,9 +104,15 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   	void EmissionForRadioactiveSourceDecay( G4Event* myEvent );
   	void LevelSchemeReader( const char* filename );
   	void EmitBetaForSourceDecay(G4double myEndPointEnergy, G4Event* myEvent);
-  	void EmitParticleForSourceDecay(G4double energy, G4ParticleGun *gun, G4Event* myEvent);
+  	void EmitParticleForSourceDecay(G4double energy, G4Event* myEvent);
   	void EmissionForVacantShell(int shell, G4Event* myEvent);
-
+  	
+  	void SetKinematicsActive( G4bool tf );
+  	void SetKinematicsBetaValue( G4double beta );
+  	void SetKinematicsIonEnergy( G4double value );
+  	G4double KinematicEnergyBroadening( G4double energy, G4Event* anEvent );
+  	void EmitIon(G4int ionZ, G4int ionA, G4double ionE, G4Event* anEvent);
+  	
   	G4ThreeVector GetEmissionPositionAtSource( G4ThreeVector value );
 
     void ReadEnergyDistribution( G4String );
@@ -249,7 +257,25 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4int         						eventID;  
     G4int         						numberOfEvents;  
     G4int         						eventSum;
-
+    
+    G4double                  fSpeedOfLight;
+	  G4double                  fRestMassOfElectron;
+	  G4double                  fAtomicMassUnit;
+	  
+	  G4double                  fBetaHeavyIon;
+    G4bool                    fBetaDefinedByUser;
+    G4bool										fSimulateKinematics;
+    G4bool										ionDefined;
+    G4bool                    ionEmittedThisEvent;
+    G4int											ionDefinitionZ;
+    G4int											ionDefinitionA;
+    G4double									ionDefinitionE;
+    G4ThreeVector							ionDirection;
+    G4double									fIonKineticEnergy;
+    G4bool                    fIonEnergyDefinedByUser;
+    
+    
+    
     std::vector <double> 			energyDist;
     std::vector <double> 			weightDist;
     std::vector <double> 			monteCarlo;

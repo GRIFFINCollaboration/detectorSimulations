@@ -24,12 +24,12 @@ using namespace std ;
 #include "DetectionSystemSpice.hh"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
+#include "../dataRootClass/TGriffinData.h"
 
 
 class DetectionSystemSpice;
 
 class RootManager   {
-
     
     public:
         static RootManager *instance();
@@ -53,9 +53,9 @@ class RootManager   {
         
         //Writing Class for detectors goes here
         TSpiceData* fSpiceData;
-        TS3Data*    fS3Data;      
- 
-        //Detector Classes
+        TS3Data*    fS3Data;   
+        TGriffinData* fGriffinData;   
+     
         DetectionSystemSpice *fDetectorSpice; 
                      
        
@@ -72,7 +72,7 @@ class RootManager   {
 					 int,// primary particle pdg encoding
 					 double,//original (primary) particle energy
 					 double, double, double);// primary particle momentum vector
-					 
+
        //Set event number  						 
        void SetEventNumber(int) ;
        
@@ -85,6 +85,7 @@ class RootManager   {
        //Set the data in Spice writing Class
        void SetSpiceEvent(int key);
        void SetS3Event(int key);
+       void SetGriffinEvent(int key);
        
        // Close the root Manager        							
        void Close();  

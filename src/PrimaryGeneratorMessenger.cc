@@ -150,7 +150,20 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun
   parameter6 = new G4UIparameter ("step", 'd', omitable = false);
   rangeCmd->SetParameter(parameter6);
   rangeCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+  
+  simKinematicsCmd = new G4UIcmdWithABool("/DetSys/gun/simulateKinematics",this);
+  simKinematicsCmd->SetGuidance("Choose to simulate kinematic shift/broadening of particles");
+  simKinematicsCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  simKinematicsBetaValueCmd = new G4UIcmdWithADouble("/DetSys/gun/kinematicsBetaValue",this);
+  simKinematicsBetaValueCmd->SetGuidance("Set beta value of heavy ion");
+  simKinematicsBetaValueCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  simKinematicsIonEnergyCmd = new G4UIcmdWithADoubleAndUnit("/DetSys/gun/kinematicsIonEnergy",this);
+	simKinematicsIonEnergyCmd->SetGuidance("Sets energy of the ions in kinematic simulation.");
+  simKinematicsIonEnergyCmd->SetUnitCategory("Energy");
+  simKinematicsIonEnergyCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -176,6 +189,9 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete includeXRayInputFileMShellCmd;
   delete radioactiveDecayHalflifeCmd;
   delete numberOfRadioactiveNucleiCmd;
+  delete simKinematicsCmd;
+  delete simKinematicsBetaValueCmd;
+  delete simKinematicsIonEnergyCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -244,6 +260,15 @@ void PrimaryGeneratorMessenger::SetNewValue( G4UIcommand* command, G4String newV
     std::istringstream is ((char*)s);
     is>>minimum>>maximum>>step;
     Action->SetEnergyRange(minimum,maximum,step);
+  }
+  if( command == simKinematicsCmd) {
+  	Action->SetKinematicsActive(simKinematicsCmd->GetNewBoolValue(newValue));
+  }
+  if( command == simKinematicsBetaValueCmd ) {
+  	Action->SetKinematicsBetaValue(simKinematicsBetaValueCmd->GetNewDoubleValue(newValue));
+  }
+  if( command == simKinematicsIonEnergyCmd ) { 
+    Action->SetKinematicsIonEnergy(simKinematicsIonEnergyCmd->GetNewDoubleValue(newValue));
   }
 
 }

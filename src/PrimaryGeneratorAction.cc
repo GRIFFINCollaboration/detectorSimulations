@@ -61,13 +61,21 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
 :Detector(DC)
 {
   srand48(time(NULL));
+  
+  
+
   directionSpecified         = false;
   newParticleType            = false;
   emissionSimulation         = false;
   radioactiveDecaySimulation = false;
   radioactiveDecaySimulation = false;
-  energyRange = false;
-  previousEnergy = 0*keV;
+  energyRange                = false;
+  previousEnergy             = 0*keV;
+  ionDefined                 = false;
+  
+  fSpeedOfLight              = 299.8*km/s;
+	fRestMassOfElectron        = 511*keV;
+	fAtomicMassUnit            = 1.660539E-27*kg;
 
   eventSum = 0;
   G4int n_particle = 1;
@@ -78,6 +86,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
 
   // defaults
   energy = 1000.*keV;
+  
+  fBetaHeavyIon               = 0.0;
+  fBetaDefinedByUser          = false;
+  fSimulateKinematics         = false;
+  fIonEnergyDefinedByUser     = false;
+  
 
   this->halflife              = 0.0; //seconds
   this->polarization          = 0.0;
@@ -115,8 +129,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
 	WriteSourceRecord();
-	
-  delete particleGun;
+	delete particleGun;
   delete gunMessenger;
 }
 
@@ -126,15 +139,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   G4double randomClock = 0.0, lamda = 0.0;
   G4double deltaTimeInSeconds = 0.0;
-  G4double posx, posy, posz ;
-  G4int theBetaBranch, numberOfParticles, numberOfXRays;    
+  G4int theBetaBranch, numberOfParticles, numberOfXRays;  
+  ionEmittedThisEvent = false;  
 
-  //G4cout << "GeneratePrimaries" << G4endl;
-
+	// if /DetSys/gun/radioactiveBetaDecay is called
   if(emissionSimulation) {
     G4double selectedEnergy = 0.00*keV;
     G4double monteCarloRand = UniformRand48();
 
+		// energy distribution
     for(G4int i = 0 ; i < energyDist.size() ; i++ )
     {
       if(monteCarloRand <= monteCarlo[i])
@@ -142,32 +155,17 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         selectedEnergy = energyDist[i]*1.0*keV;
         break;
       }
-    }
+    } // end for(G4int i
     
     energy = selectedEnergy;
-
-		if( isoRadOnBox )
-		{
-      posx = position.x();
-      posy = position.y();
-      posz = position.z();
-
-      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
-      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
-      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
-      
-      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
-	  }		
-
-    else if(!directionSpecified)
-    {
-      // random direction
-      G4double costheta = 2.*UniformRand48()-1.0;
-      G4double sintheta = sqrt( 1. - costheta*costheta );
-      G4double phi      = (360.*deg)*UniformRand48();
-      direction = G4ThreeVector(sintheta*cos(phi), sintheta*sin(phi), costheta);
-    }
-
+    
+    if( isoRadOnBox || !directionSpecified) GetRandomDirection();
+    
+    // If the particle is an electron/positron and the user has decided to simulate kinematic
+    // broadening, do so.
+    if (this->particle->GetParticleName() == "e-" || this->particle->GetParticleName() == "e-") 
+      if (fSimulateKinematics) energy = KinematicEnergyBroadening(energy, anEvent);
+    
     particleGun->SetParticleDefinition(this->particle);
     particleGun->SetParticlePosition(position);
     particleGun->SetParticleMomentumDirection(direction);
@@ -177,7 +175,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     eventID = anEvent->GetEventID();
     eventSum++;
     particleGun->GeneratePrimaryVertex(anEvent);
-  }
+  } // end if /DetSys/gun/radioactiveBetaDecay
   else if(this->radioactiveDecaySimulation) {
     if(this->halflife > 0 && this->numberOfNuclei > 0)
     {
@@ -236,28 +234,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   } //end if(radioactiveSourceDecaySimulation)
   else if(energyRange)
   {
-		if( isoRadOnBox )
-		{
-      posx = position.x();
-      posy = position.y();
-      posz = position.z();
-
-      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
-      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
-      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
-      
-      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
-	  }	
-    else if(!directionSpecified)
-    {
-      // random direction
-      //G4double costheta = 2.*UniformRand48()-1.0;
-      G4double costheta = 2. * ( CLHEP::RandFlat::shoot() ) - 1.0 ;
-      G4double sintheta = sqrt( 1. - costheta*costheta );
-      //G4double phi      = (360.*deg)*UniformRand48();
-      G4double phi      = (360.*deg) * ( CLHEP::RandFlat::shoot() ) ;
-      direction = G4ThreeVector( sintheta * cos(phi) , sintheta * sin(phi) , costheta);
-    }
+		if( isoRadOnBox || !directionSpecified) GetRandomDirection();
 	
 		// Stepping
 		if (previousEnergy/keV == 0 || (abs(previousEnergy-maximumEnergy+stepSizeEnergy))/keV < 0.001)
@@ -270,43 +247,33 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			previousEnergy = energy;
 			energy = energy + stepSizeEnergy;
 		}
-
+		
+		// In this instance a new variable has to be created with the energy, as the above if statement
+		// relies on the energy prior to it being corrected by kinematics.
+		G4double correctedEnergy = energy;
+    if (this->particle->GetParticleName() == "e-" || this->particle->GetParticleName() == "e-") 
+      if (fSimulateKinematics) correctedEnergy = KinematicEnergyBroadening(correctedEnergy, anEvent);
+    
 		particleGun->SetParticleDefinition(this->particle);
     particleGun->SetParticlePosition(position);
     particleGun->SetParticleMomentumDirection(direction);
-    particleGun->SetParticleEnergy(energy);
+    particleGun->SetParticleEnergy(correctedEnergy);
     particleGun->SetParticleTime(randomClock);
     
   	eventID = anEvent->GetEventID();
   	eventSum++;
   	particleGun->GeneratePrimaryVertex(anEvent);	
-  
+  	  
   } // end if(energyRange)
   else 
   {
     
-    if( isoRadOnBox )
-		{
-      posx = position.x();
-      posy = position.y();
-      posz = position.z();
-
-      randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
-      randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
-      randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
-      
-      direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
-	  }	
-    else if(!directionSpecified)
-    {
-      // random direction
-      //G4double costheta = 2.*UniformRand48()-1.0;
-      G4double costheta = 2. * ( CLHEP::RandFlat::shoot() ) - 1.0 ;
-      G4double sintheta = sqrt( 1. - costheta*costheta );
-      //G4double phi      = (360.*deg)*UniformRand48();
-      G4double phi      = (360.*deg) * ( CLHEP::RandFlat::shoot() ) ;
-      direction = G4ThreeVector( sintheta * cos(phi) , sintheta * sin(phi) , costheta);
-    }
+    if( isoRadOnBox || !directionSpecified) GetRandomDirection();
+    
+    // If the particle is an electron/positron and the user has decided to simulate kinematic
+    // broadening, do so.
+    if (this->particle->GetParticleName() == "e-" || this->particle->GetParticleName() == "e-") 
+      if (fSimulateKinematics) energy = KinematicEnergyBroadening(energy, anEvent);
 
     particleGun->SetParticleDefinition(this->particle);
     particleGun->SetParticlePosition(position);
@@ -321,6 +288,37 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void PrimaryGeneratorAction::GetRandomDirection()
+{
+	G4double posx, posy, posz ;
+	
+	// if DefineIsotropicRadOnBox() has been called
+	if( isoRadOnBox )
+	{
+     posx = position.x();
+     posy = position.y();
+     posz = position.z();
+
+     randBox_x = ( UniformRand48() * totalLengthOfBox_x ) - ( totalLengthOfBox_x / 2.0 ) ;
+     randBox_y = ( UniformRand48() * totalLengthOfBox_y ) - ( totalLengthOfBox_y / 2.0 ) ;
+     randBox_z = ( UniformRand48() * totalLengthOfBox_z ) - ( totalLengthOfBox_z / 2.0 ) ;
+      
+     direction = G4ThreeVector( randBox_x-posx, randBox_y-posy, randBox_z-posz) ;
+	 }	// end if( isoRadOnBox )
+
+	// if direction has not been specified, emit in random direction
+   else if(!directionSpecified)
+   {
+     G4double costheta = 2.*UniformRand48()-1.0;
+     G4double sintheta = sqrt( 1. - costheta*costheta );
+     G4double phi      = (360.*deg)*UniformRand48();
+     direction = G4ThreeVector(sintheta*cos(phi), sintheta*sin(phi), costheta);
+     
+   } // end if(!directionSpecified)
+   
+   	
+}
 
 void PrimaryGeneratorAction::SetEnergy( G4double value )
 {
@@ -403,9 +401,20 @@ void PrimaryGeneratorAction::SetParticleType( G4String name )
 
 void PrimaryGeneratorAction::SetIonType( G4int Z, G4int A, G4double E )
 {
+	// If ion hasn't been defined previously, assign Z, A & E to variables outside 
+	// the scope of this function... this allows the ion to be emitted repeatedly 
+	// at each new event along with gammas, electrons, etc 
+	// (e.g. in the KinematicEnergyBroadening function)
+	if (!ionDefined) {
+		ionDefinitionZ = Z;
+		ionDefinitionA = A;
+		ionDefinitionE = E;
+		ionDefined = true;
+	}
   this->particle = this->particleTable->GetIon(Z,A,E*keV);
   particleGun->SetParticleDefinition(this->particle);
-  G4cout << " --> Particle type has been set to an ion with Z=" << Z << " and A=" << A << " and an excitation energy of " << E << " keV." << G4endl;
+  G4cout << " --> Particle type has been set to an ion with Z=" << Z << " and A=" << A 
+  			 << " and an excitation energy of " << E << " keV." << G4endl;
 }
 
 void PrimaryGeneratorAction::DefineIsotropicRadOnBox( G4ThreeVector boxSize )
@@ -575,26 +584,26 @@ void PrimaryGeneratorAction::SetBetaMinusEmission( G4String file )
 }
 
 // -----------------------------------------------------
-// simulation of radioactive source as set up for SPICE
+// The next several functions are used in simulating a decay scheme (text file),
+// primarily used for SPICE
 // -----------------------------------------------------
-// set up command from messenger
+
+// Messenger set-up
 void PrimaryGeneratorAction::SetRadioactiveSourceDecay( G4String myInputFile )
 {
   radioactiveSourceDecaySimulation = true;
   PrimaryGeneratorAction::LevelSchemeReader(myInputFile);
 }
 
-// superordinate function for decay
+// Superordinate function for decay
 void PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay( G4Event* myEvent)
 {
+  // Variables used in control-loops
   G4int i = 0;
   G4int j = 0;
   G4int k = 0;
   
-  /*
-    Find starting point of the decay
-    by comparing beta decay probability to random number
-  */
+  // Find starting point of the decay by comparing beta decay probability to random number
     	
   // RandFlat is a random-number generating class from CLHEP
   // RandFlat::shoot(m,n) excludes m and n itself!
@@ -663,46 +672,41 @@ void PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay( G4Event* myEvent
       conversionTest = RandFlat::shoot(0.,1.);
       if(transitionConversionK > conversionTest)
 		{
-		 // EmitParticleForSourceDecay((particleEnergy-bindingEnergyK)*keV,electronGun,myEvent);
 		  SetParticleType( "e-" ) ; // MHD 12 April 2013
 		  if (DEBUG) G4cout << "PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay K-IC " << (particleEnergy-bindingEnergyK)*keV << endl;
-		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyK)*keV,particleGun,myEvent); // MHD 12 April 2013
+		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyK)*keV,myEvent); // MHD 12 April 2013
 		  SetSourceRecord( (particleEnergy-bindingEnergyK)*keV , "IC-k"); // MHD 01 May 2013
 		  EmissionForVacantShell(0, myEvent);
 		}
       else if((transitionConversionK + transitionConversionL1) > conversionTest)
 		{
-		 // EmitParticleForSourceDecay((particleEnergy-bindingEnergyL1)*keV,electronGun,myEvent);
 		  SetParticleType( "e-" ) ; // MHD 12 April 2013
 		  if (DEBUG) G4cout << "PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay L1-IC " <<  (particleEnergy-bindingEnergyL1)*keV << endl;
-		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL1)*keV,particleGun,myEvent); // MHD 12 April 2013
+		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL1)*keV,myEvent); // MHD 12 April 2013
 		  SetSourceRecord( (particleEnergy-bindingEnergyL1)*keV , "IC-L1"); // MHD 01 May 2013
 		  EmissionForVacantShell(1, myEvent);
 		}
       else if((transitionConversionK + transitionConversionL1 + transitionConversionL2) > conversionTest)
 		{
-		 // EmitParticleForSourceDecay((particleEnergy-bindingEnergyL2)*keV,electronGun,myEvent);
 		  SetParticleType( "e-" ) ; // MHD 12 April 2013
 		  if (DEBUG) G4cout << "PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay L2-IC " <<(particleEnergy-bindingEnergyL2)*keV<< endl;
-		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL2)*keV,particleGun,myEvent); // MHD 12 April 2013
+		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL2)*keV,myEvent); // MHD 12 April 2013
 		  SetSourceRecord( (particleEnergy-bindingEnergyL2)*keV , "IC-L2"); // MHD 01 May 2013
 		  EmissionForVacantShell(2, myEvent);
 		}
       else if((transitionConversionK + transitionConversionL1 + transitionConversionL2 + transitionConversionL3) > conversionTest)
 		{
-		  //EmitParticleForSourceDecay((particleEnergy-bindingEnergyL3)*keV,electronGun,myEvent);
 		  SetParticleType( "e-" ) ; // MHD 12 April 2013
 		  if (DEBUG) G4cout << "PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay L3-IC " <<(particleEnergy-bindingEnergyL3)*keV<< endl;
-		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL3)*keV,particleGun,myEvent); // MHD 12 April 2013
+		  EmitParticleForSourceDecay((particleEnergy-bindingEnergyL3)*keV,myEvent); // MHD 12 April 2013
 		  SetSourceRecord( (particleEnergy-bindingEnergyL3)*keV , "IC-L3"); // MHD 01 May 2013
 		  EmissionForVacantShell(3, myEvent);
 		}
       else
 		{
-//		 EmitParticleForSourceDecay((particleEnergy)*keV,gammaGun,myEvent);
 		 SetParticleType( "gamma" ) ; // MHD 12 April 2013
 		 if (DEBUG) G4cout << "PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay gamma"<< (particleEnergy)*keV << endl;
-		 EmitParticleForSourceDecay((particleEnergy)*keV,particleGun,myEvent); // MHD 12 April 2013
+		 EmitParticleForSourceDecay((particleEnergy)*keV,myEvent); // MHD 12 April 2013
 		 SetSourceRecord( (particleEnergy)*keV , "gamma"); // MHD 01 May 2013
 		} 
     } // end while(i!=0) 
@@ -932,23 +936,8 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 // ------------------------------------------
 void PrimaryGeneratorAction::EmitBetaForSourceDecay(G4double myEndPointEnergy, G4Event* myEvent)
 {  
-  // Random uniform distribution
-  do
-    {
-      direction_x = 2.*G4UniformRand()-1.;
-      direction_y = 2.*G4UniformRand()-1.;
-      direction_z = 2.*G4UniformRand()-1.;
-      direction_norm2 = direction_x*direction_x	+ direction_y*direction_y + direction_z*direction_z;
-    }
-  while(direction_norm2 == 0.0 || direction_norm2 > 1.);
-  
-  direction_norm = sqrt(direction_norm2);
-  
-  direction_x /= direction_norm;
-  direction_y /= direction_norm;
-  direction_z /= direction_norm;
-  
-  G4ThreeVector direction(direction_x, direction_y, direction_z);
+  // Get random direction for emission
+  if( isoRadOnBox || !directionSpecified) GetRandomDirection();
   
   // compare a random number to the energy distribution of
   // the beta decay to get correct energy
@@ -973,55 +962,30 @@ void PrimaryGeneratorAction::EmitBetaForSourceDecay(G4double myEndPointEnergy, G
     }
   betaEnergyDouble = (G4double)betaEnergy*keV;
   
-
-		  
-//  electronGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
-//  electronGun->SetParticleMomentumDirection(direction);
-//  electronGun->SetParticleEnergy(betaEnergyDouble);
-//  electronGun->GeneratePrimaryVertex(myEvent);
-  
   SetParticleType( "e-" ) ; // MHD 12 April 2013
   particleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));  // MHD 12 April 2013
   particleGun->SetParticleMomentumDirection(direction);  // MHD 12 April 2013
   particleGun->SetParticleEnergy(betaEnergyDouble);  // MHD 12 April 2013
   particleGun->GeneratePrimaryVertex(myEvent);  // MHD 12 April 2013
+  
+} // end EmitBetaForSourceDecay(...)
 
- // G4cout << "Particle energy = " << betaEnergyDouble/keV << " Particle type = Beta" << G4endl;  
-}
-
-// ----------------------------------------------
-// emit particle for Decay of Radioactive Source
-// ----------------------------------------------
-void PrimaryGeneratorAction::EmitParticleForSourceDecay(G4double energy, G4ParticleGun *gun, G4Event* myEvent)
+// Function called each time a particle (e.g. K-electron, x-ray or Auger) needs to be fired
+void PrimaryGeneratorAction::EmitParticleForSourceDecay(G4double energy, G4Event* myEvent)
 {
-  // Emit a particle in a uniform random direction
-  do
-    {
-      direction_x = 2.*G4UniformRand()-1.;
-      direction_y = 2.*G4UniformRand()-1.;
-      direction_z = 2.*G4UniformRand()-1.;
-      direction_norm2 = direction_x*direction_x
-	+ direction_y*direction_y
-	+ direction_z*direction_z;
-    }
-  while(direction_norm2 == 0.0 || direction_norm2 > 1.);
-
-  direction_norm = sqrt(direction_norm2);
+  // Get random direction for emission
+  if( isoRadOnBox || !directionSpecified) GetRandomDirection();
   
-  direction_x /= direction_norm;
-  direction_y /= direction_norm;
-  direction_z /= direction_norm;
+  // If the particle is an electron/positron and the user has decided to simulate kinematic
+  // broadening, do so.
+  if (this->particle->GetParticleName() == "e-" || this->particle->GetParticleName() == "e-") 
+    if (fSimulateKinematics) energy = KinematicEnergyBroadening(energy, myEvent);
 
-  G4ThreeVector direction(direction_x, direction_y, direction_z);
-
-  gun->SetParticlePosition(GetEmissionPositionAtSource(position));
-  gun->SetParticleMomentumDirection(direction);
-  gun->SetParticleEnergy(energy);
-  gun->GeneratePrimaryVertex(myEvent);
+  particleGun->SetParticlePosition(GetEmissionPositionAtSource(position));
+  particleGun->SetParticleMomentumDirection(direction);
+  particleGun->SetParticleEnergy(energy);
+  particleGun->GeneratePrimaryVertex(myEvent);
   
-  
- //  G4cout << "PrimaryGeneratorAction::EmitParticleForSourceDecay ; Particle type = " << GetPrimaryParticleType() << G4endl;  // MHD 15 April 2013
-//   G4cout << "Particle energy = " << energy/keV << G4endl;  // MHD 12? April 2013
 } // end EmitParticleForSourceDecay(...)
 
 // --------------------------------------------------------
@@ -1069,10 +1033,9 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 			}
 	    }
 
-//	  EmitParticleForSourceDecay((fKXRayEnergy.at(i))*keV,gammaGun,myEvent);
 	 SetParticleType( "gamma" ) ; // MHD 12 April 2013
 	 //G4cout << "PrimaryGeneratorAction::EmissionForVacantShell, K-XRay" << endl;
-	 EmitParticleForSourceDecay((fKXRayEnergy.at(i))*keV,particleGun,myEvent); // MHD 12 April 2013
+	 EmitParticleForSourceDecay((fKXRayEnergy.at(i))*keV,myEvent); // MHD 12 April 2013
 	 SetSourceRecord((fKXRayEnergy.at(i))*keV,"K-XRay");
 	 EmissionForVacantShell(fKXRayOrigin.at(i), myEvent);	  
 	}
@@ -1091,11 +1054,10 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 			}
 	    }
 	    
-//	  EmitParticleForSourceDecay((fAugerEnergy.at(i))*keV,electronGun,myEvent);
 	  SetParticleType( "e-" ) ; // MHD 12 April 2013
 	  //G4cout << "PrimaryGeneratorAction::EmissionForVacantShell Auger" << endl;
 	  SetSourceRecord((fAugerEnergy.at(i))*keV,"K-Auger");
-      EmitParticleForSourceDecay((fAugerEnergy.at(i))*keV,particleGun,myEvent); // MHD 12 April 2013
+      EmitParticleForSourceDecay((fAugerEnergy.at(i))*keV,myEvent); // MHD 12 April 2013
       
 	  EmissionForVacantShell(augerRecFrom[i], myEvent);	  
 	  EmissionForVacantShell(augerEjecFrom[i], myEvent);	  
@@ -1128,12 +1090,11 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 			  exit (1);
 			}
 	    }
-	    	    
-//	  EmitParticleForSourceDecay((fL1XRayEnergy.at(i))*keV,gammaGun,myEvent);
+
 	SetParticleType( "gamma" ) ; // MHD 12 April 2013
     //G4cout << "PrimaryGeneratorAction::EmissionForVacantShell L1-XRay" << endl;
     SetSourceRecord((fL1XRayEnergy.at(i))*keV,"L1-Xray");
-	EmitParticleForSourceDecay((fL1XRayEnergy.at(i))*keV,particleGun,myEvent); // MHD 12 April 2013
+	EmitParticleForSourceDecay((fL1XRayEnergy.at(i))*keV,myEvent); // MHD 12 April 2013
 	
 	EmissionForVacantShell(fL1XRayOrigin.at(i), myEvent);	  
 	}
@@ -1164,10 +1125,9 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 			  exit (1);
 			}
 	    }
-//	  EmitParticleForSourceDecay((fL2XRayEnergy.at(i))*keV,gammaGun,myEvent);
 	  SetParticleType( "gamma" ) ; // MHD 12 April 2013
 	  //G4cout << "PrimaryGeneratorAction::EmissionForVacantShell L2-XRay" << endl;	  
-	  EmitParticleForSourceDecay((fL2XRayEnergy.at(i))*keV,particleGun,myEvent); // MHD 12 April 2013
+	  EmitParticleForSourceDecay((fL2XRayEnergy.at(i))*keV,myEvent); // MHD 12 April 2013
 	  SetSourceRecord((fL2XRayEnergy.at(i))*keV,"L2-Xray");
 	  EmissionForVacantShell(fL2XRayOrigin.at(i), myEvent);	  
 	}
@@ -1198,11 +1158,11 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 			  exit (1);
 			}
 	    }
-//	  EmitParticleForSourceDecay((fL3XRayEnergy.at(i))*keV,gammaGun,myEvent);
+
 	  SetParticleType( "gamma" ) ; // MHD 12 April 2013
 	  //G4cout << "PrimaryGeneratorAction::EmissionForVacantShell L3-XRay" << endl;
 	  SetSourceRecord((fL3XRayEnergy.at(i))*keV,"L3-Xray");
-	  EmitParticleForSourceDecay((fL3XRayEnergy.at(i))*keV,particleGun,myEvent); // MHD 12 April 2013
+	  EmitParticleForSourceDecay((fL3XRayEnergy.at(i))*keV,myEvent); // MHD 12 April 2013
 	  
 	  EmissionForVacantShell(fL3XRayOrigin.at(i), myEvent);	  
 	}
@@ -1215,6 +1175,10 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
    
 
 }
+// -----------------------------------------------------
+// End of functions used for simulating a decay scheme (text file),
+// primarily used for SPICE
+// -----------------------------------------------------
 
 void PrimaryGeneratorAction::SetRadioactiveBetaDecay( G4String path )
 {
@@ -1372,6 +1336,126 @@ G4int PrimaryGeneratorAction::GetPrimaryParticleType()  // MHD : 12 April 2013
 					  
 	return type ; 				  
  }
+
+// Messenger command to activate the kinematic effects
+void PrimaryGeneratorAction::SetKinematicsActive( G4bool tf )
+{
+  fSimulateKinematics = tf;
+}
+
+// Messenger command to set beta value of heavy ion
+void PrimaryGeneratorAction::SetKinematicsBetaValue( G4double beta )
+{
+  fBetaHeavyIon = beta;
+  fBetaDefinedByUser = true;
+}
+
+// Messenger command to set kinetic energy of ion used in kinematic simulations
+void PrimaryGeneratorAction::SetKinematicsIonEnergy( G4double value )
+{
+  fIonKineticEnergy = value;
+  fIonEnergyDefinedByUser = true;
+}
+
+
+G4double PrimaryGeneratorAction::KinematicEnergyBroadening( G4double energy, G4Event* anEvent )
+{
+	// If the ion has been declared with '/DetSys/gun/ion' ...
+	if ( ionDefined)
+	{
+	  // ... and no ion has been emitted this event, emit one
+	  // At the very least, the direction of the ion is required in order to simulate kinematics
+		if ( !ionEmittedThisEvent ) EmitIon( ionDefinitionZ, ionDefinitionA, ionDefinitionE, anEvent ); 
+	}
+	else 
+	{
+	  // Return an error if the ion has not been declared and return original energy
+		G4cout << "ERROR: You need to define an ion with '/DetSys/gun/ion Z A E*' prior to using"
+		       << " the KinematicEnergyBroadening function" << G4endl;
+		return energy;
+	}
+	
+	// Retrieve the theta and phi of the emitted particle & ion
+  G4double thetaParticleIonFrame = direction.getTheta();
+  G4double phiParticleIonFrame = direction.getPhi();
+  if (phiParticleIonFrame < 0) phiParticleIonFrame += 2*3.141592654; // So that range is 0 to 2pi
+  G4double thetaIonLabFrame = ionDirection.getTheta();
+  G4double phiIonLabFrame = ionDirection.getPhi();
+  if (phiIonLabFrame < 0) phiIonLabFrame += 2*3.141592654;
+	
+	// Using kinematics, theta in the lab frame is calculated starting from the
+	// energy, theta & beta in the ion (source) frame.
+	G4double gammaHeavyIon = 1 / sqrt(1 - pow(fBetaHeavyIon,2)); 
+	
+	G4double totalEnergyIonFrame = energy + fRestMassOfElectron;
+  G4double gammaIonFrame = totalEnergyIonFrame / fRestMassOfElectron;
+  G4double betaIonFrame = sqrt(1 - pow(gammaIonFrame, -2));
+  G4double momentumIonFrame = sqrt(pow(energy,2) + ( 2 * energy * fRestMassOfElectron));	
+  
+  G4double totalEnergyLabFrame = 
+           gammaHeavyIon * (totalEnergyIonFrame + fBetaHeavyIon * cos(thetaParticleIonFrame) * momentumIonFrame);
+  G4double kineticEnergyLabFrame = totalEnergyLabFrame - fRestMassOfElectron;
+  G4double gammaLabFrame = totalEnergyLabFrame / fRestMassOfElectron;
+  G4double betaLabFrame = sqrt(1 - pow(gammaLabFrame, -2));
+  G4double momentumLabFrame = 
+           sqrt(pow(kineticEnergyLabFrame,2) + ( 2 * kineticEnergyLabFrame * fRestMassOfElectron));
+           
+	G4double betaLabThetaLab = (betaIonFrame * cos(thetaParticleIonFrame) + fBetaHeavyIon)
+	                           /(1 + fBetaHeavyIon * betaIonFrame * cos(thetaParticleIonFrame));
+  G4double thetaParticleLabFrame = acos(betaLabThetaLab/betaLabFrame);
+   
+  // Beautiful rotation matrices to find the new (x,y,z) components of the particle emission
+  direction = G4ThreeVector(
+                cos(phiIonLabFrame) * cos(thetaIonLabFrame) * cos(phiParticleIonFrame) * sin(thetaParticleLabFrame) - 
+								sin(phiIonLabFrame) * sin(phiParticleIonFrame) * sin(thetaParticleLabFrame) +
+								cos(phiIonLabFrame) * sin(thetaIonLabFrame) * cos(thetaParticleLabFrame),
+                
+                sin(phiIonLabFrame) * cos(thetaIonLabFrame) * cos(phiParticleIonFrame) * sin(thetaParticleLabFrame) +
+								cos(phiIonLabFrame) * sin(phiParticleIonFrame) * sin(thetaParticleLabFrame) +
+								sin(phiIonLabFrame) * sin(thetaIonLabFrame) * cos(thetaParticleLabFrame),
+								
+                cos(thetaIonLabFrame) * cos(thetaParticleLabFrame) - 
+	              sin(thetaIonLabFrame) * cos(phiParticleIonFrame) * sin(thetaParticleLabFrame)
+	            );
+  
+  return kineticEnergyLabFrame;      
+}
+
+// Emit ion for Kinematic Broadening simulation
+void PrimaryGeneratorAction::EmitIon(G4int ionZ, G4int ionA, G4double ionE, G4Event* anEvent)
+{
+  // Random generator decides direction of ion
+  // TODO The direction of the ion will actually form a distribution but for now it's directed at the S3
+  G4double theta = 0;
+  while (theta < 0.523598775 || theta > 1.047197551)
+  {
+    G4double costheta = 2.*UniformRand48()-1.0;
+    G4double sintheta = sqrt( 1. - costheta*costheta );
+    G4double phi      = (360.*deg)*UniformRand48();
+    ionDirection = G4ThreeVector(sintheta*cos(phi), sintheta*sin(phi), costheta);
+    theta = ionDirection.getTheta();
+  }
+  
+  // Create a gun to fire the ion
+  G4ParticleGun* ionGun = new G4ParticleGun(1);
+  
+  // Set ion attributes (direction, definition, position)
+  ionGun->SetParticleMomentumDirection(ionDirection);  
+  ionGun->SetParticleDefinition(this->particleTable->GetIon(ionZ,ionA,ionE));
+	ionGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
+  
+  // If beta has been defined by user, calculate appropriate kinetic energy of ion
+  // or if kinetic energy has been defined by user, calculate beta
+  if (fBetaDefinedByUser) fIonKineticEnergy = 100000 * ionA * fAtomicMassUnit * fBetaHeavyIon * pow(fSpeedOfLight, 2)/2;
+  else if (fIonEnergyDefinedByUser) fBetaHeavyIon = sqrt( 2 * fIonKineticEnergy / (ionA * fAtomicMassUnit * pow(fSpeedOfLight, 2)) ) / 1000;
+  else fIonKineticEnergy = 100*MeV; // Default
+  
+  // Fire ion  
+  ionGun->SetParticleEnergy(fIonKineticEnergy);
+  ionGun->GeneratePrimaryVertex(anEvent);
+  ionEmittedThisEvent = true;
+  delete ionGun;
+}
  
        
 void PrimaryGeneratorAction::SetSourceRecord( G4double energy , string process_name)
