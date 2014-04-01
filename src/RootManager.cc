@@ -28,15 +28,19 @@ RootManager::RootManager()
 		}
 
 
-    // Create objects to hold the data
-    //spice event
+	// Create objects to hold the data
+	//spice event
 	fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
+	//
 	fDetectorSpice = new DetectionSystemSpice();
 
-        //GRIFFIN Event
-        fGriffinData = new TGriffinData();
+	//GRIFFIN Event
+	fGriffinData = new TGriffinData();
 
+	//Fragment Event
+	fFragment = new TTigFragment();
+	
 	//histograms 
 	fHist = new TH1F("h","h",500,0,1800);
 
@@ -58,15 +62,23 @@ RootManager::RootManager()
 RootManager::~RootManager()  {}
 
 
-void RootManager::SetTree()
-{
- fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData);
- fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
-// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
- 
- /*
-Other detector branches goes here
-*/
+void RootManager::SetTree() {
+
+	/*
+	At this stage you can define what branches are written in the tree
+	*/
+
+	fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment);
+	
+	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
+	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	
+	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
+
+
+	/*
+	Other detector branches goes here
+	*/
 
 } 
 
@@ -84,8 +96,7 @@ double Px, double Py, double Pz,// position vector
 int Id, 			// original(primary) ID
 int PrimPdg,			// primary particle definition        PDG encoding
 double PrimEnergy,		// original(primary) energy
-double Mx, double My, double Mz)// primary particle momentum vector
-{
+double Mx, double My, double Mz) { // primary particle momentum vector 
 	/*			
 	Some other functions 
 	*/
@@ -95,8 +106,7 @@ double Mx, double My, double Mz)// primary particle momentum vector
 
 
 
-void RootManager::SortEvent(void)
-{
+void RootManager::SortEvent(void) {
 
 // Sort Data from the map second element by getters and set them
        std::map<Int_t,RawG4Event>::iterator it;
@@ -104,13 +114,16 @@ void RootManager::SortEvent(void)
   
 			int key = it->first ;
 
+			//Fragment
+			if (key>1 && key <1000) SetFragmentEvent(key);
+			
 			//Spice
 			if (key>1 && key <50) SetSpiceEvent(key);
 			if (key>50 && key <1000) SetS3Event(key);
 
 			//Griffin
 			//Need to put Griffin key here
-			
+
 			//other
 			//if (key>1 && key <1000) SetOtherDetectorEvent(key);
 			}
@@ -121,14 +134,33 @@ void RootManager::SortEvent(void)
 // clear the map
 	fGeantEvent.clear();
 
+// clear the Fragment 
+	fFragment->Clear();
+	
 // clear the SpiceData object
 	fSpiceData->Clear();
 	fS3Data->Clear();
-	
+
 // clear the GriffinData object
 //	fGriffinData->Clear();
 }
 
+
+void RootManager::SetFragmentEvent(int RingSeg) {	
+	// treat
+	fGeantEvent.at(RingSeg).SortPrimary();			
+
+	// get the segment and ring
+	int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
+	int Ring = (RingSeg-Seg)/100;
+
+	// Energy      
+	double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
+
+	// Set the data into the fragment , NB : TTigFragment Class has the memnbers "public", no setters are used, instead we could assigne the values immediatly. 
+	fFragment->ChargeCal = energy ; 
+
+}
 
 void RootManager::SetSpiceEvent(int RingSeg)
 {	
@@ -147,15 +179,13 @@ void RootManager::SetSpiceEvent(int RingSeg)
 
 	// Energy      
     mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
+	for (int i = 0 ; i<mult ;  i++ )	{
 	fSpiceData->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
 	}
 
 	// Momentum
 	    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
+	for (int i = 0 ; i<mult ;  i++ )	{
 	fSpiceData->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
 	fSpiceData->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
 	}
@@ -183,8 +213,7 @@ void RootManager::SetSpiceEvent(int RingSeg)
 }
 
 
-void RootManager::SetS3Event(int RingSeg)
-{	
+void RootManager::SetS3Event(int RingSeg) {	
 	// treat
 	fGeantEvent.at(RingSeg).SortPrimary();			
 

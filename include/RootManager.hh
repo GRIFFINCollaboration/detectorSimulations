@@ -25,7 +25,7 @@ using namespace std ;
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
-
+#include "../dataRootClass/TTigFragment.h"
 
 class DetectionSystemSpice;
 
@@ -52,10 +52,11 @@ class RootManager   {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
-        TSpiceData* fSpiceData;
-        TS3Data*    fS3Data;   
-        TGriffinData* fGriffinData;   
-     
+        TSpiceData* 	fSpiceData;
+        TS3Data*    	fS3Data;   
+        TGriffinData* 	fGriffinData;   
+        TTigFragment* 	fFragment;   
+             
         DetectionSystemSpice *fDetectorSpice; 
                      
        
@@ -86,6 +87,7 @@ class RootManager   {
        void SetSpiceEvent(int key);
        void SetS3Event(int key);
        void SetGriffinEvent(int key);
+       void SetFragmentEvent(int key);
        
        // Close the root Manager        							
        void Close();  
