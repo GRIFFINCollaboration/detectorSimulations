@@ -69,5 +69,3 @@ To add TTigFragment structure :
  << NB 1 >> : The implemetation in the dataRootClass/Makefile, the CMakeLists.txt and the detectorSimulation is similar to the implementation of any new data class.   
  << NB 2 >> : TTigFragment class inherits from TFragment class, which explains the need of importing the TFragment class as well.
 
-
-

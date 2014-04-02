@@ -44,15 +44,6 @@ RootManager::RootManager()
 	//histograms 
 	fHist = new TH1F("h","h",500,0,1800);
 
-
-	//Creating the tree ;
-	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
-	if(!fOutputTree) {
-		cout << "\nCould not create Simulated Data Tree in root file" << endl;
-		exit(-1);
-		}
-	fOutputTree->SetAutoSave(100000);
-
 	//Attach detector branches to the tree
 	SetTree();
 
@@ -63,19 +54,27 @@ RootManager::~RootManager()  {}
 
 
 void RootManager::SetTree() {
-
+ 
+	/*
+	Creating the tree
+	*/
+	fOutputTree = new TTree("FragmentTree","Simulated Data Tree");
+	if(!fOutputTree) {
+		cout << "\nCould not create Simulated Data Tree in root file" << endl;
+		exit(-1);
+		}
+	fOutputTree->SetAutoSave(100000);
+	
 	/*
 	At this stage you can define what branches are written in the tree
 	*/
-
-	fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment);
-	
+	fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
+	//----------------
 	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
-	
+	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
-
-
+	//----------------
 	/*
 	Other detector branches goes here
 	*/

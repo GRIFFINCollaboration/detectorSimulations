@@ -6,6 +6,7 @@
 #include<time.h>
 
 #include<TObject.h>
+#include<TNamed.h>
 
 //#ifndef __CINT__
 //#include "Globals.h"  // commented [MHD : 1 April 2014]
@@ -13,7 +14,7 @@
 
 //using namespace std;
 
-class TFragment : public TObject	{
+class TFragment : public TNamed	{
 
   public:
     TFragment();

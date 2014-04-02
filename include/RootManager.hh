@@ -10,8 +10,8 @@
 using namespace std ;
 
 //ROOT
-#include<TFile.h>
-#include<TH1.h>
+#include "TFile.h"
+#include "TH1.h"
 #include "TTree.h"
 
 //Geant4
@@ -22,10 +22,12 @@ using namespace std ;
 //User
 #include "RawG4Event.hh"
 #include "DetectionSystemSpice.hh"
+
+#include "../dataRootClass/TTigFragment.h"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
-#include "../dataRootClass/TTigFragment.h"
+
 
 class DetectionSystemSpice;
 
@@ -52,10 +54,12 @@ class RootManager   {
         map<Int_t,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
+        TTigFragment* 	fFragment;  
+    
         TSpiceData* 	fSpiceData;
         TS3Data*    	fS3Data;   
         TGriffinData* 	fGriffinData;   
-        TTigFragment* 	fFragment;   
+ 
              
         DetectionSystemSpice *fDetectorSpice; 
                      
