@@ -3,6 +3,7 @@ The code is modular, we should keep it this way, A detector <=> separate writing
 For each new detector a "Setter" root-class must be written.
 
 To add another "Setter" class for another detector :
+--------------------------------------------------------------------------------
 
 - All the files corresponding to the "Setter" class goes in the folder dataRootClass/ (${myROOTclassDir} in the CMakeLists.txt)
 - copy the New_linkdef.h in the directory ${myROOTclassDir} and Replace "New" by the name of your detector
@@ -39,4 +40,32 @@ e.g.
 #include "relative/path/to/dataRootClass/TSpiceData.h" 
 >>> #include "relative/path/to/dataRootClass/TNewData.h" <<<
 
+================================================================================
+
+
+To add TTigFragment structure :
+--------------------------------------------------------------------------------
+
+- The main idea here is to create a simulated tree that ressembles to the actual real data from TIGRESS/GRIFFIN/SPICE etc..
+- The DAQ system at TRIUMF write the Data in MIDAS format, this file is than parsed with GRSISPOON to produce what is know as the "Fragment tree", which is a ROOT tree
+- The TTigFragment class is how the Data are stored in the "Fragment tree"
+- The TTigFrgament is like any other class and should be implemented in the same way
+- Some members of this class will not be used (i.e. filled) in the simulation, however we recommend to keep the class as close as possible to the actual class in the GRSISPOON project.
+- The GRSISPOON project is under developpement, so one needs to update this class accordingly with each GRSISPOON production version.
+- In order to produce a "real-data-like" fragment tree, one needs to comment all the other detector branches in the function RootManager::SetTree() function.
+
+- The steps to import this class are as follows :
+	- Copy the header files TFragment.h and TTigFragment.h from the GRSISPOON project under the directory : $GRSISYS/include/   to   detectorSimulations/dataRootClass/
+	- Copy the implementation files TFragment.cxx and TTigFragment.cxx from the GRSISPOON project under the directory : $GRSISYS/libraries/TigFormat/   to   detectorSimulations/dataRootClass/
+	- Change the suffix from .cxx to .cpp for the implementation files
+	- Inside TigFragment.h, comment the lines : 
+			//#ifndef __CINT__
+			//#include "Globals.h"
+			//#endif
+	- Inside TTigFragment.cpp, replace int64_t by Long64_t (known by ROOT)
+	- In detectorSimulations/dataRootClass/ : 	>make clean  and >make
+	
+	
+ << NB 1 >> : The implemetation in the dataRootClass/Makefile, the CMakeLists.txt and the detectorSimulation is similar to the implementation of any new data class.   
+ << NB 2 >> : TTigFragment class inherits from TFragment class, which explains the need of importing the TFragment class as well.
 

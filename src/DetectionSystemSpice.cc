@@ -98,9 +98,9 @@ G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Three
   //G4cout << "DetectionSystemSpice :: Ring number : "<< ringNumber <<  " SegNumber in ring : "<< Seg << " SegmentNumber in detector : " <<SegmentNumber << G4endl;
   //G4cin.get();
   G4int NumberSeg = (G4int)this->siDetPhiSegments; // total number of segments = 12
-  G4double angle = (360.*deg/NumberSeg)*(Seg+0.5); // Seg = {0, ...,11} 
+  G4double angle = (360.*deg/NumberSeg)*(Seg); // Seg = {0, ...,11} 
   G4RotationMatrix* rotate = new G4RotationMatrix;
-  rotate->rotateZ(angle);
+  rotate->rotateZ(-210*deg-angle); // the axis are inverted, this operation will correct for it  [MHD : 03 April 2014]
   
   assemblySiRing[ringNumber]->MakeImprint(exp_hall_log, move, rotate, SegmentNumber);
 

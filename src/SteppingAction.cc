@@ -121,10 +121,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4double initialDirectionX = theTrack->GetVertexMomentumDirection().getX();
   G4double initialDirectionY = theTrack->GetVertexMomentumDirection().getY();
   G4double initialDirectionZ = theTrack->GetVertexMomentumDirection().getZ();
-	G4double initialEnergy = theTrack->GetVertexKineticEnergy();
+  G4double initialEnergy = theTrack->GetVertexKineticEnergy();
 	// if (parentID == 0) initialEnergy = theTrack->GetVertexKineticEnergy();
 	
-
   G4StepPoint* point1 = aStep->GetPreStepPoint();
   G4StepPoint* point2 = aStep->GetPostStepPoint();
 
@@ -156,14 +155,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinCrystDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   found = volname.find("back_quarter_suppressor");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorBackDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   found = volname.find("left_suppressor_extension");
@@ -171,14 +170,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForGriffinComponent(volname);
       //G4cout << "left_suppressor_extension Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinSuppressorLeftExtensionDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   found = volname.find("right_suppressor_extension");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorRightExtensionDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   found = volname.find("left_suppressor_casing");
@@ -186,14 +185,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForGriffinComponent(volname);
       //G4cout << "left_suppressor_casing_log Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinSuppressorLeftSideDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   found = volname.find("right_suppressor_casing");
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForGriffinComponent(volname);
       eventaction->AddGriffinSuppressorRightSideDet(edep,stepl,det-1,cry-1);
-      //eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      //eventaction->AddStepTracker(evntNb, stepNumber, volname, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   // Dead layer specific code
@@ -202,7 +201,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(volname);
       //G4cout << "germanium_dls_block1 Found Edep = " << edep/keV << " keV in det = " << det << " cry = " << cry << " found = " << found << " volname = " << volname << G4endl;
       eventaction->AddGriffinCrystDet(edep,stepl,det-1,cry-1);
-      eventaction->AddStepTracker(evntNb, stepNumber, cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      eventaction->AddStepTracker(evntNb, stepNumber, "GRG", cry-1, det-1, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
   // LaBr
@@ -244,7 +243,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForSpiceDetector(volname);
       eventaction->AddSpiceCrystDet(edep,stepl,det);
-      eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+      eventaction->AddStepTracker(evntNb, stepNumber, "SPI", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
   
   //S3 of SPICE
@@ -252,7 +251,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
 	SetDetAndCryNumberForS3Detector(volname);
 	eventaction->AddSpiceCrystDet(edep,stepl,det);
-	eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
+	eventaction->AddStepTracker(evntNb, stepNumber, "SPE", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);
   }
 
 }
@@ -329,6 +328,7 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    
    dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
    det = atoi(dummy.c_str()); // ring 
+
 
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;

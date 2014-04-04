@@ -53,30 +53,33 @@ public:
 
   G4int GetEventNumber(){return evtNb;};
 
-  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4double cryNumber, G4double detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, G4double initialDirectionX, G4double initialDirectionY, G4double initialDirectionZ, G4double initialEnergy, G4int trackID) {
-  if(histoManager->GetStepTrackerBool())
-  {
-  	stepTracker[0][stepIndex] = eventNumber; 
-  	stepTracker[1][stepIndex] = stepNumber; 
-  	stepTracker[2][stepIndex] = cryNumber; 
-  	stepTracker[3][stepIndex] = detNumber; 
-  	stepTracker[4][stepIndex] = depEnergy; 
-  	stepTracker[5][stepIndex] = posx; 
-  	stepTracker[6][stepIndex] = posy; 
-  	stepTracker[7][stepIndex] = posz; 
-  	stepTracker[8][stepIndex] = time; 
-  	stepTracker[9][stepIndex] = initialDirectionX;
-		stepTracker[10][stepIndex] = initialDirectionY;
-		stepTracker[11][stepIndex] = initialDirectionZ;
-  	stepTracker[12][stepIndex] = initialEnergy;
-  	stepTracker[13][stepIndex] = trackID;
-  	stepIndex++; 
-  	if(stepIndex == MAXSTEPS)
-  	{
-  		G4cout << "\n ----> error 13423549 \n" << G4endl; 
-  		exit(1);
-  	}
-  }; 
+  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, G4double cryNumber, G4double detNumber, 
+  						G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, 
+  						G4double initialDirectionX, G4double initialDirectionY, G4double initialDirectionZ, 
+  						G4double initialEnergy, G4int trackID) {
+  						
+					  if(histoManager->GetStepTrackerBool())   {
+						  	stepTracker[0][stepIndex] = eventNumber; 
+						  	stepTracker[1][stepIndex] = stepNumber; 
+						  	stepTracker[2][stepIndex] = cryNumber; 
+						  	stepTracker[3][stepIndex] = detNumber; 
+						  	stepTracker[4][stepIndex] = depEnergy; 
+						  	stepTracker[5][stepIndex] = posx; 
+						  	stepTracker[6][stepIndex] = posy; 
+						  	stepTracker[7][stepIndex] = posz; 
+						  	stepTracker[8][stepIndex] = time; 
+						  	stepTracker[9][stepIndex] = initialDirectionX;
+							stepTracker[10][stepIndex] = initialDirectionY;
+							stepTracker[11][stepIndex] = initialDirectionZ;
+						  	stepTracker[12][stepIndex] = initialEnergy;
+						  	stepTracker[13][stepIndex] = trackID;
+						  	stepVolume[stepIndex] = volume ; 	
+						  	stepIndex++; 
+						  	if(stepIndex == MAXSTEPS) 	{
+						  		G4cout << "\n ----> error 13423549 \n" << G4endl; 
+						  		exit(1);
+						  		}
+						  }; 
  	};
 
   // particle types
@@ -133,6 +136,7 @@ private:
 
     // tracking info
     G4double stepTracker[NUMSTEPVARS][MAXSTEPS];
+    G4String stepVolume[MAXSTEPS]; // volume at each step 
     G4int    stepIndex;
 
 	// Particle types in simulation
