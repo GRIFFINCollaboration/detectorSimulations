@@ -1,43 +1,44 @@
 #include "RawG4Event.hh"
 
-RawG4Event::RawG4Event(void)
-{
+RawG4Event::RawG4Event(void){
 }
 
-RawG4Event::~RawG4Event(void)
-{
+RawG4Event::~RawG4Event(void){
 }
 			 
 
-void RawG4Event::FillVectors( int pdg,
+void RawG4Event::FillVectors( 
+							int pdg,
 							double Energy, // depositid energy
-							 double Px, double Py, double Pz, // position vector
-							 
-							 int ID, // original(primary) TrackID
-							 int PrimPdg,// primary particle pdg        PDG encoding
-							 double PrimEnergy,//original(primary) energy
-							 double Mx, double My, double Mz) // primary particle momentum vector
+							int detector, // detector 
+							int crystal, // crystal 
+							double Px, double Py, double Pz, // position vector
+
+							int ID, // original(primary) TrackID
+							int PrimPdg,// primary particle pdg        PDG encoding
+							double PrimEnergy,//original(primary) energy
+							double Mx, double My, double Mz) { // primary particle momentum vector
 							
-							{
-							    fHCPdg.push_back(pdg); 
-								fHCEnergy.push_back(Energy) ;
-								fHCPosition.push_back(TVector3(Px,Py,Pz)) ;
-								
-								fHCPrimaryID.push_back(ID) ;
-								fHCPrimaryPdg.push_back(PrimPdg) ;
-								fHCPrimaryEnergy.push_back(PrimEnergy) ;
-								fHCPrimaryMomentum.push_back(TVector3(Mx,My,Mz)) ;
-								fHCPrimaryTheta.push_back( TVector3(Mx,My,Mz).Angle(TVector3(0,0,1)) / deg ); // TVector3(0,0,1) is beam direction  in degrees
-								fHCPrimaryPhi.push_back(TVector3(Mx,My,Mz).Phi()  / deg );
+							fHCPdg.push_back(pdg); 
+							fHCEnergy.push_back(Energy) ;
+							fHCPosition.push_back(TVector3(Px,Py,Pz)) ;
+							fHCDetector.push_back(detector) ;
+							fHCCrystal.push_back(crystal) ;
+							
+							
+							fHCPrimaryID.push_back(ID) ;
+							fHCPrimaryPdg.push_back(PrimPdg) ;
+							fHCPrimaryEnergy.push_back(PrimEnergy) ;
+							fHCPrimaryMomentum.push_back(TVector3(Mx,My,Mz)) ;
+							fHCPrimaryTheta.push_back( TVector3(Mx,My,Mz).Angle(TVector3(0,0,1)) / deg ); // TVector3(0,0,1) is beam direction  in degrees
+							fHCPrimaryPhi.push_back(TVector3(Mx,My,Mz).Phi()  / deg );
 							}
 
 
 
-void RawG4Event::SortPrimary(void)
-{
+void RawG4Event::SortPrimary(void) {
 
-	for(unsigned i=0 ; i < fHCPrimaryPdg.size() ; i++)
-	{
+	for(unsigned i=0 ; i < fHCPrimaryPdg.size() ; i++) 	{
 		fMapPrimaryPdg[fHCPrimaryPdg.at(i)]++;
 		fMapPrimaryEnergy[fHCPrimaryEnergy.at(i)]++;
        	fMapPrimaryTheta[fHCPrimaryTheta.at(i)]++; 
@@ -49,19 +50,29 @@ void RawG4Event::SortPrimary(void)
 
 // ------------------- GETTERS --------------------
 
-TVector3 RawG4Event::GetFirstHitPosition(void) 
-	{
+
+TVector3 RawG4Event::GetFirstHitPosition(void) 	{  // generates artificially a spurious peak in the interstrip region 
 	return fHCPosition.at(0) ; // returns the first position registered in this vector
 	}
 
-
-Double_t RawG4Event::GetFullEnergy(void) 
-	{
+TVector3 RawG4Event::GetSecondHitPosition(void)	{
+	if (fHCPosition.size()>1) return fHCPosition.at(1) ; // returns the second position registered in this vector if the vector size > 1 
+	else return fHCPosition.at(0) ; // else returns the first position 
+	}
+	
+	
+Int_t RawG4Event::GetDetector(void) {
+	return fHCDetector.at(0) ; // returns the detector number, since the key of the map is the mnemonic, all the values should be the same 
+	}
+	
+Int_t RawG4Event::GetCrystal(void) 	{
+	return fHCCrystal.at(0) ; // returns the crystal number, since the key of the map is the mnemonic, all the values should be the same 
+	}
+	
+Double_t RawG4Event::GetFullEnergy(void) {
 
 	Double_t energy=0 ;
-	
-	for(unsigned i=0 ; i< fHCEnergy.size() ; i++)
-	 energy += fHCEnergy.at(i);
+	for(unsigned i=0 ; i< fHCEnergy.size() ; i++)	 energy += fHCEnergy.at(i);
 
 	return energy ;
 	}

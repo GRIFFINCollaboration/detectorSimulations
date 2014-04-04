@@ -91,8 +91,8 @@ void EventAction::EndOfEventAction(const G4Event*)
 {
         G4double eventNumber = 0 ;
         G4double stepNumber = 0;
-        G4double cryNumber  = 0;
-        G4double detNumber  = 0;
+        G4int	 cryNumber  = 0;
+        G4int	 detNumber  = 0;
         G4double depEnergy  = 0;
         G4double posx       = 0;
         G4double posy       = 0;
@@ -101,9 +101,10 @@ void EventAction::EndOfEventAction(const G4Event*)
         G4double initialDirectionX       = 0;
         G4double initialDirectionY       = 0;
         G4double initialDirectionZ       = 0;
-        G4double initialEnergy       = 0;
+        G4double initialEnergy       	 = 0;
         G4int trackID       = 0;
-                
+        G4String volume     = "";
+                        
     for(G4int i = 0; i < MAXSTEPS; i++) {
          
         if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
@@ -122,25 +123,17 @@ void EventAction::EndOfEventAction(const G4Event*)
         initialDirectionZ = stepTracker[11][i];
         initialEnergy = stepTracker[12][i];
         trackID    = stepTracker[13][i];
-            
-        histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
-        /*    
-		detnum*100+segnum = key, // detnum = radius Segnum = phi     
-		pdg,
-		edep,
-		posA.x()/mm, posA.y()/mm, posA.z()/mm,
-		OriginID, OriginPdg, OriginEnergy,                  
-		OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
-        */
+        volume    = stepVolume[i];
         
-        RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	   // this is one hit of a Hit Collection
-        //RootManager::instance()->FillHist(1000/keV);		//optionale
+        histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );     
+        RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	   // this is one hit of a Hit Collection
+        //RootManager::instance()->FillHist(1000/keV);		//optional
         }
 		
     }
     
-    if (depEnergy>0.0 &&  detNumber<12) { // if condition satisfied 
-		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
+    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
+		RootManager::instance()->SortEvent();
 		}
     
   FillParticleType() ; 
