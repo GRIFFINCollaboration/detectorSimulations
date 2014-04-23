@@ -40,7 +40,7 @@ class HistoManager;
 using namespace std;
 
 static const int MAXSTEPS = 1000;
-static const int NUMSTEPVARS = 14;
+static const int NUMSTEPVARS = 16;
 
 class EventAction : public G4UserEventAction
 {
@@ -53,10 +53,11 @@ public:
 
   G4int GetEventNumber(){return evtNb;};
 
-  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, G4double cryNumber, G4double detNumber, 
+  void AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
+  						G4double cryNumber, G4double detNumber, 
   						G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, 
-  						G4double initialDirectionX, G4double initialDirectionY, G4double initialDirectionZ, 
-  						G4double initialEnergy, G4int trackID) {
+  						G4double originDirectionX, G4double originDirectionY, G4double originDirectionZ, 
+  						G4double originEnergy, G4int originPdg, G4int originID, G4int trackID) {
   						
 					  if(histoManager->GetStepTrackerBool())   {
 						  	stepTracker[0][stepIndex] = eventNumber; 
@@ -68,11 +69,14 @@ public:
 						  	stepTracker[6][stepIndex] = posy; 
 						  	stepTracker[7][stepIndex] = posz; 
 						  	stepTracker[8][stepIndex] = time; 
-						  	stepTracker[9][stepIndex] = initialDirectionX;
-							stepTracker[10][stepIndex] = initialDirectionY;
-							stepTracker[11][stepIndex] = initialDirectionZ;
-						  	stepTracker[12][stepIndex] = initialEnergy;
-						  	stepTracker[13][stepIndex] = trackID;
+						  	stepTracker[9][stepIndex] = originDirectionX;
+							stepTracker[10][stepIndex] = originDirectionY;
+							stepTracker[11][stepIndex] = originDirectionZ;
+						  	stepTracker[12][stepIndex] = originEnergy;
+						  	stepTracker[13][stepIndex] = originPdg;
+						  	stepTracker[14][stepIndex] = originID;
+						  	stepTracker[15][stepIndex] = trackID;
+      
 						  	stepVolume[stepIndex] = volume ; 	
 						  	stepIndex++; 
 						  	if(stepIndex == MAXSTEPS) 	{
