@@ -38,6 +38,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
+#include "RootManager.hh"
 
 
 class G4Box;
@@ -196,8 +197,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4ThreeVector fieldBoxMagneticField;
 
     G4String matWorldName;
-    
-    G4double 			SpiceResolutionVariables[2];
                  
     DetectorMessenger* detectorMessenger;
 

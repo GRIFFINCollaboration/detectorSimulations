@@ -17,22 +17,16 @@ using namespace std ;
 #include "TH1.h"
 #include "TTree.h"
 
-//Geant4
-#include "G4LogicalVolume.hh"
-#include "G4AssemblyVolume.hh"
-#include "G4Tubs.hh"
+// CLHEP
+#include "CLHEP/Random/RandGauss.h"
 
 //User
 #include "RawG4Event.hh"
-#include "DetectionSystemSpice.hh"
 
 #include "../dataRootClass/TTigFragment.h"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
-
-
-class DetectionSystemSpice;
 
 class RootManager   {
     
@@ -62,10 +56,7 @@ class RootManager   {
         TSpiceData* 	fSpiceData;
         TS3Data*    	fS3Data;   
         TGriffinData* 	fGriffinData;   
- 
-             
-        DetectionSystemSpice *fDetectorSpice; 
-                     
+                    
        
     public:
     // fill the histograms 
@@ -103,6 +94,9 @@ class RootManager   {
        
        // Close the root Manager        							
        void Close();  
+       
+  public:
+    static double SpiceResolution[2];
 
 };
 

@@ -103,13 +103,7 @@ private:
   G4int 	BuildOuterGuardRing();
   
   G4Tubs*	BuildCrystal(G4int myRingID);
-  
-  // Applying Resolution to SPICE detector
-public:
-	static double SpiceResolution[2];
-	G4int AssignSpiceResolution(G4double intercept, G4double gradient);
-	G4double ApplySpiceResolution(G4double energy);
-	
+  	
 };
 
 #endif

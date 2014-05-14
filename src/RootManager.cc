@@ -2,6 +2,7 @@
 
 #include "RootManager.hh"
 
+double RootManager::SpiceResolution[2];
 
 RootManager *RootManager::fRootManager = NULL;
 
@@ -31,17 +32,15 @@ RootManager::RootManager()
 	//spice event
 	fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
-	//
-	fDetectorSpice = new DetectionSystemSpice();
 
 	//GRIFFIN Event
-	fGriffinData = new TGriffinData();
+	//fGriffinData = new TGriffinData();
 
 	//Fragment Event
-	fFragment = new TTigFragment();
+	//fFragment = new TTigFragment();
 	
 	//histograms 
-	fHist = new TH1F("h","h",500,0,1800);
+	//fHist = new TH1F("h","h",500,0,1800);
 
 	//Attach detector branches to the tree
 	SetTree();
@@ -67,7 +66,7 @@ void RootManager::SetTree() {
 	/*
 	At this stage you can define what branches are written in the tree
 	*/
-	fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
+	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
 	fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
@@ -118,7 +117,7 @@ void RootManager::SortEvent(void) {
   			string system (it->first, 0, 3); // first three letters of the mnemonic (it->first) defines the system
 
 			//Fragment
-			if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
+			//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
 			
 			//Spice
 			if (system=="SPI") SetSpiceEvent(it->first, it->second.GetDetector(), it->second.GetCrystal());
@@ -139,7 +138,7 @@ void RootManager::SortEvent(void) {
 	fGeantEvent.clear();
 
 // clear the Fragment 
-	fFragment->Clear();
+	//fFragment->Clear();
 	
 // clear the SpiceData object
 	fSpiceData->Clear();
@@ -224,9 +223,10 @@ void RootManager::SetSpiceEvent(string mnemonic, int Ring, int Seg)
 
 	// get the energy 			
 	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
-	double applied_resolution = fDetectorSpice->ApplySpiceResolution(energy);
+	double stDev = SpiceResolution[1] * energy + SpiceResolution[0];
+	double applied_resolution = CLHEP::RandGauss::shoot(energy, stDev); 
 	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
-
+	
 	// fill the SpiceData object
 	// (Th,E)
 	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
