@@ -725,8 +725,8 @@ void DetectorConstruction::AddDetectionSystemSceptar(G4int ndet)
 
 void DetectorConstruction::SetSpiceResolutionVariables(G4double intercept, G4double gain)
 {
-	this->SpiceResolutionVariables[0] = intercept;
-	this->SpiceResolutionVariables[1] = gain;
+	RootManager::SpiceResolution[0] = intercept;
+	RootManager::SpiceResolution[1] = gain;
 
 }
 
@@ -735,8 +735,6 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
 
 	DetectionSystemSpice* pSpice = new DetectionSystemSpice() ;
 	pSpice->Build(); 
-	
-	pSpice->AssignSpiceResolution(this->SpiceResolutionVariables[0], this->SpiceResolutionVariables[1]);
 	
   G4int NumberSeg = 12; // Segments in Phi
   G4int segmentID=0;
