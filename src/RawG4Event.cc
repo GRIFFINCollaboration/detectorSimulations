@@ -9,16 +9,14 @@ RawG4Event::~RawG4Event(void)
 }
 			 
 
-void RawG4Event::FillVectors( int pdg,
-							double Energy, // depositid energy
+void RawG4Event::FillVectors(int pdg,
+							 double Energy, // depositid energy
 							 double Px, double Py, double Pz, // position vector
-							 
 							 int ID, // original(primary) TrackID
 							 int PrimPdg,// primary particle pdg        PDG encoding
 							 double PrimEnergy,//original(primary) energy
-							 double Mx, double My, double Mz) // primary particle momentum vector
+							 double Mx, double My, double Mz) { // primary particle momentum vector
 							
-							{
 							    fHCPdg.push_back(pdg); 
 								fHCEnergy.push_back(Energy) ;
 								fHCPosition.push_back(TVector3(Px,Py,Pz)) ;

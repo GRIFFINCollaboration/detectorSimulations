@@ -108,39 +108,41 @@ void EventAction::EndOfEventAction(const G4Event*)
          
         if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
 
-        eventNumber = stepTracker[0][i] ;
-        stepNumber = stepTracker[1][i];
-        cryNumber  = stepTracker[2][i];
-        detNumber  = stepTracker[3][i];
-        depEnergy  = stepTracker[4][i];
-        posx       = stepTracker[5][i]/mm;
-        posy       = stepTracker[6][i]/mm;
-        posz       = stepTracker[7][i]/mm;
-        time       = stepTracker[8][i]/second;
-        initialDirectionX = stepTracker[9][i];
-        initialDirectionY = stepTracker[10][i];
-        initialDirectionZ = stepTracker[11][i];
-        initialEnergy = stepTracker[12][i];
-        trackID    = stepTracker[13][i];
-            
-        histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
-        /*    
-		detnum*100+segnum = key, // detnum = radius Segnum = phi     
-		pdg,
-		edep,
-		posA.x()/mm, posA.y()/mm, posA.z()/mm,
-		OriginID, OriginPdg, OriginEnergy,                  
-		OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
-        */
-        
-        RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	   // this is one hit of a Hit Collection
-        //RootManager::instance()->FillHist(1000/keV);		//optionale
-        }
+		    eventNumber = stepTracker[0][i] ;
+		    stepNumber = stepTracker[1][i];
+		    cryNumber  = stepTracker[2][i];
+		    detNumber  = stepTracker[3][i];
+		    depEnergy  = stepTracker[4][i];
+		    posx       = stepTracker[5][i]/mm;
+		    posy       = stepTracker[6][i]/mm;
+		    posz       = stepTracker[7][i]/mm;
+		    time       = stepTracker[8][i]/second;
+		    initialDirectionX = stepTracker[9][i];
+		    initialDirectionY = stepTracker[10][i];
+		    initialDirectionZ = stepTracker[11][i];
+		    initialEnergy = stepTracker[12][i];
+		    trackID    = stepTracker[13][i];
+		        
+		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
+		    /*    
+			detnum*100+segnum = key, // detnum = radius Segnum = phi     
+			pdg, edep, posA.x()/mm, posA.y()/mm, posA.z()/mm,
+			OriginID, OriginPdg, OriginEnergy,                  
+			OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
+		    */
+		    
+		    RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	 // this is one hit of a Hit Collection
+		    //cout << " EventAction.cc : detNumber*100+cryNumber " << detNumber*100+cryNumber << endl ; 
+		    //RootManager::instance()->FillHist(1000/keV);		//optional
+		    }
 		
     }
-    
-    if (depEnergy>0.0 &&  detNumber<12) { // if condition satisfied 
-		RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
+
+    if (depEnergy>0.0) { // if condition satisfied  &&  detNumber<12
+        //cout << detNumber << "  " ; 
+        //cout << cryNumber << "  "  ;
+        //cout << detNumber*100+cryNumber << endl  ;
+        RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
 		}
     
   FillParticleType() ; 
@@ -159,8 +161,6 @@ void EventAction::EndOfEventAction(const G4Event*)
 
 
   //G4int i =0;
-  //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
-
   //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
 
   ClearVariables() ;

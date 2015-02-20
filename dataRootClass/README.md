@@ -31,7 +31,7 @@ To add another "Setter" class for another detector :
 			- Replace "New" by the name of your detector (the dictionary file must be the same)
 
 
-- Finally, in ./src/RootManager.hh,  add the header of the new class and use it 
+- Finally, in ./include/RootManager.hh,  add the header of the new class and use it 
 
 e.g. 
 

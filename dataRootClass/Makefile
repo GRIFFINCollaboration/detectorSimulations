@@ -33,7 +33,7 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 #-------------------------
 #SHARELIB      = libDetector.so libNewData.so libNew2Data.so
 
-SHARELIB      = libSpiceData.so  libS3Data.so libGriffinData.so
+SHARELIB      = libSpiceData.so  libS3Data.so  libPacesData.so  libGriffinData.so
 
 all:            $(SHARELIB)
 
@@ -57,6 +57,12 @@ libGriffinData.so:	TGriffinData.o   TGriffinDataDict.o
 TGriffinDataDict.cpp:	TGriffinData.h
 			rootcint -f $@ -c $^			
 
+libPacesData.so:	TPacesData.o   TPacesDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TPacesDataDict.cpp:	TPacesData.h
+			rootcint -f $@ -c $^
+
 #libNewData.so:	TNewData.o   TNewDataDict.o
 #		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 #
@@ -78,6 +84,7 @@ distclean:
 
 # Manage dependances
 #-------------------------
-TSpiceData.o:	TSpiceData.cpp	TSpiceData.h
-TS3Data.o:	TS3Data.cpp	TS3Data.h
+TSpiceData.o:	TSpiceData.cpp		TSpiceData.h
+TS3Data.o:		TS3Data.cpp			TS3Data.h
+TPacesData.o:	TPacesData.cpp		TPacesData.h
 TGriffinData.o:	TGriffinData.cpp	TGriffinData.h

@@ -12,7 +12,8 @@ set(myROOTclassDir 		dataRootClass	) 			# directory of the root classes
 set(myROOTclass 		true			)   		# comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
 set(myROOTS3class 		TS3Data.cpp		)   		# comment if none  
 set(myROOTSpiceclass 	TSpiceData.cpp	)   		# comment if none  
-set(myROOTGriffclass TGriffinData.cpp )  			# comment if none  
+set(myROOTPacesclass 	TPacesData.cpp	)   		# comment if none  
+set(myROOTGriffclass 	TGriffinData.cpp )  		# comment if none  
 #set(myROOTNewclass 	TNewData.cpp) 				# comment if none  
 
 # http://www.cmake.org/cmake/help/cmake_tutorial.html
@@ -64,6 +65,11 @@ if(useROOT)
 		EXECUTE_PROCESS(COMMAND rootcint -f dictSpice.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTSpiceclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Spice_linkdef.h )
 		endif(myROOTSpiceclass)
 
+		if(myROOTPacesclass)
+		message(" --- compiling Paces --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictPaces.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTPacesclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Paces_linkdef.h )
+		endif(myROOTPacesclass)
+		
 		if(myROOTGriffclass)
 		message(" --- compiling Griffin --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictGriffin.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTGriffclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Griffin_linkdef.h )
@@ -150,6 +156,11 @@ if(useROOT)
 		set(myROOTDict ${myROOTDict} dictSpice.cxx)
 		endif(myROOTSpiceclass)
 
+		if(myROOTPacesclass)
+			message(" --- Linking :  dictPaces.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictPaces.cxx)
+		endif(myROOTPacesclass)
+		
 		if(myROOTGriffclass)
 			message(" --- Linking :  dictGriffin.cxx --- ")
 		set(myROOTDict ${myROOTDict} dictGriffin.cxx)

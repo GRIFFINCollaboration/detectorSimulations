@@ -60,6 +60,9 @@ private:
   void SetDetAndCryNumberForDeadLayerSpecificGriffinCrystal(G4String);
   void SetDetNumberForGenericDetector( G4String );
   
+  //Paces
+  void SetDetAndCryNumberForPacesDetector( G4String ); 
+  
   //Spice
   void SetDetAndCryNumberForSpiceDetector( G4String ) ;
   

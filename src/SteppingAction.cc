@@ -235,8 +235,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // Paces
   found = volname.find("paces_silicon_block_log");
   if (edep != 0 && found!=G4String::npos) {   
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddPacesCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForPacesDetector(volname);
+      eventaction->AddPacesCrystDet(edep,stepl,det);
+      eventaction->AddStepTracker(evntNb, stepNumber, cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, initialDirectionX, initialDirectionY, initialDirectionZ, initialEnergy, trackID);  
   }
   
   //SPICE  
@@ -356,6 +357,27 @@ void SteppingAction::SetDetAndCryNumberForS3Detector(G4String volname)
     //G4cin.get();
 }
 
+
+void SteppingAction::SetDetAndCryNumberForPacesDetector(G4String volname)
+{
+    // the volume name contains five underscrores : av_xxx_impr_SegmentID_siDetSpiceRing_RingID_etc...
+    G4String dummy="";                          
+    size_t UnderScoreIndex[6];
+    size_t old = -1 ;  
+    for (int i = 0 ; i < 6 ; i++ ){
+		UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+		old = UnderScoreIndex[i] ;
+		}
+
+   dummy = volname.substr (UnderScoreIndex[2]+1,UnderScoreIndex[3]-UnderScoreIndex[2]-1); // select the substring between the underscores 
+   cry = atoi(dummy.c_str()) ; // in paces, start counting from 1 
+   
+   dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
+   det = atoi(dummy.c_str()); // ring 
+   
+    //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+    //G4cin.get();
+}
 
 void SteppingAction::SetDetNumberForGenericDetector(G4String volname)
 {

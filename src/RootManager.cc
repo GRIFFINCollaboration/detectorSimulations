@@ -30,16 +30,18 @@ RootManager::RootManager()
 
     // Create objects to hold the data
     //spice event
+    fDetectorSpice = new DetectionSystemSpice();
 	fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
-	fDetectorSpice = new DetectionSystemSpice();
 
-        //GRIFFIN Event
-        fGriffinData = new TGriffinData();
+    //Paces event 
+	fPacesData = new TPacesData();
+	
+    //GRIFFIN Event
+    fGriffinData = new TGriffinData();
 
 	//histograms 
-	fHist = new TH1F("h","h",500,0,1800);
-
+	//fHist = new TH1F("h","h",500,0,1800);
 
 	//Creating the tree ;
 	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
@@ -58,40 +60,37 @@ RootManager::RootManager()
 RootManager::~RootManager()  {}
 
 
-void RootManager::SetTree()
-{
+void RootManager::SetTree(){
+
+//detector branches goes here
  fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData);
  fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+ fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
 // fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
  
- /*
-Other detector branches goes here
-*/
+ 	
+ } 
 
-} 
-
-void RootManager::FillHist(double temp)
-{
-    float tempf = (float)temp; 
-    fHist->Fill(tempf);
-}
+void RootManager::FillHist(double temp) {
+		float tempf = (float)temp; 
+		//fHist->Fill(tempf);
+	}
 
 
 void RootManager::FillG4Hit(int key,  	// integer representing the key, could be used to identify the detector
-int pdg,			// integer representing the type of particle
-double Energy, 			// depositid energy in a step
-double Px, double Py, double Pz,// position vector
-int Id, 			// original(primary) ID
-int PrimPdg,			// primary particle definition        PDG encoding
-double PrimEnergy,		// original(primary) energy
-double Mx, double My, double Mz)// primary particle momentum vector
-{
-	/*			
-	Some other functions 
-	*/
-	//Fill the event, calculate the full deposited energy etc...
-	fGeantEvent[key].FillVectors( pdg, Energy,  Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
-}
+							int pdg,			// integer representing the type of particle
+							double Energy, 			// depositid energy in a step
+							double Px, double Py, double Pz,// position vector
+							int Id, 			// original(primary) ID
+							int PrimPdg,			// primary particle definition        PDG encoding
+							double PrimEnergy,		// original(primary) energy
+							double Mx, double My, double Mz) { // primary particle momentum vector
+
+								//	Some other functions 
+								//  Fill the event, calculate the full deposited energy etc...
+								fGeantEvent[key].FillVectors( pdg, Energy,  Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
+								//cout << " Px Py Pz : " << Px << " " << Py << " " << Pz << endl ;
+							}
 
 
 
@@ -105,12 +104,15 @@ void RootManager::SortEvent(void)
 			int key = it->first ;
 
 			//Spice
-			if (key>1 && key <50) SetSpiceEvent(key);
-			if (key>50 && key <1000) SetS3Event(key);
+			if (key>0 && key <1000) SetSpiceEvent(key);
+			if (key>0 && key <1000) SetS3Event(key);
+
+			//Paces 
+			if (key>=0 && key <6) SetPacesEvent(key);
 
 			//Griffin
 			//Need to put Griffin key here
-			
+				
 			//other
 			//if (key>1 && key <1000) SetOtherDetectorEvent(key);
 			}
@@ -125,8 +127,12 @@ void RootManager::SortEvent(void)
 	fSpiceData->Clear();
 	fS3Data->Clear();
 	
+// clear the PacesData object
+	fPacesData->Clear();
+
 // clear the GriffinData object
 //	fGriffinData->Clear();
+
 }
 
 
@@ -136,7 +142,7 @@ void RootManager::SetSpiceEvent(int RingSeg)
 	fGeantEvent.at(RingSeg).SortPrimary();			
 
 	// get the segment and ring
-	int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
+	int Seg = (RingSeg%100) ;   
 	int Ring = (RingSeg-Seg)/100;
 
 	// get primary
@@ -232,6 +238,56 @@ void RootManager::SetS3Event(int RingSeg)
 
 }
 
+
+void RootManager::SetPacesEvent(int key)
+{	
+	// treat
+	fGeantEvent.at(key).SortPrimary();	
+	
+	// get the detectorNb, segment and ring from the key 
+	int Seg = (key%100) ;   
+	int Ring = (key-Seg)/100;
+    
+    //cout << " Key " << key << endl;
+    //cout << " Seg " << Seg << endl;
+    //cout << " Ring " << Ring << endl;
+    
+	//fGeantEvent.at(key).ShowVectorsContent();   	
+	//G4cin.get(); 
+	  
+	// get primary
+	// Pdg	
+	int mult = fGeantEvent.at(key).GetPrimaryPdgMult(); // inside this particular pad 
+    for (int i = 0 ; i<mult ;  i++ )
+	fPacesData->SetPrimaryPdg( fGeantEvent.at(key).GetPrimaryPdg(i) ) ;
+
+	// Energy      
+    mult = fGeantEvent.at(key).GetPrimaryEnergyMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ ) {
+	fPacesData->SetPrimaryEnergy( fGeantEvent.at(key).GetPrimaryEnergy(i) ) ;
+	}
+
+	// Momentum
+	mult = fGeantEvent.at(key).GetPrimaryThetaMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ ) {
+	fPacesData->SetPrimaryTheta( fGeantEvent.at(key).GetPrimaryTheta(i) ) ;
+	fPacesData->SetPrimaryPhi( fGeantEvent.at(key).GetPrimaryPhi(i) ) ;
+	}
+
+	// get the energy 			
+	double energy = fGeantEvent.at(key).GetFullEnergy();
+	TVector3 pos = fGeantEvent.at(key).GetFirstHitPosition() ;
+    
+	// fill the PacesData object
+	fPacesData->SetPacesDetectorNbr(Seg) ; 
+	fPacesData->SetPacesEnergy(energy) ;    
+
+	fPacesData->SetPositionFirstHit(pos) ;		
+
+}
+
+
+
 void RootManager::SetGriffinEvent(int Crystal)
 {	
 	//Stuff goes here
@@ -245,6 +301,7 @@ void RootManager::SetEventNumber(int i )
 {
 fSpiceData->SetEventNumber(i) ;
 fS3Data->SetEventNumber(i) ;
+fPacesData->SetEventNumber(i) ;
 //fGriffinData->SetEventNumber(i);
 }		
 

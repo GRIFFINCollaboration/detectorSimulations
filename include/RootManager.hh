@@ -10,8 +10,8 @@
 using namespace std ;
 
 //ROOT
-#include<TFile.h>
-#include<TH1.h>
+#include <TFile.h>
+#include <TH1.h>
 #include "TTree.h"
 
 //Geant4
@@ -25,7 +25,7 @@ using namespace std ;
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
-
+#include "../dataRootClass/TPacesData.h"
 
 class DetectionSystemSpice;
 
@@ -54,6 +54,7 @@ class RootManager   {
         //Writing Class for detectors goes here
         TSpiceData* fSpiceData;
         TS3Data*    fS3Data;   
+        TPacesData* fPacesData;
         TGriffinData* fGriffinData;   
      
         DetectionSystemSpice *fDetectorSpice; 
@@ -85,6 +86,7 @@ class RootManager   {
        //Set the data in Spice writing Class
        void SetSpiceEvent(int key);
        void SetS3Event(int key);
+       void SetPacesEvent(int key);
        void SetGriffinEvent(int key);
        
        // Close the root Manager        							
