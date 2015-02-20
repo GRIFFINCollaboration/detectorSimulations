@@ -20,25 +20,27 @@ class RawG4Event
  private:
 
 //From geant, HC stands for hit collection
-vector<Int_t> fHCPdg; // type of detected particles
-vector<Double_t> fHCEnergy; // depositied energy
-vector<TVector3> fHCPosition; // position of the hit, we are intersted with the first position
+vector<Int_t> 		fHCPdg; // type of detected particles
+vector<Double_t> 	fHCEnergy; // depositied energy
+vector<Int_t> 		fHCDetector; // Detector
+vector<Int_t> 		fHCCrystal; // Crystal
+vector<TVector3> 	fHCPosition; // position of the hit, we are intersted with the first position
 
-vector<Int_t> fHCPrimaryID; // the ID number of the mother particle generated in the source
-vector<Int_t> fHCPrimaryPdg; // the type of the particle generated in the source
-vector<Double_t> fHCPrimaryEnergy; // usefull for sorting and for analysis
-vector<TVector3> fHCPrimaryMomentum; // Momentum of the particle,
-vector<Double_t> fHCPrimaryTheta; // Angle theta with respect to the beam of the particle,
-vector<Double_t> fHCPrimaryPhi; // Angle Phi the particle,
+vector<Int_t> 		fHCPrimaryID; // the ID number of the mother particle generated in the source
+vector<Int_t> 		fHCPrimaryPdg; // the type of the particle generated in the source
+vector<Double_t> 	fHCPrimaryEnergy; // usefull for sorting and for analysis
+vector<TVector3> 	fHCPrimaryMomentum; // Momentum of the particle,
+vector<Double_t> 	fHCPrimaryTheta; // Angle theta with respect to the beam of the particle,
+vector<Double_t> 	fHCPrimaryPhi; // Angle Phi the particle,
 
 // Sorted vectors
-vector<Int_t>    fDetectedPrimaryParticleID ; // If we have several primary particle ending in the same pad
-vector<Double_t> fDetectedPrimaryEnergy; // the DETECTED energy of the primary particle, this will be the sum of all the energy from the same ID
+vector<Int_t>    	fDetectedPrimaryParticleID ; // If we have several primary particle ending in the same pad
+vector<Double_t> 	fDetectedPrimaryEnergy; // the DETECTED energy of the primary particle, this will be the sum of all the energy from the same ID
 
-map<int,int> fMapPrimaryPdg;
-map<double,int> fMapPrimaryEnergy;
-map<double,int> fMapPrimaryTheta;
-map<double,int> fMapPrimaryPhi;
+map<int,int> 		fMapPrimaryPdg;
+map<double,int> 	fMapPrimaryEnergy;
+map<double,int> 	fMapPrimaryTheta;
+map<double,int> 	fMapPrimaryPhi;
 
 
 /********************************************
@@ -64,6 +66,8 @@ void SortPrimary(void);
  
 void FillVectors(int pdg, // particle pdg
  				 double Energy, // depositid energy
+ 				 int detector, //detector
+ 				 int crystal, //crystal
 				 double Px, double Py, double Pz, // position vector
 				 
 				 int ID, // original(primary) ID
@@ -86,6 +90,9 @@ Double_t    GetHCPrimaryPhi(int i);
 // after treatment
 Double_t 	GetFullEnergy(void) ; // full energy in pad
 TVector3 	GetFirstHitPosition(void) ; // first hit position
+TVector3 	GetSecondHitPosition(void) ; // first hit position
+Int_t 	 	GetDetector(void) ; // detector
+Int_t 	 	GetCrystal(void) ; // crystal
                                   // the reason for this treatment is because our basic element is a pad not one hit from the collection of Hit
 Int_t    	GetPrimaryPdgMult(void); // say you have in one pad two primary particles  1 1 1 1 1 1 0 0 0  2 2 2 2 2 => this function will return '3'
 Int_t    	GetPrimaryPdg(int i); // say you have in one pad two primary particles 1 1 1 1 1 1 0 0 0  2 2 2 2 2 => 1 - 0 - 2 => this function will return  1 for i=0, 0 for i=1 and 2 for i=2

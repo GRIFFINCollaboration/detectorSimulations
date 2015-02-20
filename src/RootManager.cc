@@ -18,7 +18,6 @@ RootManager::RootManager()
 	printf("RootManager has been created.\n");    
 	fflush(stdout);
 
-
 	// open root file
 	int t = (int) time(0);   // get time now
 	fRootfile = new TFile(Form("output_at_%d_seconds.root",t ),"RECREATE");
@@ -28,18 +27,22 @@ RootManager::RootManager()
 		}
 
 
-    // Create objects to hold the data
-    //spice event
-    fDetectorSpice = new DetectionSystemSpice();
+	// Create objects to hold the data
+	//spice event
 	fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
+	//
+	fDetectorSpice = new DetectionSystemSpice();
 
     //Paces event 
 	fPacesData = new TPacesData();
 	
-    //GRIFFIN Event
-    fGriffinData = new TGriffinData();
+	//GRIFFIN Event
+	//fGriffinData = new TGriffinData();
 
+	//Fragment Event
+	//fFragment = new TTigFragment();
+	
 	//histograms 
 	//fHist = new TH1F("h","h",500,0,1800);
 
@@ -50,6 +53,7 @@ RootManager::RootManager()
 		exit(-1);
 		}
 	fOutputTree->SetAutoSave(100000);
+
 
 	//Attach detector branches to the tree
 	SetTree();
@@ -62,70 +66,91 @@ RootManager::~RootManager()  {}
 
 void RootManager::SetTree(){
 
-//detector branches goes here
- fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData);
- fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
- fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
-// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
- 
+ 	/*
+	At this stage you can define what branches are written in the tree
+	*/
+	 
+	//----------------
+	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
+	//----------------
+	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
+	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	//----------------
+	 fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
+	//----------------
+	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
+	//----------------
+	
+	/*
+	Other detector branches goes here
+	*/
  	
  } 
 
 void RootManager::FillHist(double temp) {
 		float tempf = (float)temp; 
-		//fHist->Fill(tempf);
+		fHist->Fill(tempf);
 	}
-
-
-void RootManager::FillG4Hit(int key,  	// integer representing the key, could be used to identify the detector
+					
+void RootManager::FillG4Hit(string volume, // Word representing the key used to identify the detector, and to build mnemonics
+							int detector,
+							int crystal,  	
 							int pdg,			// integer representing the type of particle
 							double Energy, 			// depositid energy in a step
 							double Px, double Py, double Pz,// position vector
 							int Id, 			// original(primary) ID
 							int PrimPdg,			// primary particle definition        PDG encoding
 							double PrimEnergy,		// original(primary) energy
-							double Mx, double My, double Mz) { // primary particle momentum vector
+							double Mx, double My, double Mz) { // primary particle momentum vector 
+	
+	/*			
+	Some other functions 
+	*/
+	
+	//Get the menmonic
+	string mnemonic = BuildMnemonic(volume,detector,crystal);
+	//Fill the event, calculate the full deposited energy etc...
+	fGeantEvent[mnemonic].FillVectors( pdg, Energy, detector,crystal, Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
+}
 
-								//	Some other functions 
-								//  Fill the event, calculate the full deposited energy etc...
-								fGeantEvent[key].FillVectors( pdg, Energy,  Px, Py, Pz,  Id,  PrimPdg, PrimEnergy,  Mx, My, Mz);
-								//cout << " Px Py Pz : " << Px << " " << Py << " " << Pz << endl ;
-							}
 
 
 
-void RootManager::SortEvent(void)
-{
+void RootManager::SortEvent(void) {
 
-// Sort Data from the map second element by getters and set them
-       std::map<Int_t,RawG4Event>::iterator it;
-  for (std::map<Int_t,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it) {
-  
-			int key = it->first ;
+	// Sort Data from the map second element by getters and set them
+	std::map<string,RawG4Event>::iterator it;
+	for (std::map<string,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it) {
+		
+		string system (it->first, 0, 3); // first three letters of the mnemonic (it->first) defines the system
+		//		cout << " RootManager::SortEvent -- system " << system << endl ; 
+		
+		//Fragment
+		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
+		//Spice
+		//if (system=="SPI") SetSpiceEvent(it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//if (system=="SPE") SetS3Event(it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//Paces
+		if (system=="PAC") SetPacesEvent(it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//Griffin
+		//Need to put Griffin key here
+		//New Detector
+		//if (system==XYZ) SetOtherDetectorEvent(key);
+		}
 
-			//Spice
-			if (key>0 && key <1000) SetSpiceEvent(key);
-			if (key>0 && key <1000) SetS3Event(key);
-
-			//Paces 
-			if (key>=0 && key <6) SetPacesEvent(key);
-
-			//Griffin
-			//Need to put Griffin key here
-				
-			//other
-			//if (key>1 && key <1000) SetOtherDetectorEvent(key);
-			}
-
+ 
 // fill the tree by SpiceData
 	fOutputTree->Fill();
  
 // clear the map
 	fGeantEvent.clear();
 
+// clear the Fragment 
+	//fFragment->Clear();
+	
 // clear the SpiceData object
-	fSpiceData->Clear();
-	fS3Data->Clear();
+	//fSpiceData->Clear();
+	//fS3Data->Clear();
 	
 // clear the PacesData object
 	fPacesData->Clear();
@@ -133,43 +158,87 @@ void RootManager::SortEvent(void)
 // clear the GriffinData object
 //	fGriffinData->Clear();
 
+//cout << " RootManager::SortEvent(void) " << endl ; 
 }
 
+string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 
-void RootManager::SetSpiceEvent(int RingSeg)
-{	
+	std::string system (volume, 0, 2);
+	std::string sub_system (volume, 2, 1);
+	std::string number = "00" ; 
+
+	//Build the mnemonic for spice 
+	//---------------------  
+	if (system == "SP")
+		if (sub_system == "I") {
+			detector = 9 - detector ; // (detector here = ring) spice is upstream the target, according to the mnemonics outer ring is '0' inner ring is 9.
+			ostringstream convert;   // stream used for the conversion	
+			convert << std::setw(3) << std::setfill('0') << (detector * 12 + crystal);      //  set the width to 3 (xyz), fill the blanks by zeros
+			number = convert.str(); // set 'Result' to the contents of the stream
+			return ( system + sub_system  + "00XN" + number) ; 
+			}
+		else if (sub_system == "E") {
+				return system + sub_system  +"00"+"XN"+ number ; 
+				}
+				
+    //--------------------- 
+	if (system == "PA" && sub_system == "C") {
+		// (detector here = ring), Paces has only one "ring",  =>  detector = 0 
+		ostringstream convert;   // stream used for the conversion	
+		convert << std::setw(2) << std::setfill('0') << (crystal);      //  set the width to 2, i.e. (xy), fill the blanks by zeros = { 01, ... , 05 }
+		number = convert.str(); // set 'Result' to the contents of the stream
+		//cout << " RootManager::BuildMnemonic : " << system + sub_system << number <<"XN00" << "  |  " << system + sub_system + number+"XN"+"00" << endl ; 
+		return system + sub_system  + number + "XN" + "00"; 
+		}
+
+    //--------------------- 
+	//Griffin 	
+
+    //--------------------- 
+	//Other detectors 	
+
+}
+
+	
+
+void RootManager::SetFragmentEvent(string mnemonic) {	
+	
+		// treat
+		fGeantEvent.at(mnemonic).SortPrimary();			
+		// get the Energy      
+		double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+		// Set the data into the fragment , NB : TTigFragment Class has the all the memebers "public", no setters are used, instead we could assigne the values immediatly. 
+		fFragment->ChannelName	= mnemonic ;
+		fFragment->ChargeCal = energy ;
+	}
+
+void RootManager::SetSpiceEvent(string mnemonic, int Ring, int Seg) {	
 	// treat
-	fGeantEvent.at(RingSeg).SortPrimary();			
-
-	// get the segment and ring
-	int Seg = (RingSeg%100) ;   
-	int Ring = (RingSeg-Seg)/100;
+	fGeantEvent.at(mnemonic).SortPrimary();			
 
 	// get primary
 	// Pdg	
-	int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
+	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
     for (int i = 0 ; i<mult ;  i++ )
-	fSpiceData->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
+	fSpiceData->SetPrimaryPdg( fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
 
 	// Energy      
-    mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
-	fSpiceData->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )	{
+	fSpiceData->SetPrimaryEnergy( fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) ) ;
 	}
 
 	// Momentum
-	    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
-	fSpiceData->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
-	fSpiceData->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
+	    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )	{
+	fSpiceData->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+	fSpiceData->SetPrimaryPhi( fGeantEvent.at(mnemonic).GetPrimaryPhi(i) ) ;
 	}
 
 	// get the energy 			
-	double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
+	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
 	double applied_resolution = fDetectorSpice->ApplySpiceResolution(energy);
-	TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
+	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
 
 	// fill the SpiceData object
 	// (Th,E)
@@ -189,39 +258,32 @@ void RootManager::SetSpiceEvent(int RingSeg)
 }
 
 
-void RootManager::SetS3Event(int RingSeg)
-{	
+void RootManager::SetS3Event(string mnemonic, int Ring, int Seg) {	
 	// treat
-	fGeantEvent.at(RingSeg).SortPrimary();			
-
-	// get the segment and ring
-	int Seg = (RingSeg%100) ;   //?? 100 should be 12... CHECK, MHD 20Dec2013 
-	int Ring = (RingSeg-Seg)/100;
+	fGeantEvent.at(mnemonic).SortPrimary();			
 
 	// get primary
 	// Pdg	
-	int mult = fGeantEvent.at(RingSeg).GetPrimaryPdgMult(); // inside this particular pad 
+	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
     for (int i = 0 ; i<mult ;  i++ )
-	fS3Data->SetPrimaryPdg( fGeantEvent.at(RingSeg).GetPrimaryPdg(i) ) ;
+	fS3Data->SetPrimaryPdg( fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
 
 	// Energy      
-    mult = fGeantEvent.at(RingSeg).GetPrimaryEnergyMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
-	fS3Data->SetPrimaryEnergy( fGeantEvent.at(RingSeg).GetPrimaryEnergy(i) ) ;
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )	{
+	fS3Data->SetPrimaryEnergy( fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) ) ;
 	}
 
 	// Momentum
-	    mult = fGeantEvent.at(RingSeg).GetPrimaryThetaMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )
-	{
-	fS3Data->SetPrimaryTheta(fGeantEvent.at(RingSeg).GetPrimaryTheta(i) ) ;
-	fS3Data->SetPrimaryPhi( fGeantEvent.at(RingSeg).GetPrimaryPhi(i) ) ;
+	    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult(); // this should be the same as above
+	for (int i = 0 ; i<mult ;  i++ )	{
+	fS3Data->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+	fS3Data->SetPrimaryPhi( fGeantEvent.at(mnemonic).GetPrimaryPhi(i) ) ;
 	}
 
 	// get the energy 			
-	double energy = fGeantEvent.at(RingSeg).GetFullEnergy();
-	TVector3 pos = fGeantEvent.at(RingSeg).GetFirstHitPosition() ;
+	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
 
 	// fill the S3Data object
 	// (Th,E)
@@ -239,50 +301,50 @@ void RootManager::SetS3Event(int RingSeg)
 }
 
 
-void RootManager::SetPacesEvent(int key)
+void RootManager::SetPacesEvent(string mnemonic, int Ring, int Seg)
 {	
 	// treat
-	fGeantEvent.at(key).SortPrimary();	
-	
-	// get the detectorNb, segment and ring from the key 
-	int Seg = (key%100) ;   
-	int Ring = (key-Seg)/100;
+	fGeantEvent.at(mnemonic).SortPrimary();	
     
-    //cout << " Key " << key << endl;
+    //cout << " mnemonic " << mnemonic << endl;
     //cout << " Seg " << Seg << endl;
     //cout << " Ring " << Ring << endl;
     
-	//fGeantEvent.at(key).ShowVectorsContent();   	
+	//fGeantEvent.at(mnemonic).ShowVectorsContent();   	
 	//G4cin.get(); 
 	  
 	// get primary
 	// Pdg	
-	int mult = fGeantEvent.at(key).GetPrimaryPdgMult(); // inside this particular pad 
+	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
     for (int i = 0 ; i<mult ;  i++ )
-	fPacesData->SetPrimaryPdg( fGeantEvent.at(key).GetPrimaryPdg(i) ) ;
+		fPacesData->SetPrimaryPdg( fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
 
 	// Energy      
-    mult = fGeantEvent.at(key).GetPrimaryEnergyMult(); // this should be the same as above
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult(); // this should be the same as above
 	for (int i = 0 ; i<mult ;  i++ ) {
-	fPacesData->SetPrimaryEnergy( fGeantEvent.at(key).GetPrimaryEnergy(i) ) ;
-	}
+		fPacesData->SetPrimaryEnergy( fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) ) ;
+		}
 
 	// Momentum
-	mult = fGeantEvent.at(key).GetPrimaryThetaMult(); // this should be the same as above
+	mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult(); // this should be the same as above
 	for (int i = 0 ; i<mult ;  i++ ) {
-	fPacesData->SetPrimaryTheta( fGeantEvent.at(key).GetPrimaryTheta(i) ) ;
-	fPacesData->SetPrimaryPhi( fGeantEvent.at(key).GetPrimaryPhi(i) ) ;
-	}
+		fPacesData->SetPrimaryTheta( fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+		fPacesData->SetPrimaryPhi( fGeantEvent.at(mnemonic).GetPrimaryPhi(i) ) ;
+		}
 
 	// get the energy 			
-	double energy = fGeantEvent.at(key).GetFullEnergy();
-	TVector3 pos = fGeantEvent.at(key).GetFirstHitPosition() ;
+	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+	TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition() ;
     
 	// fill the PacesData object
 	fPacesData->SetPacesDetectorNbr(Seg) ; 
 	fPacesData->SetPacesEnergy(energy) ;    
-
-	fPacesData->SetPositionFirstHit(pos) ;		
+    
+    //pos.Dump();
+    //getchar();
+	fPacesData->SetPositionFirstHit(pos) ;	
+	
+	//fPacesData->Dump();	
 
 }
 
@@ -297,10 +359,9 @@ void RootManager::SetGriffinEvent(int Crystal)
 
 
 // set event number
-void RootManager::SetEventNumber(int i )
-{
-fSpiceData->SetEventNumber(i) ;
-fS3Data->SetEventNumber(i) ;
+void RootManager::SetEventNumber(int i ) {
+//fSpiceData->SetEventNumber(i) ;
+//fS3Data->SetEventNumber(i) ;
 fPacesData->SetEventNumber(i) ;
 //fGriffinData->SetEventNumber(i);
 }		

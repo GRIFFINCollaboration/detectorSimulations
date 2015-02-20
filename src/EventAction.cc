@@ -80,7 +80,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 //    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
     printf( " ---> Ev.# %5d\r", evtNb);
     G4cout.flush();
-
+    
 	RootManager::instance()->SetEventNumber(evtNb); 
     ClearVariables();
 }
@@ -88,26 +88,29 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::EndOfEventAction(const G4Event*)
-{
+{      
         G4double eventNumber = 0 ;
         G4double stepNumber = 0;
-        G4double cryNumber  = 0;
-        G4double detNumber  = 0;
+        G4int	 cryNumber  = 0;
+        G4int	 detNumber  = 0;
         G4double depEnergy  = 0;
         G4double posx       = 0;
         G4double posy       = 0;
         G4double posz       = 0;
         G4double time       = 0;
-        G4double initialDirectionX       = 0;
-        G4double initialDirectionY       = 0;
-        G4double initialDirectionZ       = 0;
-        G4double initialEnergy       = 0;
+        G4double originDirectionX       = 0;
+        G4double originDirectionY       = 0;
+        G4double originDirectionZ       = 0;
+        G4double originEnergy       	= 0;
+        G4int originPdg       	 		= 0;
+        G4int originID       	 		= 0;
         G4int trackID       = 0;
-                
-    for(G4int i = 0; i < MAXSTEPS; i++) {
-         
-        if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
 
+        G4String volume     = "";
+                        
+    for(G4int i = 0; i < MAXSTEPS; i++) {
+    
+        if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
 		    eventNumber = stepTracker[0][i] ;
 		    stepNumber = stepTracker[1][i];
 		    cryNumber  = stepTracker[2][i];
@@ -117,32 +120,27 @@ void EventAction::EndOfEventAction(const G4Event*)
 		    posy       = stepTracker[6][i]/mm;
 		    posz       = stepTracker[7][i]/mm;
 		    time       = stepTracker[8][i]/second;
-		    initialDirectionX = stepTracker[9][i];
-		    initialDirectionY = stepTracker[10][i];
-		    initialDirectionZ = stepTracker[11][i];
-		    initialEnergy = stepTracker[12][i];
-		    trackID    = stepTracker[13][i];
-		        
-		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time );
-		    /*    
-			detnum*100+segnum = key, // detnum = radius Segnum = phi     
-			pdg, edep, posA.x()/mm, posA.y()/mm, posA.z()/mm,
-			OriginID, OriginPdg, OriginEnergy,                  
-			OriginMoment.x(), OriginMoment.y(), OriginMoment.z()
-		    */
-		    
-		    RootManager::instance()->FillG4Hit(detNumber*100+cryNumber, 11, depEnergy, posx, posy, posz, trackID, 11, initialEnergy, initialDirectionX, initialDirectionY, initialDirectionZ);	 // this is one hit of a Hit Collection
-		    //cout << " EventAction.cc : detNumber*100+cryNumber " << detNumber*100+cryNumber << endl ; 
+	    		// primary particle info
+				originDirectionX 	= stepTracker[9][i];
+				originDirectionY 	= stepTracker[10][i];
+				originDirectionZ 	= stepTracker[11][i];
+				originEnergy 		= stepTracker[12][i];
+				originPdg 			= stepTracker[13][i];
+				originID    		= stepTracker[14][i];
+		    trackID    = stepTracker[15][i];
+		    volume    = stepVolume[i];                   
+		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
+		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID /* <- this should be particle pdg */, 
+												depEnergy, posx, posy, posz, 
+												originID, originPdg, originEnergy, 
+												originDirectionX, originDirectionY, originDirectionZ);
 		    //RootManager::instance()->FillHist(1000/keV);		//optional
-		    }
+        }
 		
     }
-
-    if (depEnergy>0.0) { // if condition satisfied  &&  detNumber<12
-        //cout << detNumber << "  " ; 
-        //cout << cryNumber << "  "  ;
-        //cout << detNumber*100+cryNumber << endl  ;
-        RootManager::instance()->SortEvent(); // Sort the HitCollection and make a physical event 
+    
+    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
+		RootManager::instance()->SortEvent();
 		}
     
   FillParticleType() ; 
@@ -466,20 +464,6 @@ void EventAction::FillPacesCryst()
       if(WRITEEDEPHISTOS)     histoManager->FillHisto(paces_crystal_edep_sum, energySum);
     }     
 }
-
-//void AddStepTracker(G4int eventNumber, G4int stepNumber, G4int cryNumber, G4int detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
-//{
-//    stepTracker[0][stepIndex] = (G4double)(eventNumber);
-//    stepTracker[1][stepIndex] = (G4double)(stepNumber);
-//    stepTracker[2][stepIndex] = (G4double)(cryNumber);
-//    stepTracker[3][stepIndex] = (G4double)(detNumber);
-//    stepTracker[4][stepIndex] = depEnergy;
-//    stepTracker[5][stepIndex] = posx;
-//    stepTracker[6][stepIndex] = posy;
-//    stepTracker[7][stepIndex] = posz;
-//    stepTracker[8][stepIndex] = time;
-//    stepIndex++;
-
 
 
 //}

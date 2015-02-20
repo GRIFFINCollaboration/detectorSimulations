@@ -4,14 +4,17 @@
 
 //c++
 #include <iostream>
+#include <iomanip>
 #include <map>
+#include <string>
+#include <sstream>
 #include <ctime>
 
 using namespace std ;
 
 //ROOT
-#include <TFile.h>
-#include <TH1.h>
+#include "TFile.h"
+#include "TH1.h"
 #include "TTree.h"
 
 //Geant4
@@ -22,6 +25,8 @@ using namespace std ;
 //User
 #include "RawG4Event.hh"
 #include "DetectionSystemSpice.hh"
+
+#include "../dataRootClass/TTigFragment.h"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
@@ -49,30 +54,37 @@ class RootManager   {
         TH1F *fHist;
         
         //G4 Event
-        map<Int_t,RawG4Event> fGeantEvent;
+        map<string,RawG4Event> fGeantEvent;
         
         //Writing Class for detectors goes here
         TSpiceData* fSpiceData;
         TS3Data*    fS3Data;   
         TPacesData* fPacesData;
-        TGriffinData* fGriffinData;   
-     
+        TGriffinData* fGriffinData;  
+         
         DetectionSystemSpice *fDetectorSpice; 
-                     
-       
+           
+        TTigFragment* 	fFragment;    
+        
+
     public:
     // fill the histograms 
         void FillHist(double);
         
     //fill the map hit by hit    
-      void FillG4Hit(int, // key of the detector
-					 int, // particle pdg 
-					 double, // particle depositid energy
-					 double, double, double, // particle position vector
-					 int, // original particle Track ID
-					 int,// primary particle pdg encoding
-					 double,//original (primary) particle energy
-					 double, double, double);// primary particle momentum vector
+      void FillG4Hit(string , // Word representing the key used to identify the detector, and to build mnemonics
+					int , // detector 
+					int ,  // crystal 	
+					int, // particle pdg 
+					double, // particle depositid energy
+					double, double, double, // particle position vector
+					int, // original particle Track ID
+					int,// primary particle pdg encoding
+					double,//original (primary) particle energy
+					double, double, double);// primary particle momentum vector
+       
+       //Build the mnemonic used in TRIUMF  	
+	   string BuildMnemonic(string volume, int detector, int crystal);
 
        //Set event number  						 
        void SetEventNumber(int) ;
@@ -84,10 +96,12 @@ class RootManager   {
        void SortEvent();
        
        //Set the data in Spice writing Class
-       void SetSpiceEvent(int key);
-       void SetS3Event(int key);
-       void SetPacesEvent(int key);
+       void SetSpiceEvent(string mnemonic, int ring, int seg);
+       void SetS3Event(string mnemonic, int ring, int seg);
+       void SetPacesEvent(string mnemonic, int ring, int seg);
+
        void SetGriffinEvent(int key);
+       void SetFragmentEvent(string key);
        
        // Close the root Manager        							
        void Close();  

@@ -32,35 +32,54 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 # Specify Shared libraries
 #-------------------------
 #SHARELIB      = libDetector.so libNewData.so libNew2Data.so
-
-SHARELIB      = libSpiceData.so  libS3Data.so  libPacesData.so  libGriffinData.so
+SHARELIB      = libSpiceData.so  libS3Data.so libPacesData.so libGriffinData.so\
+				libFragment.so  libTigFragment.so
 
 all:            $(SHARELIB)
 
 # Create dictionaries
 #-------------------------
+
+# S P I C E
 libSpiceData.so:	TSpiceData.o   TSpiceDataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TSpiceDataDict.cpp:	TSpiceData.h
 			rootcint -f $@ -c $^
 
+# S 3
 libS3Data.so:	TS3Data.o   TS3DataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TS3DataDict.cpp:	TS3Data.h
 			rootcint -f $@ -c $^
-			
+
+# G R I F F I N 
 libGriffinData.so:	TGriffinData.o   TGriffinDataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TGriffinDataDict.cpp:	TGriffinData.h
 			rootcint -f $@ -c $^			
 
+# P A C E S
 libPacesData.so:	TPacesData.o   TPacesDataDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
 
 TPacesDataDict.cpp:	TPacesData.h
+			rootcint -f $@ -c $^
+
+# F R A G M E N T 	(G R S I S P O O N) 
+libFragment.so:	TFragment.o   TFragmentDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TFragmentDict.cpp:	TFragment.h
+			rootcint -f $@ -c $^
+
+# T I G  F R A G M E N T 	(G R S I S P O O N) 
+libTigFragment.so:	TTigFragment.o   TTigFragmentDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TTigFragmentDict.cpp:	TTigFragment.h
 			rootcint -f $@ -c $^
 
 #libNewData.so:	TNewData.o   TNewDataDict.o
@@ -82,9 +101,12 @@ distclean:
 	$(CXX) $(CXXFLAGS) -c $<
 
 
-# Manage dependances
+# Manage dependancies
 #-------------------------
 TSpiceData.o:	TSpiceData.cpp		TSpiceData.h
 TS3Data.o:		TS3Data.cpp			TS3Data.h
 TPacesData.o:	TPacesData.cpp		TPacesData.h
 TGriffinData.o:	TGriffinData.cpp	TGriffinData.h
+TFragment.o:		TFragment.cpp		TFragment.h
+TTigFragment.o:		TTigFragment.cpp	TTigFragment.h
+
