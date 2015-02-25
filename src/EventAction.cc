@@ -73,15 +73,15 @@ EventAction::~EventAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EventAction::BeginOfEventAction(const G4Event* evt)
-{  
+void EventAction::BeginOfEventAction(const G4Event* evt) {
+  
   evtNb = evt->GetEventID();
+  
   if (evtNb%printModulo == 0) 
 //    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
     printf( " ---> Ev.# %5d\r", evtNb);
     G4cout.flush();
-    
-	RootManager::instance()->SetEventNumber(evtNb); 
+   
     ClearVariables();
 }
 
@@ -105,7 +105,6 @@ void EventAction::EndOfEventAction(const G4Event*)
         G4int originPdg       	 		= 0;
         G4int originID       	 		= 0;
         G4int trackID       = 0;
-
         G4String volume     = "";
                         
     for(G4int i = 0; i < MAXSTEPS; i++) {
@@ -120,13 +119,13 @@ void EventAction::EndOfEventAction(const G4Event*)
 		    posy       = stepTracker[6][i]/mm;
 		    posz       = stepTracker[7][i]/mm;
 		    time       = stepTracker[8][i]/second;
-	    		// primary particle info
-				originDirectionX 	= stepTracker[9][i];
-				originDirectionY 	= stepTracker[10][i];
-				originDirectionZ 	= stepTracker[11][i];
-				originEnergy 		= stepTracker[12][i];
-				originPdg 			= stepTracker[13][i];
-				originID    		= stepTracker[14][i];
+    		// primary particle info
+			originDirectionX 	= stepTracker[9][i];
+			originDirectionY 	= stepTracker[10][i];
+			originDirectionZ 	= stepTracker[11][i];
+			originEnergy 		= stepTracker[12][i];
+			originPdg 			= stepTracker[13][i];
+			originID    		= stepTracker[14][i];
 		    trackID    = stepTracker[15][i];
 		    volume    = stepVolume[i];                   
 		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
@@ -139,8 +138,8 @@ void EventAction::EndOfEventAction(const G4Event*)
 		
     }
     
-    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
-		RootManager::instance()->SortEvent();
+    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event
+		RootManager::instance()->SortEvent(evtNb);
 		}
     
   FillParticleType() ; 

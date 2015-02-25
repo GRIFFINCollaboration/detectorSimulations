@@ -46,13 +46,7 @@ RootManager::RootManager()
 	//histograms 
 	//fHist = new TH1F("h","h",500,0,1800);
 
-	//Creating the tree ;
-	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
-	if(!fOutputTree) {
-		cout << "\nCould not create Simulated Data Tree in root file" << endl;
-		exit(-1);
-		}
-	fOutputTree->SetAutoSave(100000);
+
 
 
 	//Attach detector branches to the tree
@@ -66,17 +60,26 @@ RootManager::~RootManager()  {}
 
 void RootManager::SetTree(){
 
+	//Creating the tree ;
+	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
+	if(!fOutputTree) {
+		cout << "\nCould not create Simulated Data Tree in root file" << endl;
+		exit(-1);
+		}
+	fOutputTree->SetAutoSave(100000);
+	
  	/*
 	At this stage you can define what branches are written in the tree
 	*/
-	 
+		fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//----------------
 	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
-	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
-	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
 	//----------------
-	 fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
+
+
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
@@ -106,7 +109,6 @@ void RootManager::FillG4Hit(string volume, // Word representing the key used to 
 	/*			
 	Some other functions 
 	*/
-	
 	//Get the menmonic
 	string mnemonic = BuildMnemonic(volume,detector,crystal);
 	//Fill the event, calculate the full deposited energy etc...
@@ -116,7 +118,20 @@ void RootManager::FillG4Hit(string volume, // Word representing the key used to 
 
 
 
-void RootManager::SortEvent(void) {
+void RootManager::SortEvent(int eventNb) {
+
+	// clear the Fragment 
+		//fFragment->Clear();
+	
+	// clear the SpiceData object
+		//fSpiceData->Clear();
+		//fS3Data->Clear();
+	
+	// clear the PacesData object
+		fPacesData->Clear();
+
+	// clear the GriffinData object
+	//	fGriffinData->Clear();
 
 	// Sort Data from the map second element by getters and set them
 	std::map<string,RawG4Event>::iterator it;
@@ -124,14 +139,16 @@ void RootManager::SortEvent(void) {
 		
 		string system (it->first, 0, 3); // first three letters of the mnemonic (it->first) defines the system
 		//		cout << " RootManager::SortEvent -- system " << system << endl ; 
-		
 		//Fragment
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
 		//Spice
-		//if (system=="SPI") SetSpiceEvent(it->first, it->second.GetDetector(), it->second.GetCrystal());
-		//if (system=="SPE") SetS3Event(it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//Paces
-		if (system=="PAC") SetPacesEvent(it->first, it->second.GetDetector(), it->second.GetCrystal());
+		if (system=="PAC") {
+			SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+			fPacesData->Dump();
+			}
 		//Griffin
 		//Need to put Griffin key here
 		//New Detector
@@ -139,27 +156,14 @@ void RootManager::SortEvent(void) {
 		}
 
  
-// fill the tree by SpiceData
+// fill the tree 
 	fOutputTree->Fill();
- 
+
 // clear the map
 	fGeantEvent.clear();
-
-// clear the Fragment 
-	//fFragment->Clear();
 	
-// clear the SpiceData object
-	//fSpiceData->Clear();
-	//fS3Data->Clear();
-	
-// clear the PacesData object
-	fPacesData->Clear();
-
-// clear the GriffinData object
-//	fGriffinData->Clear();
-
-//cout << " RootManager::SortEvent(void) " << endl ; 
 }
+
 
 string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 
@@ -212,10 +216,11 @@ void RootManager::SetFragmentEvent(string mnemonic) {
 		fFragment->ChargeCal = energy ;
 	}
 
-void RootManager::SetSpiceEvent(string mnemonic, int Ring, int Seg) {	
+void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg) {	
 	// treat
 	fGeantEvent.at(mnemonic).SortPrimary();			
 
+	fSpiceData->SetEventNumber(eventNb) ;
 	// get primary
 	// Pdg	
 	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
@@ -258,10 +263,11 @@ void RootManager::SetSpiceEvent(string mnemonic, int Ring, int Seg) {
 }
 
 
-void RootManager::SetS3Event(string mnemonic, int Ring, int Seg) {	
+void RootManager::SetS3Event(int eventNb, string mnemonic, int Ring, int Seg) {	
 	// treat
 	fGeantEvent.at(mnemonic).SortPrimary();			
 
+	fS3Data->SetEventNumber(eventNb) ;
 	// get primary
 	// Pdg	
 	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
@@ -301,8 +307,9 @@ void RootManager::SetS3Event(string mnemonic, int Ring, int Seg) {
 }
 
 
-void RootManager::SetPacesEvent(string mnemonic, int Ring, int Seg)
+void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 {	
+
 	// treat
 	fGeantEvent.at(mnemonic).SortPrimary();	
     
@@ -313,6 +320,7 @@ void RootManager::SetPacesEvent(string mnemonic, int Ring, int Seg)
 	//fGeantEvent.at(mnemonic).ShowVectorsContent();   	
 	//G4cin.get(); 
 	  
+	fPacesData->SetEventNumber(eventNb) ;
 	// get primary
 	// Pdg	
 	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
@@ -343,8 +351,6 @@ void RootManager::SetPacesEvent(string mnemonic, int Ring, int Seg)
     //pos.Dump();
     //getchar();
 	fPacesData->SetPositionFirstHit(pos) ;	
-	
-	//fPacesData->Dump();	
 
 }
 
@@ -357,14 +363,6 @@ void RootManager::SetGriffinEvent(int Crystal)
 
 }
 
-
-// set event number
-void RootManager::SetEventNumber(int i ) {
-//fSpiceData->SetEventNumber(i) ;
-//fS3Data->SetEventNumber(i) ;
-fPacesData->SetEventNumber(i) ;
-//fGriffinData->SetEventNumber(i);
-}		
 
 
 void RootManager::Close()

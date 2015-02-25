@@ -44,7 +44,7 @@ void TPacesData::Clear() {
 
 void TPacesData::Dump() const
 {
-   cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event : " << fEventNumber <<  "XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+   cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event : " << fEventNumber <<  " XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 
    // DSSD
    // (Th,E)

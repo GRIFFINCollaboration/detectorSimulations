@@ -85,20 +85,17 @@ class RootManager   {
        
        //Build the mnemonic used in TRIUMF  	
 	   string BuildMnemonic(string volume, int detector, int crystal);
-
-       //Set event number  						 
-       void SetEventNumber(int) ;
        
        // Set the branches on the tree
        void SetTree();
        
        //SortEvent
-       void SortEvent();
+       void SortEvent(int eventNb);
        
        //Set the data in Spice writing Class
-       void SetSpiceEvent(string mnemonic, int ring, int seg);
-       void SetS3Event(string mnemonic, int ring, int seg);
-       void SetPacesEvent(string mnemonic, int ring, int seg);
+       void SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg);
+       void SetS3Event(int eventNb, string mnemonic, int Ring, int Seg);
+       void SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg);
 
        void SetGriffinEvent(int key);
        void SetFragmentEvent(string key);

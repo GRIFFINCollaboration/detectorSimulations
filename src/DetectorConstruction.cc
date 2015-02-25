@@ -753,16 +753,17 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
     } // end for(int ring = 0; ring<nRings; ring++)
 }
 
-void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
+void DetectorConstruction::AddDetectionSystemS3(G4int nRings = 24, G4double posX = 0 , G4double posY = 0 , G4int posZ = 21)
 {
 	DetectionSystemS3* pS3 = new DetectionSystemS3();
 	pS3->Build();
+
+	G4int NumberSeg = 32; // Segments in Phi
+	G4int detID=0;
+	G4ThreeVector pos(posX*mm,posY*mm,posZ*mm); 
+	pS3->PlaceGuardRing(logicWorld, pos);
+	pS3->PlaceS3Mount(logicWorld, pos);
 	
-  G4int NumberSeg = 32; // Segments in Phi
-  G4int detID=0;
-  G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
-  G4ThreeVector pos(0,0,S3DetectorDistance); 
-  pS3->PlaceGuardRing(logicWorld, pos);
   for(int ring = 0; ring<nRings; ring++)
 	{
 		for(int Seg=0; Seg<NumberSeg; Seg++)

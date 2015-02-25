@@ -39,6 +39,8 @@
 #include "globals.hh"
 
 #define AL_COL 0.5,0.5,0.5
+#define PEEK_COL 0.5, 0.5, 0.0
+
 
 class DetectionSystemS3
 {
@@ -52,26 +54,25 @@ public:
 private:
   G4AssemblyVolume* assembly;
 	G4AssemblyVolume* assemblyS3Ring[24];
+
+	G4VPhysicalVolume* s3_mount_phys;
   
-public:
-  G4int Build();
-  G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,
-		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
-  G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
-  
+
 private:
   G4ThreeVector GetDirectionXYZ(G4double theta, G4double phi);
   
   G4LogicalVolume* S3InnerGuardRing_log;
   G4LogicalVolume* S3OuterGuardRing_log;
   G4LogicalVolume* siDetS3Ring_log[24];
-  
+  G4LogicalVolume* s3_mount_log; 
+   
   //--------------------------------------------------------//
   // SPICE physical properties
   // OBS: crystal properties are public, others are private
   //--------------------------------------------------------//
 private:
   G4String wafer_material;
+  G4String s3_mount_material; 
   
   //-----------------------------//
   // parameters for the annular  //
@@ -90,7 +91,23 @@ public:
 private:
   G4double S3DetGuardRingInnerDiameter;
   G4double S3DetGuardRingOuterDiameter;
-   
+
+  // -------------------------
+  // Dimensions of Si-CD Mount
+  // -------------------------
+  G4double s3_mount_length;
+  G4double s3_mount_thickness;
+  G4double s3_active_radius;
+  G4double s3_mount_chamfer;
+  G4double s3_mount_centre_to_chamfer;
+  G4double s3_mount_angular_offset;
+  G4double s3_mount_z_offset;
+  
+  // -------------------------
+  // Copy number
+  // -------------------------
+  G4int s3MountCopyNumber;
+       
     //------------------------------------------------//
     // internal methods in Build()
     //------------------------------------------------//
@@ -98,8 +115,18 @@ private:
   G4int BuildSiliconWafer(G4int ringID);
   G4int BuildInnerGuardRing();
   G4int BuildOuterGuardRing();
-  
-  G4Tubs*             BuildCrystal(G4int myRingID);
+  void BuildS3Mount();  
+
+	   
+  G4Tubs*  BuildCrystal(G4int myRingID);
+ 
+ public:
+  G4int Build();
+  G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,
+		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
+  G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
+  void  PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move); 
+
 };
 
 #endif

@@ -96,7 +96,6 @@ private:
   G4LogicalVolume* mclamp_chamber_log;
   G4LogicalVolume* mclamp_shield_log;
   G4LogicalVolume* electro_box_log;
-  G4LogicalVolume* s3_mount_log;
   G4LogicalVolume* shield_cover_log;
   G4LogicalVolume* detector_mount_log;
   G4LogicalVolume* annular_clamp_log;
@@ -130,7 +129,6 @@ private:
   G4VPhysicalVolume* mclamp_chamber_phys;
   G4VPhysicalVolume* mclamp_shield_phys;
   G4VPhysicalVolume* electro_box_phys;
-  G4VPhysicalVolume* s3_mount_phys;
   G4VPhysicalVolume* shield_cover_phys;
   G4VPhysicalVolume* detector_mount_phys;
   G4VPhysicalVolume* annular_clamp_phys;
@@ -166,7 +164,6 @@ private:
   G4String gear_plate_material;
   G4String target_mount_plate_material;
   G4String electro_box_material;
-  G4String s3_mount_material;
   G4String small_bolt_material;
   G4String large_bolt_material;
   G4String shield_cover_material;
@@ -324,18 +321,7 @@ private:
   G4double electrobox_lip_length;
   G4double electrobox_lip_inner_radius;
   G4double electrobox_z_offset;
-  
-  // -------------------------
-  // Dimensions of Si-CD Mount
-  // -------------------------
-  G4double s3_mount_length;
-  G4double s3_mount_thickness;
-  G4double s3_active_radius;
-  G4double s3_mount_chamfer;
-  G4double s3_mount_centre_to_chamfer;
-  G4double s3_mount_angular_offset;
-  G4double s3_mount_z_offset;
-  
+ 
   // ------------------------------
   // Dimensions of Plastic Coatings
   // ------------------------------
@@ -385,7 +371,6 @@ private:
   G4int targetMountCopyNumber;
   G4int gearStickCopyNumber;
   G4int electroBoxCopyNumber;
-  G4int s3MountCopyNumber;
   G4int photonShieldClampBoltCopyNumber;
   G4int shieldCoveringCopyNumber;
   G4int magnetCoveringCopyNumber;
@@ -415,7 +400,6 @@ private:
   void BuildMagnetClampChamber();
   void BuildMagnetClampPhotonShield();
   void BuildElectroBox();
-  void BuildS3Mount();
   void BuildShieldCovering();
   void BuildDetectorMount();
   void BuildAnnularClamps();
@@ -436,7 +420,6 @@ private:
   void PlaceMagnetClampChamber(G4int);
   void PlaceMagnetClampPhotonShield(G4int);
   void PlaceElectroBox();
-  void PlaceS3Mount();
   void PlaceShieldCovering();
   void PlaceDetectorMount();
   void PlaceAnnularClamps();
