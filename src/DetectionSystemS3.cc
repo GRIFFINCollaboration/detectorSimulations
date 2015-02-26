@@ -38,7 +38,7 @@ DetectionSystemS3::DetectionSystemS3() :
     //-----------------------------//
     this->S3DetCrystalOuterDiameter = 70.*mm;
     this->S3DetCrystalInnerDiameter = 22.*mm;
-    this->S3DetCrystalThickness = .15*mm;
+    this->S3DetCrystalThickness = 1.0*mm; // .15*mm
     this->S3DetRadialSegments = 24.;
     this->S3DetPhiSegments = 32.;
 
@@ -57,8 +57,6 @@ DetectionSystemS3::DetectionSystemS3() :
   this->s3_active_radius = 35*mm;
   this->s3_mount_chamfer = 28.284*mm;
   this->s3_mount_centre_to_chamfer = 70.711*mm;
-  this->s3_mount_angular_offset = 20*deg;
-  this->s3_mount_z_offset = 21*mm;
   
 }
 
@@ -96,13 +94,14 @@ G4int DetectionSystemS3::Build()
 //---------------------------------------------------------//
 // "place" function called in DetectorMessenger            //
 // if detector is added                                    //
-//---------------------------------------------------------//
-G4int DetectionSystemS3::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4int ringNumber, G4int Seg, G4int detectorNumber)
+//---------------------------------------------------------//logicWorld, pos, rotate , ring, Seg, detID
+G4int DetectionSystemS3::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,  G4double angle_offset, G4int ringNumber, G4int Seg, G4int detectorNumber)
 {
-  G4RotationMatrix* rotate = new G4RotationMatrix;
   G4int NumberSeg = (G4int)this->S3DetPhiSegments;
-  G4double angle = (360./NumberSeg)*(Seg-0.5)*deg;
+  G4RotationMatrix* rotate = new G4RotationMatrix;
+  G4double angle = ( (360./NumberSeg)*(Seg-0.5) + angle_offset )*deg  ;
   rotate->rotateZ(angle);
+  
   assemblyS3Ring[ringNumber]->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
 
   return 1;
@@ -233,16 +232,14 @@ G4int DetectionSystemS3::BuildOuterGuardRing()
 }
 
 
-  void DetectionSystemS3::PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move)
+  void DetectionSystemS3::PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4double angular_offset)
 {
-  
-  G4double z_offset = this->s3_mount_z_offset + this->s3_mount_thickness/2. /*+ this->frontDomeOffset (this offset was used historically for visu checking)*/;
-  G4ThreeVector move_offset(0, 0, z_offset);
-  //move = move + move_offset ;
-  
-  G4double angular_offset = this->s3_mount_angular_offset;
-  G4RotationMatrix* rotate = new G4RotationMatrix(angular_offset, 0, 0);
-  
+
+  G4RotationMatrix* rotate = new G4RotationMatrix(angular_offset, 0, 0);  
+  G4double z_offset = this->s3_mount_thickness/2. /*+ this->frontDomeOffset (this offset was used historically for visu checking as far as I understood)*/;
+  G4ThreeVector move_offset(0, 0, -z_offset);
+  move = move + move_offset ;
+    
   s3_mount_phys = new G4PVPlacement(rotate, move, s3_mount_log,
 				    "s3_mount", exp_hall_log, false, 0);
   

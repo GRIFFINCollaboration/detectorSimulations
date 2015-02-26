@@ -277,7 +277,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   
   AddDetectionSystemS3Cmd = new G4UIcommand("/DetSys/det/addS3",this);
   AddDetectionSystemS3Cmd->SetGuidance("Add Detection System S3 [Nb of rings, xyz position of the center in mm]");
-  G4UIparameter *S3parameter1,*S3parameter2, *S3parameter3, *S3parameter4;
+  G4UIparameter *S3parameter1,*S3parameter2, *S3parameter3, *S3parameter4, *S3parameter5;
   S3parameter1 = new G4UIparameter ("rings", 'i', true);
   AddDetectionSystemS3Cmd->SetParameter(S3parameter1);
   S3parameter2 = new G4UIparameter ("posX", 'd', true);
@@ -286,6 +286,8 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   AddDetectionSystemS3Cmd->SetParameter(S3parameter3);
   S3parameter4 = new G4UIparameter ("posZ", 'd', true);
   AddDetectionSystemS3Cmd->SetParameter(S3parameter4);
+  S3parameter5 = new G4UIparameter ("AngleOffset", 'd', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter5);
   AddDetectionSystemS3Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   AddDetectionSystemPacesCmd = new G4UIcmdWithAnInteger("/DetSys/det/addPaces",this);
@@ -510,11 +512,11 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }
   if( command == AddDetectionSystemS3Cmd ) { 
     G4int rings;
-    G4double x,y,z;
+    G4double x,y,z, angle_offset;
     const char* s = newValue;
     std::istringstream is ((char*)s);
-    is>>rings>>x>>y>>z;
-    Detector->AddDetectionSystemS3(rings,x,y,z); // values in mm  
+    is>>rings>>x>>y>>z>>angle_offset;
+    Detector->AddDetectionSystemS3(rings,x,y,z,angle_offset); // values in mm  
   }
   if( command == AddDetectionSystemPacesCmd ) {
     Detector->AddDetectionSystemPaces(AddDetectionSystemPacesCmd->GetNewIntValue(newValue));

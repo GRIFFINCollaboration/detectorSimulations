@@ -137,7 +137,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     
     void SetSpiceResolutionVariables(G4double intercept, G4double gain);
     void AddDetectionSystemSpice(G4int nRings);
-    void AddDetectionSystemS3(G4int nRings, G4double posX, G4double posY, G4int posZ);
+    void AddDetectionSystemS3(G4int nRings, G4double posX, G4double posY, G4int posZ, G4double AngleOffset);
 
     void UseTIGRESSPositions( G4bool input )                  {useTigressPositions = input;};
   private:

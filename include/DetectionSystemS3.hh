@@ -54,7 +54,6 @@ public:
 private:
   G4AssemblyVolume* assembly;
 	G4AssemblyVolume* assemblyS3Ring[24];
-
 	G4VPhysicalVolume* s3_mount_phys;
   
 
@@ -100,8 +99,6 @@ private:
   G4double s3_active_radius;
   G4double s3_mount_chamfer;
   G4double s3_mount_centre_to_chamfer;
-  G4double s3_mount_angular_offset;
-  G4double s3_mount_z_offset;
   
   // -------------------------
   // Copy number
@@ -121,11 +118,10 @@ private:
   G4Tubs*  BuildCrystal(G4int myRingID);
  
  public:
-  G4int Build();
-  G4int PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,
-		      G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
+  G4int Build(); 
+  G4int PlaceDetector( G4LogicalVolume* exp_hall_log, G4ThreeVector move,  G4double angle_offset, G4int ringNumber, G4int nRadSeg, G4int detectorNumber);
   G4int PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4ThreeVector move);
-  void  PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move); 
+  void  PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move,  G4double angle_offset); 
 
 };
 
