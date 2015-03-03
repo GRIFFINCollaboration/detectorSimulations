@@ -30,11 +30,13 @@ RootManager::RootManager()
 
 	// Create objects to hold the data
 	//spice event
-	fSpiceData = new TSpiceData();
+	//fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
+	//
+	//fDetectorSpice = new DetectionSystemSpice();
 
     //Paces event 
-	fPacesData = new TPacesData();
+	//fPacesData = new TPacesData();
 	
 	//GRIFFIN Event
 	//fGriffinData = new TGriffinData();
@@ -67,15 +69,12 @@ void RootManager::SetTree(){
  	/*
 	At this stage you can define what branches are written in the tree
 	*/
-		fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
 	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//----------------
 	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
-	fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
-	//----------------
-
-
+	//fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
@@ -121,10 +120,10 @@ void RootManager::SortEvent(int eventNb) {
 	
 	// clear the SpiceData object
 		//fSpiceData->Clear();
-		//fS3Data->Clear();
+		fS3Data->Clear();
 	
 	// clear the PacesData object
-		fPacesData->Clear();
+		//fPacesData->Clear();
 
 	// clear the GriffinData object
 	//	fGriffinData->Clear();
@@ -139,12 +138,13 @@ void RootManager::SortEvent(int eventNb) {
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
 		//Spice
 		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
-		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//Paces
-		if (system=="PAC") {
-			SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
-			fPacesData->Dump();
-			}
+		//if (system=="PAC") {
+		//	SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//	fPacesData->Dump();
+		//	}
+		
 		//Griffin
 		//Need to put Griffin key here
 		//New Detector
