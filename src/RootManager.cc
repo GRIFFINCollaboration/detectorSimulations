@@ -2,6 +2,7 @@
 
 #include "RootManager.hh"
 
+double RootManager::SpiceResolution[2];
 
 RootManager *RootManager::fRootManager = NULL;
 
@@ -31,8 +32,6 @@ RootManager::RootManager()
 	//spice event
 	fSpiceData = new TSpiceData();
 	fS3Data = new TS3Data();
-	//
-	fDetectorSpice = new DetectionSystemSpice();
 
     //Paces event 
 	fPacesData = new TPacesData();
@@ -45,9 +44,6 @@ RootManager::RootManager()
 	
 	//histograms 
 	//fHist = new TH1F("h","h",500,0,1800);
-
-
-
 
 	//Attach detector branches to the tree
 	SetTree();
@@ -242,9 +238,10 @@ void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg)
 
 	// get the energy 			
 	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
-	double applied_resolution = fDetectorSpice->ApplySpiceResolution(energy);
+	double stDev = SpiceResolution[1] * energy + SpiceResolution[0];
+	double applied_resolution = CLHEP::RandGauss::shoot(energy, stDev); 
 	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
-
+	
 	// fill the SpiceData object
 	// (Th,E)
 	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
