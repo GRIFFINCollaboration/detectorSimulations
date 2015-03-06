@@ -31,9 +31,9 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 
 # Specify Shared libraries
 #-------------------------
-#SHARELIB      = libDetector.so libNewData.so libNew2Data.so
+#SHARELIB      = libDetector.so libNewData.so libNew2Data.so (example)
 SHARELIB      = libSpiceData.so  libS3Data.so libPacesData.so libGriffinData.so\
-				libFragment.so  libTigFragment.so
+				libHistoryData.so  libFragment.so  libTigFragment.so
 
 all:            $(SHARELIB)
 
@@ -67,6 +67,14 @@ libPacesData.so:	TPacesData.o   TPacesDataDict.o
 
 TPacesDataDict.cpp:	TPacesData.h
 			rootcint -f $@ -c $^
+
+# H I S T O R Y
+libHistoryData.so:	THistoryData.o   THistoryDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+THistoryDataDict.cpp:	THistoryData.h
+			rootcint -f $@ -c $^
+
 
 # F R A G M E N T 	(G R S I S P O O N) 
 libFragment.so:	TFragment.o   TFragmentDict.o
@@ -107,6 +115,7 @@ TSpiceData.o:	TSpiceData.cpp		TSpiceData.h
 TS3Data.o:		TS3Data.cpp			TS3Data.h
 TPacesData.o:	TPacesData.cpp		TPacesData.h
 TGriffinData.o:	TGriffinData.cpp	TGriffinData.h
+THistoryData.o:	THistoryData.cpp		THistoryData.h
 TFragment.o:		TFragment.cpp		TFragment.h
 TTigFragment.o:		TTigFragment.cpp	TTigFragment.h
 

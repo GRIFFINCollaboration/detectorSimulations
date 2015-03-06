@@ -83,7 +83,6 @@ TrackInformation::~TrackInformation(){;}
 
 void TrackInformation::Print() const
 {
-    G4cout	<< " --- TRACK INFORMATION --- " <<  G4endl  ; 
     G4cout	<< " at " << originalPosition << G4endl  
     		<< "Original parent ID " << originalParentID  << G4endl
 			<< "Original track ID " << originalTrackID  << G4endl
