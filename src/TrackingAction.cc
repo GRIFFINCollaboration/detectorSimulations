@@ -19,33 +19,34 @@ void TrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     TrackInformation* anInfo = new TrackInformation(aTrack);
     G4Track* theTrack = (G4Track*)aTrack;
     theTrack->SetUserInformation(anInfo);
-    
   }
   
     // Mhd 02 May 2013 
-    if(aTrack->GetParentID()!=0 /*&& aTrack->GetUserInformation()!=0*/) // I think we dont need the second condition
-  {
+    if(aTrack->GetParentID()!=0) {
   
-	TrackInformation* oldInfo = (TrackInformation*)aTrack->GetUserInformation();
-	TrackInformation* newInfo = oldInfo;
-	G4Track* theTrack = (G4Track*)aTrack;
+		TrackInformation* oldInfo = (TrackInformation*)aTrack->GetUserInformation();
+		TrackInformation* newInfo = oldInfo;
+		G4Track* theTrack = (G4Track*)aTrack;
+
+		//Set (append) the Pdg of the ancestor particle
+		newInfo->SetParentTrackID(newInfo->GetCurrentTrackID());
+		
+		//Set (append) the Pdg of the ancestor particle
+		newInfo->SetCurrentTrackID(theTrack->GetTrackID());
+			
+		//Set (append) the Pdg of the ancestor particle
+		newInfo->SetAncestorsPdgElement(theTrack->GetDefinition()->GetPDGEncoding());
+		
+		//Set (append) the Birth volume of the ancestor particle 
+	  	if( theTrack->GetNextVolume() != 0 ) 	{
+		newInfo->SetAncestorsBirthVolumeElement(theTrack->GetNextVolume()->GetName());
+		} 
+		else {
+		newInfo->SetAncestorsBirthVolumeElement("OutOfWorld");
+		}
 	
-	//Set (append) the Pdg of the ancestor particle
-    newInfo->SetAncestorsPdgElement(theTrack->GetDefinition()->GetPDGEncoding());
-    
-    //Set (append) the Birth volume of the ancestor particle 
-  if( theTrack->GetNextVolume() != 0 ) 
-	{
-	newInfo->SetAncestorsBirthVolumeElement(theTrack->GetNextVolume()->GetName());
-	} 
-else 
-	{
-	newInfo->SetAncestorsBirthVolumeElement("OutOfWorld");
-	}
-	
-	// set (append) the new user information 
-    theTrack->SetUserInformation(newInfo);
-    
+		// set (append) the new user information 
+    	theTrack->SetUserInformation(newInfo);
   }
   
   
@@ -92,5 +93,6 @@ else
       }
     }
   }
+  
 }
 

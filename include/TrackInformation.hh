@@ -29,7 +29,10 @@ class TrackInformation : public G4VUserTrackInformation
     void Print() const;
 
   private:
+    G4int                 originalParentID;
     G4int                 originalTrackID;
+    G4int                 currentTrackID;
+    G4int                 parentTrackID;
     G4int				  originalPdg;
     G4ThreeVector         originalPosition;
     G4ThreeVector         originalMomentum;
@@ -42,7 +45,10 @@ class TrackInformation : public G4VUserTrackInformation
         
   public:
   //Getters
+    inline G4int GetOriginalParentID() const {return originalParentID;}
     inline G4int GetOriginalTrackID() const {return originalTrackID;}
+    inline G4int GetCurrentTrackID() const {return currentTrackID;}
+    inline G4int GetParentTrackID() const {return parentTrackID;}
     inline G4int GetOriginalPdg() const {return originalPdg;}
     inline G4ThreeVector GetOriginalPosition() const {return originalPosition;}
     inline G4ThreeVector GetOriginalMomentum() const {return originalMomentum;}
@@ -51,11 +57,15 @@ class TrackInformation : public G4VUserTrackInformation
     inline vector<G4String> GetAncestorsBirthVolume() const {return AncestorsBirthVolume;}
     inline vector<G4String> GetAncestorsDeathVolume() const {return AncestorsDeathVolume;}
     inline vector<G4int>    GetAncestorsPdg()         const {return AncestorsPdg;}
-            
+    inline G4int GetAncestorsBirthVolumeSize() const {return AncestorsBirthVolume.size();}
+    inline G4int GetAncestorsDeathVolumeSize() const {return AncestorsDeathVolume.size();}
+    inline G4int GetAncestorsPdgSize()         const {return AncestorsPdg.size();}            
     //Setters
-    void   SetAncestorsBirthVolumeElement(G4String ans_birth_vol) { AncestorsBirthVolume.push_back(ans_birth_vol);}
-	void   SetAncestorsDeathVolumeElement(G4String ans_death_vol) { AncestorsDeathVolume.push_back(ans_death_vol);} 
-	void   SetAncestorsPdgElement(G4int ans_pdg) { AncestorsPdg.push_back(ans_pdg);} 
+    inline void   SetCurrentTrackID( int id ) { currentTrackID = id ;} 
+    inline void   SetParentTrackID( int id ) { parentTrackID = id ;} 
+    inline void   SetAncestorsBirthVolumeElement(G4String ans_birth_vol) { AncestorsBirthVolume.push_back(ans_birth_vol);}
+	inline void   SetAncestorsDeathVolumeElement(G4String ans_death_vol) { AncestorsDeathVolume.push_back(ans_death_vol);} 
+	inline void   SetAncestorsPdgElement(G4int ans_pdg) { AncestorsPdg.push_back(ans_pdg);} 
 };
 
 extern G4Allocator<TrackInformation> aTrackInformationAllocator;

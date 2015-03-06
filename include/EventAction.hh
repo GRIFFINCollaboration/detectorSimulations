@@ -31,6 +31,10 @@
 #include "globals.hh"
 
 #include "HistoManager.hh"
+#include "TrackInformation.hh"
+
+//c++
+#include <vector>
 
 class RunAction;
 class HistoManager;
@@ -44,7 +48,9 @@ static const int NUMSTEPVARS = 16;
 
 class EventAction : public G4UserEventAction
 {
+
 public:
+
   EventAction(RunAction*, HistoManager*);
   virtual ~EventAction();
 
@@ -52,59 +58,12 @@ public:
   void  EndOfEventAction(const G4Event*);
 
   G4int GetEventNumber(){return evtNb;};
-
-
+  
   void AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
   						G4double cryNumber, G4double detNumber, 
   						G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, 
   						G4double originDirectionX, G4double originDirectionY, G4double originDirectionZ, 
-  						G4double originEnergy, G4int originPdg, G4int originID, G4int trackID) {
-  						/*
-						cout <<  "eventNumber " << eventNumber << endl  
-						 	 <<  "step Number " << stepNumber  << endl 
-						 	 <<  "volume " << volume  << endl  
-						 	 <<  "cryNumber " << cryNumber  << endl 
-						 	 <<  "detNumber " << detNumber  << endl  
-						 	 <<  "depEnergy " << depEnergy  << endl 
-						 	 <<  "posx " << posx  << endl  
-						 	 <<  "posy " << posy  << endl 
-						 	 <<  "posz " << posz  << endl
-						 	 <<  "time " << time  << endl  
-						 	 <<  "originDirectionX " << originDirectionX  << endl 
-						 	 <<  "originDirectionY " << originDirectionY  << endl  
-						 	 <<  "originDirectionZ " << originDirectionZ  << endl 
-						 	 <<  "originEnergy " << originEnergy  << endl 
-						 	 <<  "originPdg " << originPdg  << endl  
-						 	 <<  "originID " << originID  << endl 
-						 	 <<  "trackID " << trackID  << endl ;
-						*/
-					  if(histoManager->GetStepTrackerBool())   {
-						  	stepTracker[0][stepIndex] = eventNumber; 
-						  	stepTracker[1][stepIndex] = stepNumber; 
-						  	stepTracker[2][stepIndex] = cryNumber; 
-						  	stepTracker[3][stepIndex] = detNumber; 
-						  	stepTracker[4][stepIndex] = depEnergy; 
-						  	stepTracker[5][stepIndex] = posx; 
-						  	stepTracker[6][stepIndex] = posy; 
-						  	stepTracker[7][stepIndex] = posz; 
-						  	stepTracker[8][stepIndex] = time; 
-						  	stepTracker[9][stepIndex] = originDirectionX;
-							stepTracker[10][stepIndex] = originDirectionY;
-							stepTracker[11][stepIndex] = originDirectionZ;
-						  	stepTracker[12][stepIndex] = originEnergy;
-						  	stepTracker[13][stepIndex] = originPdg;
-						  	stepTracker[14][stepIndex] = originID;
-						  	stepTracker[15][stepIndex] = trackID;
-      
-						  	stepVolume[stepIndex] = volume ; 
-						  		
-						  	stepIndex++; 
-						  	if(stepIndex == MAXSTEPS) {
-						  		G4cout << "\n ----> error 13423549 \n" << G4endl; 
-						  		exit(1);
-						  		}
-						  }; 
- 	};
+  						G4double originEnergy, G4int originPdg, G4int originID, G4int trackID) ;
 
   // particle types
   void AddParticleType(G4int index) {particleTypes[index] += 1;};
@@ -134,6 +93,7 @@ public:
   void AddS3CrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
   void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
 
+  void SetPrimaryInfo(TrackInformation* info);
 
 
 private:
@@ -162,6 +122,7 @@ private:
     G4double stepTracker[NUMSTEPVARS][MAXSTEPS];
     G4String stepVolume[MAXSTEPS]; // volume at each step 
     G4int    stepIndex;
+    vector <TrackInformation*> PrimaryInfo; 
 
 	// Particle types in simulation
 	G4int particleTypes[NUMPARTICLETYPES];

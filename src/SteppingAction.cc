@@ -102,9 +102,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4double ekin = aStep->GetPreStepPoint()->GetKineticEnergy();
 
 	G4Track* theTrack = aStep->GetTrack();
-  G4double stepl = 0.;
-  if (theTrack->GetDefinition()->GetPDGCharge() != 0.)
-    stepl = aStep->GetStepLength();
+	G4double stepl = 0.;
+	if (theTrack->GetDefinition()->GetPDGCharge() != 0.)
+		stepl = aStep->GetStepLength();
 
   // Track particle type in EVERY step
   //G4cout << "Particle name = " << aStep->GetTrack()->GetParticleDefinition()->GetParticleName() << G4endl;
@@ -117,9 +117,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   eventaction->AddParticleType(particleType);
   evntNb =  eventaction->GetEventNumber();
-  //G4cout << "Found Edep = " << edep/keV << " keV in " << volname << G4endl;
-  // example volname
-  //volname = av_1_impr_6_sodium_iodide_crystal_block_log_pv_0
   
   // Get initial momentum direction & energy of particle
   G4int trackID = theTrack->GetTrackID();
@@ -135,13 +132,17 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   // Get the track (extra) information , mainly about the primary particle, but could be used for other stuff
   TrackInformation* info = (TrackInformation*)(aStep->GetTrack()->GetUserInformation()); 
+  //cout << " Info in stepping action " << endl ; 
   //info->Print(); // for inspection
+  //cout << " ----------------------- " << endl ; 
   // The Origin corresponds to the information about the primary particle (exclusively from the source)
+  eventaction->SetPrimaryInfo( info ) ; 
+  
   G4int 	OriginID = info->GetOriginalTrackID() ;  
   G4int 	OriginPdg = info->GetOriginalPdg() ;     
   G4double 	OriginEnergy = info->GetOriginalEnergy() ;  // Kinetic Energy                                     
   G4ThreeVector OriginMoment = info->GetOriginalMomentum() ;    
-   
+  
   G4StepPoint* point1 = aStep->GetPreStepPoint();
   G4StepPoint* point2 = aStep->GetPostStepPoint();
 
@@ -150,8 +151,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   G4double time1 = point1->GetGlobalTime();
   G4double time2 = point2->GetGlobalTime();
-
-			
 
   size_t found;
   G4String search;
@@ -283,7 +282,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
 	OriginEnergy, OriginPdg, OriginID, trackID);
   }
-
+ 
 }
 
 void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)
@@ -358,7 +357,6 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    
    dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
    det = atoi(dummy.c_str()); // ring 
-
 
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;

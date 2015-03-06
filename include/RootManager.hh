@@ -90,6 +90,7 @@ class RootManager   {
        void SetS3Event(int eventNb, string mnemonic, int Ring, int Seg);
        void SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg);
 
+       
        void SetGriffinEvent(int key);
        void SetFragmentEvent(string key);
        

@@ -7,6 +7,8 @@ TrackInformation::TrackInformation()
   : G4VUserTrackInformation()
 {
     originalTrackID = 0;
+    currentTrackID = 0;
+    parentTrackID = 0;
     originalPdg = 0;
     originalPosition = G4ThreeVector(0.,0.,0.);
     originalMomentum = G4ThreeVector(0.,0.,0.);
@@ -23,7 +25,10 @@ TrackInformation::TrackInformation(const G4Track* aTrack)
 {
 
     //G4cout<< " this is a track with a parent ID = " <<aTrack->GetParentID()<<G4endl;
+    originalParentID = aTrack->GetParentID();
     originalTrackID = aTrack->GetTrackID();
+    currentTrackID = aTrack->GetTrackID(); 
+    parentTrackID = aTrack->GetParentID();
     originalPdg = aTrack->GetDefinition()->GetPDGEncoding();
     originalPosition = aTrack->GetPosition();
     originalMomentum = aTrack->GetMomentum();
@@ -56,7 +61,10 @@ TrackInformation::TrackInformation(const G4Track* aTrack)
 TrackInformation::TrackInformation(const TrackInformation* aTrackInfo)
   : G4VUserTrackInformation()
 {
+    originalParentID = aTrackInfo->originalParentID;
     originalTrackID = aTrackInfo->originalTrackID;
+    currentTrackID = aTrackInfo->currentTrackID;
+    parentTrackID = aTrackInfo->parentTrackID;
     originalPdg = aTrackInfo->originalPdg;
     originalPosition = aTrackInfo->originalPosition;
     originalMomentum = aTrackInfo->originalMomentum;
@@ -75,9 +83,12 @@ TrackInformation::~TrackInformation(){;}
 
 void TrackInformation::Print() const
 {
-    G4cout
-			<< " at " << originalPosition
+    G4cout	<< " --- TRACK INFORMATION --- " <<  G4endl  ; 
+    G4cout	<< " at " << originalPosition << G4endl  
+    		<< "Original parent ID " << originalParentID  << G4endl
 			<< "Original track ID " << originalTrackID  << G4endl
+			<< "Parent track ID " << parentTrackID  << G4endl
+			<< "Current track ID " << currentTrackID  << G4endl
 			<< "Original track Pdg " << originalPdg << G4endl
 			<< "Original track Energy " << originalEnergy << G4endl
 			<< "Original track Time " << originalTime << G4endl ;
@@ -94,6 +105,6 @@ void TrackInformation::Print() const
      for(unsigned i = 0 ; i < AncestorsPdg.size() ; i++ )
     G4cout      
      << " AncestorsPdg at " <<i  <<" : "<< AncestorsPdg.at(i) << G4endl;
-          
+         
 }
 
