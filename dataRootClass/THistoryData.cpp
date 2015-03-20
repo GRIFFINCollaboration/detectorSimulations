@@ -21,13 +21,13 @@ using namespace std;
 ClassImp(THistoryData)
 
 THistoryData::THistoryData() {
-   Clear();
+   ClearVariables();
 }
 
 THistoryData::~THistoryData() {}
 
 
-void THistoryData::Clear(){
+void THistoryData::ClearVariables(){
 	fHistoryPrimaryEnergy.clear(); 
 	fHistoryPrimaryPdg.clear(); 
 	fHistoryCurrentPdg.clear(); 
@@ -40,7 +40,7 @@ void THistoryData::Clear(){
 
 void THistoryData::Dump() const
 {
-   cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+   cout << "XXXXXXXXXXXXXXXXXXXXXXXX HISTORY XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 
    cout << "History_Mult = " <<fHistoryPrimaryEnergy.size() << endl;
    

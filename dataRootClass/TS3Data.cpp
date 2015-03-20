@@ -22,14 +22,14 @@ using namespace std;
 ClassImp(TS3Data)
 
 TS3Data::TS3Data() {
-   Clear();
+   ClearVariables();
 }
 
 TS3Data::~TS3Data() {
 }
 
 
-void TS3Data::Clear() {
+void TS3Data::ClearVariables() {
    // DSSD
    // (Th,E)
    fS3_Theta_DetNbr.clear();

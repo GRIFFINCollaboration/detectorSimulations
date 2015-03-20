@@ -1,6 +1,6 @@
 #include "TTigFragment.h"
 
-ClassImp(TTigFragment);
+ClassImp(TTigFragment)
 
 TTigFragment::TTigFragment()
 {

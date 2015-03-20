@@ -20,14 +20,14 @@ using namespace std;
 ClassImp(TPacesData)
 
 TPacesData::TPacesData() {
-   Clear();
+   ClearVariables();
 }
 
 TPacesData::~TPacesData() {
 }
 
 
-void TPacesData::Clear() {
+void TPacesData::ClearVariables() {
  
    fPaces_DetNbr.clear();
    fPaces_Energy.clear();

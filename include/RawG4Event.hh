@@ -14,7 +14,7 @@ using namespace std;
 
 //g4              
 #include "globals.hh"             
-#include "TrackInformation.hh"
+
 
 class RawG4Event
 {
@@ -34,9 +34,6 @@ vector<Double_t> 	fHCPrimaryEnergy; // usefull for sorting and for analysis
 vector<TVector3> 	fHCPrimaryMomentum; // Momentum of the particle,
 vector<Double_t> 	fHCPrimaryTheta; // Angle theta with respect to the beam of the particle,
 vector<Double_t> 	fHCPrimaryPhi; // Angle Phi the particle,
-
-// History of the LAST particles in a cascade of events (Whether a part or all of this cascade ended in the detector or )
-vector <TrackInformation*> PrimaryInfo; 
 
 // Sorted vectors
 vector<Int_t>    	fDetectedPrimaryParticleID ; // If we have several primary particle ending in the same pad
@@ -80,7 +77,7 @@ void FillVectors(int pdg, // particle pdg
 				 double PrimEnergy,//original(primary) energy
 				 double Mx, double My, double Mz); // primary particle momentum vector
 
-//inline void FillPrimaryInfo( vector <TrackInformation*> info) { PrimaryInfo = info ; }
+
 
 /*************************
       G E T T E R S 

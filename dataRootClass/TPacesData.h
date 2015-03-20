@@ -42,7 +42,7 @@ class TPacesData : public TObject {
    TPacesData();
    virtual ~TPacesData();
 
-   void   Clear();
+   void   ClearVariables();
    void   Dump() const;
 
    /////////////////////           GETTERS           ////////////////////////

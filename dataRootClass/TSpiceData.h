@@ -53,7 +53,7 @@ class TSpiceData : public TObject {
    TSpiceData();
    virtual ~TSpiceData();
 
-   void   Clear();
+   void   ClearVariables();
    void   Dump() const;
 
 

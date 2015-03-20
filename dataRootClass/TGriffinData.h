@@ -40,14 +40,14 @@ class TGriffinData : public TObject {
         TGriffinData();
         virtual ~TGriffinData();
 
-        void   Clear();
+        void   ClearVariables();
         void   Dump() const;
 
 
 
         /////////////////////           GETTERS           ////////////////////////
         Int_t   GetGriffinEDetectorNbr(Int_t i)   {return fDetNbr.at(i);}
-        Int_t   GetGriffinEMult(Int_t i)        {return fDetNbr.size();}
+        Int_t   GetGriffinEMult(Int_t)        {return fDetNbr.size();}
 
         TVector3 GetPositionFirstHit(Int_t i)  {return fPositionFirstHit.at(i);}    
         Int_t GetEventNumber(void)             {return fEventNumber;}

@@ -81,21 +81,15 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 
   G4int particleType = 0;
-  G4int volNameOver9;
   G4int evntNb;
 
   det = 0;
   cry = 0;
 
-  stepNumber++;
-
   // Get volume of the current step
   G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   G4String volname = volume->GetName();
-
-  // Get the process of the current step  (PreStep or Poststep??)
-  //G4String process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
-     
+   
   // collect energy and track length step by step
   // As it's called more than once, get the Track and assign to variable
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -117,44 +111,123 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   eventaction->AddParticleType(particleType);
   evntNb =  eventaction->GetEventNumber();
-  
-  // Get initial momentum direction & energy of particle
-  G4int trackID = theTrack->GetTrackID();
-  G4int parentID = theTrack->GetParentID();
-  
-  // The vertex corresponds to where the particle has been created anywhere in the chamber
-  //G4double initialDirectionX = theTrack->GetVertexMomentumDirection().getX();
-  //G4double initialDirectionY = theTrack->GetVertexMomentumDirection().getY();
-  //G4double initialDirectionZ = theTrack->GetVertexMomentumDirection().getZ();
-  //G4double initialEnergy = theTrack->GetVertexKineticEnergy();
-	// if (parentID == 0) initialEnergy = theTrack->GetVertexKineticEnergy();
-
-
+   
   // Get the track (extra) information , mainly about the primary particle, but could be used for other stuff
   TrackInformation* info = (TrackInformation*)(aStep->GetTrack()->GetUserInformation()); 
-  //cout << " Info in stepping action " << endl ; 
-  //info->Print(); // for inspection
-  //cout << " ----------------------- " << endl ; 
-  // The Origin corresponds to the information about the primary particle (exclusively from the source)
-  eventaction->SetPrimaryInfo( info ) ; 
-  
+  //info->SetTagged(false);
+
+
+// ------------- add information to the track info --------------------
+
+// After the very first step
+	if (aStep->GetTrack()->GetCurrentStepNumber()== 1 ){ 
+        
+		if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()==0) { // if out of world 
+			
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {  // if original particle  (this information will be past by to all the descendants)
+				info->SetTagged(true);
+				info->SetOriginalImpactVolume("OOW");// Out Of World
+				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				}
+			else {	// if other particle  (this information will change with every new track)
+				info->SetCurrentImpactVolume("OOW");
+				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				//cin.get() ;
+				}
+			}
+		else {  // if NOT out of world 
+		    // if original particle (this information will be past by to all the descendants)
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {
+				info->SetOriginalImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				}
+			else {// if other particle (this information will change with every new track)
+				info->SetCurrentImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;  
+				}
+			}
+			
+		} 
+
+
+// Tag this track if the particle will hit the detector
+	int anchor = 0 ; 
+	
+// Get volume before and after for each step
+	G4String after = "VolAfter" ;
+	G4String before = "VolBefore" ;
+	if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()!=0) {
+		before = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		after  = aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		}
+	else {
+		before = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		after = "OOW" ;	
+		}
+	
+// If the detector is touched get position and momentum (and time?)
+	if( (before.contains("siDetS3") || after.contains("siDetS3")) && !info->GetTagged() ){
+				
+		// Get position and momentum
+		info->SetCurrentPositionAtDetector(aStep->GetTrack()->GetPosition()) ;  
+		info->SetCurrentMomentumAtDetector(aStep->GetTrack()->GetMomentum()) ;
+		info->SetTagged(true);
+		}
+
+// this is the last step, in case the particle is tagged => add some new info and keep the track 
+	if (aStep->GetTrack()->GetTrackStatus() == 2 && info->GetTagged() ) {
+	
+		// Get position 
+		info->SetCurrentPositionAtDeath(aStep->GetTrack()->GetPosition()) ;  
+		info->SetCurrentMomentumAtDeath(aStep->GetTrack()->GetMomentum()) ;  
+		// Get Pdg 
+		info->SetCurrentPdg(aStep->GetTrack()->GetDefinition()->GetPDGEncoding());
+		// Get Energy and time of the track at vertex 
+		info->SetCurrentEnergyAtVertex(aStep->GetTrack()->GetVertexKineticEnergy());
+		info->SetCurrentTimeAtVertex(aStep->GetTrack()->GetGlobalTime()); // in ns
+		// Get Vertex of the track 
+		info->SetCurrentPositionAtVertex(aStep->GetTrack()->GetVertexPosition());
+		// Get momentum at the vertex 
+		info->SetCurrentMomentumAtVertex(aStep->GetTrack()->GetVertexMomentumDirection());                
+		// Get the creator process
+		if(aStep->GetTrack()->GetCreatorProcess()!=0)
+			info->SetCurrentProcess(aStep->GetTrack()->GetCreatorProcess()->GetProcessName());
+		else
+			info->SetCurrentProcess("source")  ;                     
+		
+		// Keep the track in the record
+		//cout << " <<<<<< Setting info >>>>>> " << endl ; 
+		eventaction->SetPrimaryInfo( info ) ;
+		//cout << " <<<<<< <<<<<< >>>>>> >>>>>> " << endl ; 
+		
+		//clear the parts unrelated to the original particle information, and untag for the new track 
+		info->PartialClear();  // info->SetTagged(false); included 
+
+		}
+
+
   G4int 	OriginID = info->GetOriginalTrackID() ;  
   G4int 	OriginPdg = info->GetOriginalPdg() ;     
   G4double 	OriginEnergy = info->GetOriginalEnergy() ;  // Kinetic Energy                                     
   G4ThreeVector OriginMoment = info->GetOriginalMomentum() ;    
-  
+ 
   G4StepPoint* point1 = aStep->GetPreStepPoint();
   G4StepPoint* point2 = aStep->GetPostStepPoint();
 
   G4ThreeVector pos1 = point1->GetPosition();
   G4ThreeVector pos2 = point2->GetPosition();
 
-  G4double time1 = point1->GetGlobalTime();
+  //G4double time1 = point1->GetGlobalTime();
   G4double time2 = point2->GetGlobalTime();
 
+  G4int trackID = theTrack->GetTrackID();
+  
   size_t found;
   G4String search;
-  G4int searchLength;
 
   // Grid Cell
   found = volname.find("gridcell");
@@ -282,6 +355,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
 	OriginEnergy, OriginPdg, OriginID, trackID);
   }
+ 
+ 
+   stepNumber++;
+ 
  
 }
 

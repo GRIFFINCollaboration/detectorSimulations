@@ -43,7 +43,10 @@ RootManager::RootManager()
 
 	//Fragment Event
 	//fFragment = new TTigFragment();
-	
+
+	//History
+	fHistoryData = new THistoryData();
+		
 	//histograms 
 	//fHist = new TH1F("h","h",500,0,1800);
 
@@ -58,7 +61,9 @@ RootManager::~RootManager()  {}
 
 void RootManager::SetTree(){
 
+
 	//Creating the tree ;
+	printf("RootManager : Setting the Tree.\n");    
 	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
 	if(!fOutputTree) {
 		cout << "\nCould not create Simulated Data Tree in root file" << endl;
@@ -78,7 +83,9 @@ void RootManager::SetTree(){
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
-	
+	fOutputTree->Branch("HistoryBranch","THistoryData",&fHistoryData);
+	//----------------
+		
 	/*
 	Other detector branches goes here
 	*/
@@ -115,19 +122,6 @@ void RootManager::FillG4Hit(string volume, // Word representing the key used to 
 
 void RootManager::SortEvent(int eventNb) {
 
-	// clear the Fragment 
-		//fFragment->Clear();
-	
-	// clear the SpiceData object
-		//fSpiceData->Clear();
-		fS3Data->Clear();
-	
-	// clear the PacesData object
-		//fPacesData->Clear();
-
-	// clear the GriffinData object
-	//	fGriffinData->Clear();
-
 	// Sort Data from the map second element by getters and set them
 	std::map<string,RawG4Event>::iterator it;
 	for (std::map<string,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it) {
@@ -136,6 +130,7 @@ void RootManager::SortEvent(int eventNb) {
 		//		cout << " RootManager::SortEvent -- system " << system << endl ; 
 		//Fragment
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
+
 		//Spice
 		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
@@ -351,7 +346,69 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 
 }
 
+     void RootManager::Clear(void){
+     
+     	//printf("RootManager : Clear .\n");    
+     
+     // clear the Fragment 
+		//fFragment->Clear();
 
+	// clear the HistoryData object
+		fHistoryData->Clear();
+			
+	// clear the SpiceData object
+		//fSpiceData->Clear();
+		fS3Data->Clear();
+	
+	// clear the PacesData object
+		//fPacesData->Clear();
+
+	// clear the GriffinData object
+		//fGriffinData->Clear();
+     }
+
+void RootManager::SetHistory( vector <TrackInformation*> info ){
+
+
+	for (int iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
+		
+		info.at(iInfo)->Print();
+		
+		fHistoryData->SetHistoryPrimaryEnergy( info.at(iInfo)->GetOriginalEnergy() ) ;
+		fHistoryData->SetHistoryPrimaryPdg( info.at(iInfo)->GetOriginalPdg() ) ;
+	
+		unsigned lastElement =  info.at(iInfo)->GetSecondariesPdgSize()-1;
+		fHistoryData->SetHistoryCurrentPdg( info.at(iInfo)->GetSecondariesPdgAt(lastElement) ) ; 
+	
+		int GenerationNumber =  info.at(iInfo)->GetSecondariesBirthVolumeSize()  ; // we subtract the first evident birth volume <i.e. world>
+		fHistoryData->SetHistoryGNumber( GenerationNumber ) ;
+
+cout << " in Root Manager " << endl ; 
+
+cout << " GetSecondariesProcess " << info.at(iInfo)->GetSecondariesProcessSize() << endl ; 
+		
+		TString G2process = "Proc.Size<2"; // starting value 
+		if (GenerationNumber>1)  G2process = info.at(iInfo)->GetSecondariesProcessAt(1); // the physics process following the birth
+		fHistoryData->SetHistoryG2Process( G2process ) ;
+
+cout << " GetSecondariesBirthVolume " << info.at(iInfo)->GetSecondariesBirthVolumeSize() << endl ; 
+		
+		TString G2BirthVolume = "B.Vol.Size<2"; // starting value 
+		if (GenerationNumber>1)  G2BirthVolume =  info.at(iInfo)->GetSecondariesBirthVolumeAt(1) ; // this corresponds to the first volume where a process has taken place
+		fHistoryData->SetHistoryG2BirthVolume( G2BirthVolume ) ;
+
+cout << " ----- In between ----- " <<  endl ; 
+				
+		TString GLastBirthVolume = "B.Vol.Size=0"; // starting value 
+		//if (GenerationNumber>1)  
+		GLastBirthVolume =  info.at(iInfo)->GetSecondariesBirthVolumeAt(GenerationNumber - 1 ) ; // this corresponds to the last volume where a process has taken place
+		fHistoryData->SetHistoryGLastBirthVolume( GLastBirthVolume ) ;
+		/**/
+cout << " ----- End ----- " <<  endl ; 
+		}
+       
+	//cin.get(); 
+}
 
 void RootManager::SetGriffinEvent(int Crystal)
 {	
@@ -367,6 +424,8 @@ void RootManager::Close()
     fRootfile->Write();
     fRootfile->Close();    
 }
+
+
 
 
 

@@ -38,7 +38,7 @@ vector<TString> 	fHistoryG2Process; // The process at the second generation e.g 
    THistoryData();
    virtual ~THistoryData();
 
-   void   Clear();
+   void   ClearVariables();
    void   Dump() const;
 
 
@@ -60,7 +60,6 @@ inline vector<Int_t>		GetHistoryGNumber(void){ return fHistoryGNumber; }
 inline vector<TString>	GetHistoryG2BirthVolume(void){ return fHistoryG2BirthVolume; } 
 inline vector<TString>	GetHistoryGLastBirthVolume(void){ return fHistoryGLastBirthVolume; } 
 inline vector<TString>	GetHistoryG2Process(void){ return fHistoryG2Process; } 
-
    
    /////////////////////           SETTERS           ////////////////////////
 inline void		SetHistoryPrimaryEnergy(Double_t i){  fHistoryPrimaryEnergy.push_back(i); }
