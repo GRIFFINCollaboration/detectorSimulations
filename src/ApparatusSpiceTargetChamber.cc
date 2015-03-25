@@ -835,7 +835,7 @@ void ApparatusSpiceTargetChamber::BuildShieldCovering()
   vis_att->SetVisibility(true);
   
   // ** Build Photon Shield Solid
-  G4double inner_radius = this->photon_shield_inner_radius; 
+  //G4double inner_radius = this->photon_shield_inner_radius; 
   G4double front_outer_radius = this->photon_shield_front_radius;
   G4double back_outer_radius = this->photon_shield_back_radius;
   G4double half_length = this->photon_shield_length/2.;  
@@ -1322,7 +1322,7 @@ void ApparatusSpiceTargetChamber::BuildDetectorMount() {
   G4double box_half_thickness = this->detector_mount_thickness/2.;
   // Inner Radius
   G4double lip_radius = this->detector_mount_lip_radius;
-  G4double lip_half_thickness = this->detector_mount_lip_thickness/2.;
+  //G4double lip_half_thickness = this->detector_mount_lip_thickness/2.;
   G4double box_cut_radius = this->detector_mount_inner_radius;
   // Annular Clamp
   G4double clamp_half_thickness = this->annular_clamp_thickness;

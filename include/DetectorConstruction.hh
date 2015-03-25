@@ -77,7 +77,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldDimensions( G4ThreeVector );
     void SetWorldVis( G4bool );
     void SetWorldMagneticField( G4ThreeVector );
-    void SetTabMagneticField(G4String);
+    void SetTabMagneticField(G4String, G4double, G4double);
 
     void SetGenericTargetMaterial( G4String );
     void SetGenericTargetDimensions( G4ThreeVector );

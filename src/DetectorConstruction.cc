@@ -242,9 +242,9 @@ void DetectorConstruction::SetWorldMagneticField( G4ThreeVector vec )
     //expHallMagField->SetFieldValue(G4ThreeVector(vec.x(),vec.y(),vec.z()));
 }
 
-void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName)
+void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName, G4double z_offset, G4double z_rotation)
 {
-  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,0);
+  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,z_offset,z_rotation);
 }
 
 void DetectorConstruction::UpdateGeometry()
