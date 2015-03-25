@@ -151,7 +151,7 @@ void RootManager::SortEvent(int eventNb) {
 // fill the tree 
 	fOutputTree->Fill();
 
-// clear the map
+// ClearVariables the map
 	fGeantEvent.clear();
 	
 }
@@ -347,25 +347,25 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 
 }
 
-     void RootManager::Clear(void){
+     void RootManager::ClearVariables(void){
      
-     	//printf("RootManager : Clear .\n");    
+     	//printf("RootManager : ClearVariables .\n");    
      
      // clear the Fragment 
-		//fFragment->Clear();
+		//fFragment->ClearVariables();
 
 	// clear the HistoryData object
-		fHistoryData->Clear();
+		fHistoryData->ClearVariables();
 			
-	// clear the SpiceData object
-		//fSpiceData->Clear();
-		fS3Data->Clear();
+	// ClearVariables the SpiceData object
+		//fSpiceData->ClearVariables();
+		fS3Data->ClearVariables();
 	
-	// clear the PacesData object
-		//fPacesData->Clear();
+	// ClearVariables the PacesData object
+		//fPacesData->ClearVariables();
 
-	// clear the GriffinData object
-		//fGriffinData->Clear();
+	// ClearVariables the GriffinData object
+		//fGriffinData->ClearVariables();
      }
 
 void RootManager::SetHistory( vector <TrackInformation*> info ){

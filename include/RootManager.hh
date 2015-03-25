@@ -82,7 +82,7 @@ class RootManager   {
 					double, double, double);// primary particle momentum vector
        
        // clear all vectors  
-       void Clear(void);
+       void ClearVariables(void);
               
        //Build the mnemonic used in TRIUMF  	
 	   string BuildMnemonic(string volume, int detector, int crystal);
