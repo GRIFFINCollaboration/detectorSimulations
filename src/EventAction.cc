@@ -75,14 +75,10 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event* evt) {
   
-  //cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << endl ;
-  evtNb = evt->GetEventID();
-  
-     G4cout << "\n---> Begin of event: " << evtNb << G4endl;
-     
-  if (evtNb%printModulo == 0) 
-    printf( " ---> Ev.# %5d\r", evtNb);
-    G4cout.flush();
+  //G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
+	evtNb = evt->GetEventID();
+	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
+	G4cout.flush();
 
 }
 
@@ -132,14 +128,15 @@ void EventAction::EndOfEventAction(const G4Event*)
 		    
 		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
 		    //RootManager::instance()->FillHist(1000/keV);		//optional		    
-		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID /* <- this should be particle pdg */, 
+		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID , // trackID <- this should be particle pdg 
 												depEnergy, posx, posy, posz, 
 												originID, originPdg, originEnergy, 
 												originDirectionX, originDirectionY, originDirectionZ);
+												
         }	
     }
     
-    if (1 /*depEnergy>0.0*/) { // if condition satisfied Sort the HitCollection and make a physical event 
+    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
     	RootManager::instance()->Clear(); 
 		RootManager::instance()->SetHistory( PrimaryInfo );
 		RootManager::instance()->SortEvent(evtNb);  

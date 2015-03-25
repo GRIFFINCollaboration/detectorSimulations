@@ -22,6 +22,7 @@ RootManager::RootManager()
 	// open root file
 	int t = (int) time(0);   // get time now
 	fRootfile = new TFile(Form("output_at_%d_seconds.root",t ),"RECREATE");
+	
 	if(!fRootfile) {
 		cout << "\nCould not open file " <<endl;
 		exit(-1);
@@ -372,39 +373,90 @@ void RootManager::SetHistory( vector <TrackInformation*> info ){
 
 	for (int iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
 		
-		info.at(iInfo)->Print();
+		//info.at(iInfo)->Print();
+		double x, y, z ;// dummy variabales  
 		
-		fHistoryData->SetHistoryPrimaryEnergy( info.at(iInfo)->GetOriginalEnergy() ) ;
-		fHistoryData->SetHistoryPrimaryPdg( info.at(iInfo)->GetOriginalPdg() ) ;
-	
-		unsigned lastElement =  info.at(iInfo)->GetSecondariesPdgSize()-1;
-		fHistoryData->SetHistoryCurrentPdg( info.at(iInfo)->GetSecondariesPdgAt(lastElement) ) ; 
-	
-		int GenerationNumber =  info.at(iInfo)->GetSecondariesBirthVolumeSize()  ; // we subtract the first evident birth volume <i.e. world>
-		fHistoryData->SetHistoryGNumber( GenerationNumber ) ;
-
-cout << " in Root Manager " << endl ; 
-
-cout << " GetSecondariesProcess " << info.at(iInfo)->GetSecondariesProcessSize() << endl ; 
+		//primary information 		
+		fHistoryData->SetHistoryPrimaryID(info.at(iInfo)->GetOriginalTrackID())		;
+		fHistoryData->SetHistoryPrimaryPdg(info.at(iInfo)->GetOriginalPdg())		; 
+		fHistoryData->SetHistoryPrimaryEnergy(info.at(iInfo)->GetOriginalEnergy())  ; 
 		
-		TString G2process = "Proc.Size<2"; // starting value 
-		if (GenerationNumber>1)  G2process = info.at(iInfo)->GetSecondariesProcessAt(1); // the physics process following the birth
-		fHistoryData->SetHistoryG2Process( G2process ) ;
+		x = info.at(iInfo)->GetOriginalPosition().getX(); 
+		y = info.at(iInfo)->GetOriginalPosition().getY(); 
+		z = info.at(iInfo)->GetOriginalPosition().getZ(); 
+		fHistoryData->SetHistoryPrimaryPositionVertex(x,y,z)  ;
+		 
+		x = info.at(iInfo)->GetOriginalMomentum().getX(); 
+		y = info.at(iInfo)->GetOriginalMomentum().getY(); 
+		z = info.at(iInfo)->GetOriginalMomentum().getZ(); 
+		fHistoryData->SetHistoryPrimaryMomentumVertex(x,y,z)  ; 	
 
-cout << " GetSecondariesBirthVolume " << info.at(iInfo)->GetSecondariesBirthVolumeSize() << endl ; 
+        // 1s timpact of the primary 
+		x = info.at(iInfo)->GetOriginalImpactMomentum().getX(); 
+		y = info.at(iInfo)->GetOriginalImpactMomentum().getY(); 
+		z = info.at(iInfo)->GetOriginalImpactMomentum().getZ(); 
+		fHistoryData->SetHistoryPrimaryMomentum1stImpact(x,y,z)	; 
 		
-		TString G2BirthVolume = "B.Vol.Size<2"; // starting value 
-		if (GenerationNumber>1)  G2BirthVolume =  info.at(iInfo)->GetSecondariesBirthVolumeAt(1) ; // this corresponds to the first volume where a process has taken place
-		fHistoryData->SetHistoryG2BirthVolume( G2BirthVolume ) ;
+		x = info.at(iInfo)->GetOriginalImpactPosition().getX(); 
+		y = info.at(iInfo)->GetOriginalImpactPosition().getY(); 
+		z = info.at(iInfo)->GetOriginalImpactPosition().getZ(); 
+		fHistoryData->SetHistoryPrimaryPosition1stImpact(x,y,z)	; 
+		fHistoryData->SetHistoryPrimaryVolume1stImpact(info.at(iInfo)->GetOriginalImpactVolume())		; 
+		
+		// Parent of the current track hitting the target
+		fHistoryData->SetHistoryParentID(info.at(iInfo)->GetCurrentParentID())	;
 
-cout << " ----- In between ----- " <<  endl ; 
-				
-		TString GLastBirthVolume = "B.Vol.Size=0"; // starting value 
-		//if (GenerationNumber>1)  
-		GLastBirthVolume =  info.at(iInfo)->GetSecondariesBirthVolumeAt(GenerationNumber - 1 ) ; // this corresponds to the last volume where a process has taken place
-		fHistoryData->SetHistoryGLastBirthVolume( GLastBirthVolume ) ;
-		/**/
-cout << " ----- End ----- " <<  endl ; 
+		// the current track hitting the target information 
+		fHistoryData->SetHistoryCurrentID(info.at(iInfo)->GetCurrentTrackID())	;
+		fHistoryData->SetHistoryCurrentPdg(info.at(iInfo)->GetCurrentPdg())		; 
+		fHistoryData->SetHistoryCurrentEnergy(info.at(iInfo)->GetCurrentEnergyAtVertex())	; 
+		fHistoryData->SetHistoryCurrentCreatorProcess(info.at(iInfo)->GetCurrentProcess())	; 
+		fHistoryData->SetHistoryCurrentTime(info.at(iInfo)->GetCurrentTimeAtVertex())	; 
+		fHistoryData->SetHistoryCurrentVolume1stImpact(info.at(iInfo)->GetCurrentImpactVolume())		; 
+  
+
+		x = info.at(iInfo)->GetCurrentPositionAtVertex().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtVertex().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtVertex().getZ(); 
+		fHistoryData->SetHistoryCurrentPositionVertex(x,y,z)	; 
+		
+		x = info.at(iInfo)->GetCurrentImpactPosition().getX(); 
+		y = info.at(iInfo)->GetCurrentImpactPosition().getY(); 
+		z = info.at(iInfo)->GetCurrentImpactPosition().getZ(); 
+		fHistoryData->SetHistoryCurrentPosition1stImpact(x,y,z) ;
+		
+		x = info.at(iInfo)->GetCurrentPositionAtDetector().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtDetector().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtDetector().getZ(); 
+		fHistoryData->SetHistoryCurrentPositionDetector(x,y,z)	; 
+
+		x = info.at(iInfo)->GetCurrentPositionAtDeath().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtDeath().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtDeath().getZ();  
+		fHistoryData->SetHistoryCurrentPositionDeath(x,y,z)	;  
+
+
+
+		x = info.at(iInfo)->GetCurrentMomentumAtVertex().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtVertex().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtVertex().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumVertex(x,y,z)	; 
+
+		x = info.at(iInfo)->GetCurrentImpactMomentum().getX(); 
+		y = info.at(iInfo)->GetCurrentImpactMomentum().getY(); 
+		z = info.at(iInfo)->GetCurrentImpactMomentum().getZ(); 		
+		fHistoryData->SetHistoryCurrentMomentum1stImpact(x,y,z)	;
+		
+		x = info.at(iInfo)->GetCurrentMomentumAtDetector().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtDetector().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtDetector().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumDetector(x,y,z)	 ; 
+		
+		x = info.at(iInfo)->GetCurrentMomentumAtDeath().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtDeath().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtDeath().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumDeath(x,y,z)	; 
+
 		}
        
 	//cin.get(); 
@@ -413,7 +465,7 @@ cout << " ----- End ----- " <<  endl ;
 void RootManager::SetGriffinEvent(int Crystal)
 {	
 	//Stuff goes here
-	cout << " " << endl;		
+	//cout << " " << endl;		
 
 }
 

@@ -81,8 +81,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 
   G4int particleType = 0;
-  G4int evntNb;
-
+  G4int evntNb = 0 ;
   det = 0;
   cry = 0;
 
@@ -155,7 +154,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
 
 // Tag this track if the particle will hit the detector
-	int anchor = 0 ; 
 	
 // Get volume before and after for each step
 	G4String after = "VolAfter" ;
