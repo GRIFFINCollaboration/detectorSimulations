@@ -165,7 +165,7 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 
 	//Build the mnemonic for spice 
 	//---------------------  
-	if (system == "SP")
+	if (system == "SP"){
 		if (sub_system == "I") {
 			detector = 9 - detector ; // (detector here = ring) spice is upstream the target, according to the mnemonics outer ring is '0' inner ring is 9.
 			ostringstream convert;   // stream used for the conversion	
@@ -176,9 +176,9 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 		else if (sub_system == "E") {
 				return system + sub_system  +"00"+"XN"+ number ; 
 				}
-				
+	 }		
     //--------------------- 
-	if (system == "PA" && sub_system == "C") {
+	else if (system == "PA" && sub_system == "C") {
 		// (detector here = ring), Paces has only one "ring",  =>  detector = 0 
 		ostringstream convert;   // stream used for the conversion	
 		convert << std::setw(2) << std::setfill('0') << (crystal);      //  set the width to 2, i.e. (xy), fill the blanks by zeros = { 01, ... , 05 }
@@ -186,12 +186,17 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 		//cout << " RootManager::BuildMnemonic : " << system + sub_system << number <<"XN00" << "  |  " << system + sub_system + number+"XN"+"00" << endl ; 
 		return system + sub_system  + number + "XN" + "00"; 
 		}
+		
 
     //--------------------- 
 	//Griffin 	
 
     //--------------------- 
-	//Other detectors 	
+	//Other detectors
+	
+	//------------------ 
+	//Default
+	 return volume;  
 
 }
 
@@ -242,14 +247,14 @@ void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	// (Th,E)
 	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
 	fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
-	fSpiceData->SetSpiceThetaEEnergy(energy) ;     
+	fSpiceData->SetSpiceThetaEEnergy(energy/keV) ;     
 	fSpiceData->SetSpiceThetaEResEnergy(applied_resolution) ;
 
 
 	// (Ph,E)
 	fSpiceData->SetSpicePhiEDetectorNbr(1) ;
 	fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
-	fSpiceData->SetSpicePhiEEnergy(energy) ;
+	fSpiceData->SetSpicePhiEEnergy(energy/keV) ;
 	fSpiceData->SetSpicePhiEResEnergy(applied_resolution) ;
 
 	fSpiceData->SetPositionFirstHit(pos) ;				
@@ -282,18 +287,20 @@ void RootManager::SetS3Event(int eventNb, string mnemonic, int Ring, int Seg) {
 
 	// get the energy 			
 	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+	double stDev = (SpiceResolution[1]*keV) * energy  + (SpiceResolution[0]*keV); // the result is in MeV
+	double applied_resolution = CLHEP::RandGauss::shoot(energy, stDev);  
 	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
 
 	// fill the S3Data object
 	// (Th,E)
 	fS3Data->SetS3ThetaEDetectorNbr(1) ; 
-	fS3Data->SetS3ThetaEStripNbr(Ring) ;    
-	fS3Data->SetS3ThetaEEnergy(energy) ;     
-
+	fS3Data->SetS3ThetaEStripNbr(Ring) ;	
+	fS3Data->SetS3ThetaEEnergy(energy/keV) ;     
+ 
 	// (Ph,E)
 	fS3Data->SetS3PhiEDetectorNbr(1) ;
 	fS3Data->SetS3PhiEStripNbr(Seg)  ;
-	fS3Data->SetS3PhiEEnergy(energy) ;
+	fS3Data->SetS3PhiEEnergy(applied_resolution/keV) ;
 
 	fS3Data->SetPositionFirstHit(pos) ;		
 
@@ -338,8 +345,9 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition() ;
     
 	// fill the PacesData object
+	Ring = Ring ; // irrelevant, in PACES we only have one "ring", should take off this parameter at some point.
 	fPacesData->SetPacesDetectorNbr(Seg) ; 
-	fPacesData->SetPacesEnergy(energy) ;    
+	fPacesData->SetPacesEnergy(energy/keV) ;    
     
     //pos.Dump();
     //getchar();
@@ -371,7 +379,7 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 void RootManager::SetHistory( vector <TrackInformation*> info ){
 
 
-	for (int iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
+	for (unsigned iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
 		
 		//info.at(iInfo)->Print();
 		double x, y, z ;// dummy variabales  
@@ -464,6 +472,7 @@ void RootManager::SetHistory( vector <TrackInformation*> info ){
 
 void RootManager::SetGriffinEvent(int Crystal)
 {	
+	Crystal = Crystal; 
 	//Stuff goes here
 	//cout << " " << endl;		
 
