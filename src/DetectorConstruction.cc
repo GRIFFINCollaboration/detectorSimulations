@@ -740,7 +740,11 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
   G4int segmentID=0;
   G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,-annularDetectorDistance); 
+
+  pSpice->PlaceDetectorMount(logicWorld,pos);
+  pSpice->PlaceAnnularClamps(logicWorld,pos);   
   pSpice->PlaceGuardRing(logicWorld, pos);
+
   for(int ring = 0; ring<nRings; ring++)
     {
       for(int Seg=0; Seg<NumberSeg; Seg++)
