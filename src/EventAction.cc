@@ -75,7 +75,7 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event* evt) {
   
-  cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << endl ;
+  //cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << endl ;
       
   evtNb = evt->GetEventID();
   
@@ -158,6 +158,7 @@ void EventAction::EndOfEventAction(const G4Event*)
   FillSpiceCryst() ;
   FillPacesCryst() ; 
   Fill8piCryst() ;
+  FillNewCryst() ;
 
   //G4int i =0;
   //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
@@ -173,14 +174,13 @@ void EventAction::EndOfEventAction(const G4Event*)
 //  //histoManager->FillHisto2D(1, x, y);
 //}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oo/*oOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
 
 void EventAction::ClearVariables()
 {
 
-G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ; 
   PrimaryInfo.clear();
   
   if(histoManager->GetStepTrackerBool()) {
@@ -217,6 +217,8 @@ G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ;
       SpiceCrystTrackDet[i]							= 0 ;
       PacesCrystEnergyDet[i]						= 0 ;
       PacesCrystTrackDet[i]							= 0 ;
+      NewCrystTrackDet[i]               			=0 ;
+      NewCrystEnergyDet[i]             				 =0 ;
       
       
   }
@@ -252,10 +254,10 @@ G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ;
 	 unsigned iSize = 0; 
 	 unsigned nSize = PrimaryInfo.size() ; 
 	 
-	 cout << " =============== Candidate info " << endl ;
+	 //cout << " =============== Candidate info " << endl ;
 	 //cout << " Adress " << info << endl ;
-	 info->Print(); 
-	 cout << " ================================ "  << endl ;
+	 //info->Print(); 
+	 //cout << " ================================ "  << endl ;
 	 
 	/* cout << " ++++++++++++++++++++ content At the begining : " << nSize << endl ; 
 	 for ( unsigned iSize = 0 ; iSize < nSize ; iSize++) {
@@ -278,15 +280,15 @@ G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ;
 		  	*/
 		  	
 		if (PrimaryInfo.at(iSize)->GetOriginalTrackID()==info->GetOriginalTrackID() ) {  //  same family
-	  		cout << "Same family" << endl ;
+	  		//cout << "Same family" << endl ;
 	  		family = true ; 
 			}
 			//else {  		  	cout << "Diff. family" << endl ;}
 	
 		if (family && info->GetParentTrackID() == PrimaryInfo.at(iSize)->GetCurrentTrackID()) {  // daughter contains all the history up to the family tree
-	  		cout << "Daughter -> Update info " << endl ;
+	  		//cout << "Daughter -> Update info " << endl ;
 	  		PrimaryInfo.at(iSize) = new TrackInformation(info) ; // replace this info with the updated one 
-	  		PrimaryInfo.at(iSize)->Print();
+	  		//PrimaryInfo.at(iSize)->Print();
 	  		daughter = true ;
 	  			copy = false ;  
 			break;
@@ -294,7 +296,7 @@ G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ;
 			//else {  		  	cout << "Not Daughter" << endl ;}
 			
 		if (family && !daughter && info->GetCurrentTrackID() == PrimaryInfo.at(iSize)->GetCurrentTrackID() ) {  // if it's the same information skip!
-		  	cout << "Same Information" << endl ;
+		  	//cout << "Same Information" << endl ;
 	  		copy = true ; 
 			break;
 			}
@@ -305,18 +307,18 @@ G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ;
  	 	//if (nSize>0 && iSize == nSize) cout << " at end of loop iSize : " << iSize << " nSize : "<< nSize<< endl ;
 
     	//if its a new track add it to the vector 
-  	 	if (!daughter && !copy) {
+  	 	 if (!daughter && !copy) {
     		//cout << ">>>>>>>>>>>>>>>>>>>>> Add this info to the vector" << endl ; 
 	  	 	PrimaryInfo.push_back( new TrackInformation(info));
 	  	 	}
-	  	 	
+	  	/* 	
  cout << " ++++++++++++++++++++ content At the end : " << endl ; 
  	 	 for ( unsigned iSize = 0 ; iSize < PrimaryInfo.size() ; iSize++) {
  	 	  	cout << " Adress " << PrimaryInfo.at(iSize) << endl ;
 			PrimaryInfo.at(iSize)->Print();
 			}
 	  	 	cin.get(); 
-  	  	 	  	 	  	 	
+  	  	*/ 	  	 	  	 	
   }
 
 void EventAction::AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
@@ -597,6 +599,11 @@ void EventAction::FillPacesCryst()
     if(energySum > MINENERGYTHRES) {
       if(WRITEEDEPHISTOS)     histoManager->FillHisto(paces_crystal_edep_sum, energySum);
     }     
+}
+
+void EventAction::FillNewCryst() 
+{
+        
 }
 
 

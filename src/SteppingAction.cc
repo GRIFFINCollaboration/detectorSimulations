@@ -140,7 +140,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   
   G4int 	OriginID = info->GetOriginalTrackID() ;  
   G4int 	OriginPdg = info->GetOriginalPdg() ;     
-  G4double 	OriginEnergy = info->GetOriginalEnergy() ;  // Kinetic Energy                                     
+  G4double 	OriginEnergy = info->GetOriginalEnergy() ; // Kinetic Energy                  
   G4ThreeVector OriginMoment = info->GetOriginalMomentum() ;    
   
   G4StepPoint* point1 = aStep->GetPreStepPoint();
@@ -240,14 +240,16 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // Sceptar
   found = volname.find("sceptar_square_scintillator_log");
   if (edep != 0 && found!=G4String::npos) {
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddSceptarSquareCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForSceptarDetector(volname);
+      eventaction->AddSceptarSquareCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "SEP", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
   }
 
   found = volname.find("sceptar_angled_scintillator_log");
   if (edep != 0 && found!=G4String::npos) {
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddSceptarAngledCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForSceptarDetector(volname);
+      eventaction->AddSceptarAngledCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "SEP", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
   }
 
   // Paces
@@ -259,6 +261,18 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       pos2.x(), pos2.y(), pos2.z(), time2, 
       OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
       OriginEnergy, OriginPdg, OriginID, trackID);  
+  }
+
+  //New
+  found = volname.find("SquareDetect");
+  if(edep !=0 && found!=G4String::npos){
+    SetDetAndCryNumberForNewDetector(volname);
+    eventaction->AddNewCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "NEW", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
+
+//cout << edep << endl ; 
+//cin.get() ; 
+
   }
   
   //SPICE  
@@ -405,6 +419,63 @@ void SteppingAction::SetDetAndCryNumberForPacesDetector(G4String volname)
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cin.get();
 }
+
+void SteppingAction::SetDetAndCryNumberForNewDetector(G4String volname)
+{
+    //the volume name contains eight underscores
+    G4String dummy="";
+    size_t UnderScoreIndex[8];
+    size_t old = -1;
+    for (int i=0; i<8 ; i++){
+        UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+        old=UnderScoreIndex[i];
+    }
+    
+
+// cout << volname << endl ; 
+//cin.get() ; 
+
+    dummy = volname.substr (UnderScoreIndex[7]+1, UnderScoreIndex[8]-UnderScoreIndex[7]-1);
+    cry = atoi(dummy.c_str())  ;
+
+    dummy = volname.substr (UnderScoreIndex[4]+1, UnderScoreIndex[5]-UnderScoreIndex[4]-1);
+    det = atoi(dummy.c_str()) ;
+
+
+// cout << cry << "  " << det  << endl ; 
+//cin.get() ; 
+
+
+}
+
+void SteppingAction::SetDetAndCryNumberForSceptarDetector(G4String volname)
+{
+    //the volume name contains eight underscores
+    G4String dummy="";
+    size_t UnderScoreIndex[9];
+    size_t old = -1;
+    for (int i=0; i<9 ; i++){
+        UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+        old=UnderScoreIndex[i];
+    }
+    
+
+// cout << volname << endl ; 
+//cin.get() ; 
+
+    dummy = volname.substr (UnderScoreIndex[2]+1, UnderScoreIndex[3]-UnderScoreIndex[2]-1);
+    cry = atoi(dummy.c_str())  ;
+
+    dummy = volname.substr (UnderScoreIndex[0]+1, UnderScoreIndex[1]-UnderScoreIndex[0]-1);
+    det = atoi(dummy.c_str()) ;
+
+
+ //cout << cry << "  " << det  << endl ; 
+//cin.get() ; 
+
+
+}
+
 
 void SteppingAction::SetDetNumberForGenericDetector(G4String volname)
 {

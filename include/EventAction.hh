@@ -92,6 +92,7 @@ public:
   void AddSpiceCrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
   void AddS3CrystDet(G4double de, G4double dl, G4int det) {SpiceCrystEnergyDet[det] += de; SpiceCrystTrackDet[det] += dl;} ;
   void AddPacesCrystDet(G4double de, G4double dl, G4int det) {PacesCrystEnergyDet[det] += de; PacesCrystTrackDet[det] += dl;} ;
+  void AddNewCrystDet(G4double de, G4double dl, G4int det) {NewCrystEnergyDet[det] += de; NewCrystTrackDet[det] += dl;} ;
 
   void SetPrimaryInfo(TrackInformation* info);
 
@@ -110,6 +111,7 @@ private:
 	void FillS3Cryst();
 	void FillPacesCryst() ; 
 	void Fill8piCryst() ;
+    void FillNewCryst();
 
 	RunAction*    runAct;
 	HistoManager* histoManager;
@@ -176,6 +178,9 @@ private:
 	
 	G4double PacesCrystEnergyDet[MAXNUMDET] ;
 	G4double PacesCrystTrackDet[MAXNUMDET] ;
+
+	G4double NewCrystEnergyDet[MAXNUMDET] ;
+	G4double NewCrystTrackDet[MAXNUMDET] ;
 	
 };
 

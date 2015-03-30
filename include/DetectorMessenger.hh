@@ -115,6 +115,8 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*   AddDetectionSystemSpiceCmd;
     G4UIcommand*   			AddDetectionSystemS3Cmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemPacesCmd;
+    G4UIcmdWithAnInteger*   AddDetectionSystemNewCmd;
+    G4UIcmdWithAnInteger*   AddNewSquareDetectorCmd;
     G4UIcmdWithAnInteger*   AddDetectionSystemGriffinHevimetCmd ; 
         
 

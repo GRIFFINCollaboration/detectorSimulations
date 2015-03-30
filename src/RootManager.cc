@@ -31,12 +31,18 @@ RootManager::RootManager()
 	// Create objects to hold the data
 	//spice event
 	//fSpiceData = new TSpiceData();
-	fS3Data = new TS3Data();
+	//fS3Data = new TS3Data();
 	//
 	//fDetectorSpice = new DetectionSystemSpice();
 
     //Paces event 
 	//fPacesData = new TPacesData();
+
+    //New event
+    fNewData = new TNewData();
+
+	//SCEPTAR
+	//fSceptarData = new TSceptarData();
 	
 	//GRIFFIN Event
 	//fGriffinData = new TGriffinData();
@@ -69,12 +75,16 @@ void RootManager::SetTree(){
  	/*
 	At this stage you can define what branches are written in the tree
 	*/
-	fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
 	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//----------------
 	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
 	//fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
+	//----------------
+	fOutputTree->Branch("NewBranch", "TNewData", &fNewData);
+	//----------------
+	//fOutputTree->Branch("SceptarBranch","TSceptarData",&fSceptarData);
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
@@ -120,10 +130,16 @@ void RootManager::SortEvent(int eventNb) {
 	
 	// clear the SpiceData object
 		//fSpiceData->Clear();
-		fS3Data->Clear();
+		//fS3Data->Clear();
 	
 	// clear the PacesData object
 		//fPacesData->Clear();
+
+    //clear the New Object
+    fNewData->Clear();
+
+	//clear the Sceptar Object
+	//fSceptarData->Clear();
 
 	// clear the GriffinData object
 	//	fGriffinData->Clear();
@@ -138,12 +154,18 @@ void RootManager::SortEvent(int eventNb) {
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
 		//Spice
 		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
-		if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//Paces
 		//if (system=="PAC") {
 		//	SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//	fPacesData->Dump();
 		//	}
+
+        //NEW
+        if (system=="NEW") SetNewEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+
+        //Sceptar
+        //if (system=="SEP") SetSceptarEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		
 		//Griffin
 		//Need to put Griffin key here
@@ -189,6 +211,38 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 		number = convert.str(); // set 'Result' to the contents of the stream
 		//cout << " RootManager::BuildMnemonic : " << system + sub_system << number <<"XN00" << "  |  " << system + sub_system + number+"XN"+"00" << endl ; 
 		return system + sub_system  + number + "XN" + "00"; 
+		}
+
+    //--------------------- 
+	//Build the mnemonic for New  
+	if (system == "NE")
+		if (sub_system == "W") {
+
+			detector = 4 - detector ; // New is upstream the target
+
+			ostringstream convert;   // stream used for the conversion	
+			convert << std::setw(3) << std::setfill('0') << (detector * 12 + crystal);      //  set the width to 3 (xyz), fill the blanks by zeros
+			number = convert.str(); // set 'Result' to the contents of the stream
+	
+		return (volume + "00XN" + number) ; 
+		}
+		else if (sub_system == "E") {
+		
+		//some operations
+		return volume+"00XN"+ number ; 
+		}
+
+
+    //--------------------- 
+	//Build the mnemonic for Sceptar  
+	if (system == "SE")
+		if (sub_system == "P") {
+
+			ostringstream convert;   // stream used for the conversion	
+			convert << std::setw(3) << std::setfill('0') << (crystal );      //  set the width to 3 (xyz), fill the blanks by zeros
+			number = convert.str(); // set 'Result' to the contents of the stream
+	
+		return (volume + "00XN" + number) ; 
 		}
 
     //--------------------- 
@@ -351,7 +405,85 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 
 }
 
+void RootManager::SetNewEvent(int eventNb, string mnemonic, int detector, int Seg)
+{
 
+    //treat
+    fGeantEvent.at(mnemonic).SortPrimary();
+
+	fNewData->SetEventNumber(eventNb) ;
+    //get primary
+    //Pdg
+    int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult();
+    for( int i = 0 ; i<mult ; i++) {
+        fNewData->SetPrimaryPdg(fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
+    }
+
+    //Energy
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult();
+    for(int i = 0 ; i<mult ; i++){
+        fNewData->SetPrimaryEnergy(fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) );
+    }
+
+    //Momentum
+    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult();
+    for(int i = 0 ; i<mult ; i++){
+        fNewData->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+        fNewData->SetPrimaryPhi(fGeantEvent.at(mnemonic).GetPrimaryPhi(i) );
+    }
+
+    //get the energy
+    double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+    TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
+
+    //fill the NewData Object
+    fNewData->SetNewDetectorNbr(detector);
+    fNewData->SetNewEnergy(energy);
+    fNewData->SetPositionFirstHit(pos);
+
+	//fNewData->Dump();
+
+}
+
+void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, int Seg)
+{
+
+    //treat
+    fGeantEvent.at(mnemonic).SortPrimary();
+
+	fSceptarData->SetEventNumber(eventNb) ;
+    //get primary
+    //Pdg
+    int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult();
+    for( int i = 0 ; i<mult ; i++) {
+        fSceptarData->SetPrimaryPdg(fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
+    }
+
+    //Energy
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult();
+    for(int i = 0 ; i<mult ; i++){
+        fSceptarData->SetPrimaryEnergy(fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) );
+    }
+
+    //Momentum
+    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult();
+    for(int i = 0 ; i<mult ; i++){
+        fSceptarData->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+        fSceptarData->SetPrimaryPhi(fGeantEvent.at(mnemonic).GetPrimaryPhi(i) );
+    }
+
+    //get the energy
+    double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+    TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
+
+    //fill the SceptarData Object
+    fSceptarData->SetSceptarDetectorNbr(detector);
+    fSceptarData->SetSceptarEnergy(energy);
+    fSceptarData->SetPositionFirstHit(pos);
+
+	//fSceptarData->Dump();
+
+}
 
 void RootManager::SetGriffinEvent(int Crystal)
 {	

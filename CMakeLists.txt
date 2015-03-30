@@ -13,7 +13,9 @@ set(myROOTclassDir 		dataRootClass	) 			# directory of the root classes
 set(myROOTclass 		true			)   		# comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
 set(myROOTS3class 		TS3Data.cpp		)   		# comment if none
 set(myROOTSpiceclass 	TSpiceData.cpp	)   		# comment if none  
-set(myROOTPacesclass 	TPacesData.cpp	)   		# comment if none  
+set(myROOTPacesclass 	TPacesData.cpp	)   		# comment if none 
+set(myROOTNewclass 		    TNewData.cpp)  			    # comment if none 
+set(myROOTSceptarclass 		    TSceptarData.cpp)  			    # comment if none 
 set(myROOTGriffclass 	TGriffinData.cpp )  		# comment if none
 set(myROOTFragmentclass 	TFragment.cpp	) 			# comment if none
 set(myROOTTigFragmentclass 	TTigFragment.cpp) 			# comment if none     
@@ -83,6 +85,16 @@ if(useROOT)
 		message(" --- compiling Paces --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictPaces.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTPacesclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Paces_linkdef.h )
 		endif(myROOTPacesclass)
+
+		if(myROOTNewclass)
+		message(" --- compiling New --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictNew.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTNewclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/New_linkdef.h)
+		endif(myROOTNewclass)
+
+		if(myROOTSceptarclass)
+		message(" --- compiling Sceptar --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictSceptar.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTSceptarclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Sceptar_linkdef.h)
+		endif(myROOTSceptarclass)
 		
 		if(myROOTGriffclass)
 		message(" --- compiling Griffin --- ")
@@ -191,10 +203,15 @@ if(useROOT)
 		set(myROOTDict ${myROOTDict} dictGriffin.cxx)
 		endif(myROOTGriffclass)
 				
-		#if(myROOTNewclass)
-		#	message(" --- Linking :  dictNew.cxx --- ")
-		#set(myROOTDict ${myROOTDict} dictNew.cxx)
-		#endif(myROOTNewclass)
+		if(myROOTNewclass)
+		message(" --- Linking :  dictNew.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictNew.cxx)
+		endif(myROOTNewclass)
+
+		if(myROOTSceptarclass)
+		message(" --- Linking :  dictSceptar.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictSceptar.cxx)
+		endif(myROOTSceptarclass)
 		
 		# This will replace the semicolons in a cmake list ";" to spaces " "	 
 		foreach(arg ${myROOTDict})

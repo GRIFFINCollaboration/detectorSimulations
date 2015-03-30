@@ -28,6 +28,8 @@ using namespace std ;
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
 #include "../dataRootClass/TPacesData.h"
+#include "../dataRootClass/TNewData.h"
+#include "../dataRootClass/TSceptarData.h"
 
 
 class RootManager   {
@@ -57,6 +59,8 @@ class RootManager   {
         TS3Data*    fS3Data;   
         TPacesData* fPacesData;
         TGriffinData* fGriffinData;  
+        TNewData*       fNewData; 
+        TSceptarData*       fSceptarData; 
            
         TTigFragment* 	fFragment;    
 
@@ -89,6 +93,8 @@ class RootManager   {
        void SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg);
        void SetS3Event(int eventNb, string mnemonic, int Ring, int Seg);
        void SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg);
+       void SetNewEvent(int eventNb, string mnemonic, int detector, int Seg);
+       void SetSceptarEvent(int eventNb, string mnemonic, int detector, int Seg);
 
        
        void SetGriffinEvent(int key);

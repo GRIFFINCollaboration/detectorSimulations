@@ -70,6 +70,8 @@
 #include "DetectionSystemSpice.hh"
 #include "DetectionSystemS3.hh"
 #include "DetectionSystemPaces.hh"
+#include "DetectionSystemNew.hh"
+#include "NewSquareDetector.hh"
 #include "DetectionSystemSodiumIodide.hh"
 #include "DetectionSystemLanthanumBromide.hh"
 #include "ApparatusGenericTarget.hh"
@@ -780,3 +782,30 @@ void DetectorConstruction::AddDetectionSystemPaces(G4int ndet)
 	
 	pPaces->PlaceDetector( logicWorld, ndet ) ;
 }
+
+void DetectorConstruction::AddDetectionSystemNew(G4int ndet)
+{
+   //Create Target Chamber
+   DetectionSystemNew* pNew = new DetectionSystemNew();
+   pNew->Build( logicWorld );
+//   pNew->Place( logicWorld) ;
+
+}
+
+void DetectorConstruction::AddNewSquareDetector(G4int nDet)
+{
+  	NewSquareDetector* pNewSquare = new NewSquareDetector();
+	pNewSquare->Build();
+	
+  
+    for(int detector = 1; detector<(nDet+1); detector++)
+    {
+        pNewSquare->PlaceGuardRing(logicWorld, detector);
+
+
+        pNewSquare->PlaceDetector(logicWorld, detector);
+		
+    }
+} //end NewSquareDetector
+
+

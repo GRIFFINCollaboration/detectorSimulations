@@ -32,8 +32,8 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 # Specify Shared libraries
 #-------------------------
 #SHARELIB      = libDetector.so libNewData.so libNew2Data.so (example)
-SHARELIB      = libSpiceData.so  libS3Data.so libPacesData.so libGriffinData.so\
-				libHistoryData.so  libFragment.so  libTigFragment.so
+SHARELIB      = libSpiceData.so  libS3Data.so libPacesData.so libGriffinData.so libNewData.so\
+				libHistoryData.so  libFragment.so  libTigFragment.so 
 
 all:            $(SHARELIB)
 
@@ -67,6 +67,20 @@ libPacesData.so:	TPacesData.o   TPacesDataDict.o
 
 TPacesDataDict.cpp:	TPacesData.h
 			rootcint -f $@ -c $^
+
+# N E W
+libNewData.so: TNewData.o   TNewDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TNewDataDict.cpp: TNewData.h
+		rootcint -f $@ -c $^
+
+# S C E P T A R
+libSceptarData.so: TSceptarData.o   TSceptarDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TSceptarDataDict.cpp: TSceptarData.h
+		rootcint -f $@ -c $^
 
 # H I S T O R Y
 libHistoryData.so:	THistoryData.o   THistoryDataDict.o
@@ -114,6 +128,8 @@ distclean:
 TSpiceData.o:	TSpiceData.cpp		TSpiceData.h
 TS3Data.o:		TS3Data.cpp			TS3Data.h
 TPacesData.o:	TPacesData.cpp		TPacesData.h
+TNewData.o:         TNewData.cpp        TNewData.h
+TSceptarData.o:         TSceptarData.cpp        TSceptarData.h
 TGriffinData.o:	TGriffinData.cpp	TGriffinData.h
 THistoryData.o:	THistoryData.cpp		THistoryData.h
 TFragment.o:		TFragment.cpp		TFragment.h
