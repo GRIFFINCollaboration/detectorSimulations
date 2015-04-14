@@ -78,7 +78,9 @@ class DetectionSystemNew
 
 
     G4int NUMBER_OF_MAGNETS;
-//    G4double zOffset;
+    G4int detector_alignment;
+	G4int no_magnet_layer;
+
 
     ////////////////
     // Materials: //
@@ -156,7 +158,6 @@ class DetectionSystemNew
 
     G4double distance_from_target;
     G4double cutting_box_angle;
-	G4int no_magnet_layer;
 	G4double magnet_cover_thickness;
   
 

@@ -61,7 +61,7 @@ class NewSquareDetector
     G4double BeamPipeYDistanceGR;
     G4double BeamPipeXDistanceD;
     G4double BeamPipeYDistanceD;
-
+	G4int detector_alignment;
 
 
 
@@ -78,10 +78,13 @@ class NewSquareDetector
     /////////////////////////////////
 
     private:
-    G4int 	BuildDetectorFace(G4int detectorID);
-    G4int BuildGuardRing(G4int detectorID);
-    G4Box*	BuildSegment();
-  	
+    G4int 	BuildDetectorFace1(G4int detectorID);
+    G4int BuildGuardRing1(G4int detectorID);
+    G4Box*	BuildSegment1();
+    G4int 	BuildDetectorFace2(G4int detectorID);
+    G4int BuildGuardRing2(G4int detectorID);
+    G4Box*	BuildSegment2();
+
 };
 
 #endif
