@@ -29,20 +29,29 @@ void TrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 		G4Track* theTrack = (G4Track*)aTrack;
 
 		//Set (append) the Pdg of the ancestor particle
-		newInfo->SetParentTrackID(newInfo->GetCurrentTrackID());
+		//newInfo->SetCurrentParentID(newInfo->GetCurrentTrackID());
+		newInfo->SetCurrentParentID(theTrack->GetParentID()); 
 		
 		//Set (append) the Pdg of the ancestor particle
 		newInfo->SetCurrentTrackID(theTrack->GetTrackID());
 			
 		//Set (append) the Pdg of the ancestor particle
-		newInfo->SetAncestorsPdgElement(theTrack->GetDefinition()->GetPDGEncoding());
-		
-		//Set (append) the Birth volume of the ancestor particle 
+		newInfo->SetSecondariesPdgElement(theTrack->GetDefinition()->GetPDGEncoding());
+
+		//Set (append) the process name at birth of the ancestor particle 
 	  	if( theTrack->GetNextVolume() != 0 ) 	{
-		newInfo->SetAncestorsBirthVolumeElement(theTrack->GetNextVolume()->GetName());
+		newInfo->SetSecondariesProcessElement(theTrack->GetCreatorProcess()->GetProcessName());
 		} 
 		else {
-		newInfo->SetAncestorsBirthVolumeElement("OutOfWorld");
+		newInfo->SetSecondariesProcessElement("OOW/Dead"); // OOW = OutOfWorld
+		}
+				
+		//Set (append) the Birth volume of the ancestor particle 
+	  	if( theTrack->GetNextVolume() != 0 ) 	{
+		newInfo->SetSecondariesBirthVolumeElement(theTrack->GetNextVolume()->GetName());
+		} 
+		else {
+		newInfo->SetSecondariesBirthVolumeElement("OOW/Dead");
 		}
 	
 		// set (append) the new user information 
@@ -64,12 +73,12 @@ void TrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   if( theTrack->GetNextVolume() != 0 ) 
 	{
 	//G4cout << " Adding the next DEATH volume "<< theTrack->GetNextVolume()->GetName() <<G4endl;
-	newInfo->SetAncestorsDeathVolumeElement(theTrack->GetNextVolume()->GetName());
+	newInfo->SetSecondariesDeathVolumeElement(theTrack->GetNextVolume()->GetName());
 	} 
 else 
 	{
 	//G4cout << std::setw(11) << "OutOfWorld" << " "<<G4endl;
-	newInfo->SetAncestorsDeathVolumeElement("OutOfWorld");
+	newInfo->SetSecondariesDeathVolumeElement("OOW/Dead");
 	}
 	
 	// set (append) the new user information 

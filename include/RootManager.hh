@@ -9,25 +9,29 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <vector>
 
 using namespace std ;
+
+// CLHEP
+#include "CLHEP/Random/RandGauss.h"
+
+//G4 
+#include "TrackInformation.hh"
 
 //ROOT
 #include "TFile.h"
 #include "TH1.h"
 #include "TTree.h"
 
-// CLHEP
-#include "CLHEP/Random/RandGauss.h"
-
 //User
 #include "RawG4Event.hh"
-
 #include "../dataRootClass/TTigFragment.h"
 #include "../dataRootClass/TSpiceData.h"
 #include "../dataRootClass/TS3Data.h"
 #include "../dataRootClass/TGriffinData.h"
 #include "../dataRootClass/TPacesData.h"
+#include "../dataRootClass/THistoryData.h"
 #include "../dataRootClass/TNewData.h"
 #include "../dataRootClass/TSceptarData.h"
 
@@ -59,9 +63,9 @@ class RootManager   {
         TS3Data*    fS3Data;   
         TPacesData* fPacesData;
         TGriffinData* fGriffinData;  
+        THistoryData* fHistoryData;
         TNewData*       fNewData; 
         TSceptarData*       fSceptarData; 
-           
         TTigFragment* 	fFragment;    
 
     public:
@@ -80,6 +84,9 @@ class RootManager   {
 					double,//original (primary) particle energy
 					double, double, double);// primary particle momentum vector
        
+       // clear all vectors  
+       void ClearVariables(void);
+              
        //Build the mnemonic used in TRIUMF  	
 	   string BuildMnemonic(string volume, int detector, int crystal);
        
@@ -90,6 +97,7 @@ class RootManager   {
        void SortEvent(int eventNb);
        
        //Set the data in Spice writing Class
+       void SetHistory( vector <TrackInformation*> info );  // History of the LAST particles in a cascade of events (Whether a part or all of this cascade ended in the detector or )
        void SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg);
        void SetS3Event(int eventNb, string mnemonic, int Ring, int Seg);
        void SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg);

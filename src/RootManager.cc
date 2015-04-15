@@ -22,6 +22,7 @@ RootManager::RootManager()
 	// open root file
 	int t = (int) time(0);   // get time now
 	fRootfile = new TFile(Form("output_at_%d_seconds.root",t ),"RECREATE");
+	
 	if(!fRootfile) {
 		cout << "\nCould not open file " <<endl;
 		exit(-1);
@@ -49,7 +50,10 @@ RootManager::RootManager()
 
 	//Fragment Event
 	//fFragment = new TTigFragment();
-	
+
+	//History
+	fHistoryData = new THistoryData();
+		
 	//histograms 
 	//fHist = new TH1F("h","h",500,0,1800);
 
@@ -64,7 +68,9 @@ RootManager::~RootManager()  {}
 
 void RootManager::SetTree(){
 
+
 	//Creating the tree ;
+	printf("RootManager : Setting the Tree.\n");    
 	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
 	if(!fOutputTree) {
 		cout << "\nCould not create Simulated Data Tree in root file" << endl;
@@ -88,7 +94,9 @@ void RootManager::SetTree(){
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
-	
+	fOutputTree->Branch("HistoryBranch","THistoryData",&fHistoryData);
+	//----------------
+		
 	/*
 	Other detector branches goes here
 	*/
@@ -126,23 +134,23 @@ void RootManager::FillG4Hit(string volume, // Word representing the key used to 
 void RootManager::SortEvent(int eventNb) {
 
 	// clear the Fragment 
-		//fFragment->Clear();
-	
-	// clear the SpiceData object
-		//fSpiceData->Clear();
-		//fS3Data->Clear();
-	
-	// clear the PacesData object
-		//fPacesData->Clear();
+	//fFragment->ClearVariables();
 
-    //clear the New Object
-    fNewData->Clear();
+	// clear the SpiceData object
+	//fSpiceData->ClearVariables();
+	//fS3Data->ClearVariables();
+
+	// clear the PacesData object
+	//fPacesData->ClearVariables();
+
+	//clear the New Object
+	//fNewData->ClearVariables();
 
 	//clear the Sceptar Object
-	//fSceptarData->Clear();
+	//fSceptarData->ClearVariables();
 
 	// clear the GriffinData object
-	//	fGriffinData->Clear();
+	//	fGriffinData->ClearVariables();
 
 	// Sort Data from the map second element by getters and set them
 	std::map<string,RawG4Event>::iterator it;
@@ -152,9 +160,11 @@ void RootManager::SortEvent(int eventNb) {
 		//		cout << " RootManager::SortEvent -- system " << system << endl ; 
 		//Fragment
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
+
 		//Spice
 		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		
 		//Paces
 		//if (system=="PAC") {
 		//	SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
@@ -169,6 +179,7 @@ void RootManager::SortEvent(int eventNb) {
 		
 		//Griffin
 		//Need to put Griffin key here
+		
 		//New Detector
 		//if (system==XYZ) SetOtherDetectorEvent(key);
 		}
@@ -177,7 +188,7 @@ void RootManager::SortEvent(int eventNb) {
 // fill the tree 
 	fOutputTree->Fill();
 
-// clear the map
+// ClearVariables the map
 	fGeantEvent.clear();
 	
 }
@@ -191,7 +202,7 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 
 	//Build the mnemonic for spice 
 	//---------------------  
-	if (system == "SP")
+	if (system == "SP"){ // SPICE SiLi
 		if (sub_system == "I") {
 			detector = 9 - detector ; // (detector here = ring) spice is upstream the target, according to the mnemonics outer ring is '0' inner ring is 9.
 			ostringstream convert;   // stream used for the conversion	
@@ -199,12 +210,12 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 			number = convert.str(); // set 'Result' to the contents of the stream
 			return ( system + sub_system  + "00XN" + number) ; 
 			}
-		else if (sub_system == "E") {
+		else if (sub_system == "E") { // SPICE S3
 				return system + sub_system  +"00"+"XN"+ number ; 
 				}
-				
-    //--------------------- 
-	if (system == "PA" && sub_system == "C") {
+	 }		
+    //--------------------- PACES
+	else if (system == "PA" && sub_system == "C") {
 		// (detector here = ring), Paces has only one "ring",  =>  detector = 0 
 		ostringstream convert;   // stream used for the conversion	
 		convert << std::setw(2) << std::setfill('0') << (crystal);      //  set the width to 2, i.e. (xy), fill the blanks by zeros = { 01, ... , 05 }
@@ -212,44 +223,34 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 		//cout << " RootManager::BuildMnemonic : " << system + sub_system << number <<"XN00" << "  |  " << system + sub_system + number+"XN"+"00" << endl ; 
 		return system + sub_system  + number + "XN" + "00"; 
 		}
-
-    //--------------------- 
-	//Build the mnemonic for New  
-	if (system == "NE")
-		if (sub_system == "W") {
-
+    //--------------------- New PACES  
+	else if (system == "NE" && sub_system == "W") {
 			detector = 4 - detector ; // New is upstream the target
-
 			ostringstream convert;   // stream used for the conversion	
 			convert << std::setw(3) << std::setfill('0') << (detector * 12 + crystal);      //  set the width to 3 (xyz), fill the blanks by zeros
 			number = convert.str(); // set 'Result' to the contents of the stream
-	
-		return (volume + "00XN" + number) ; 
-		}
-		else if (sub_system == "E") {
-		
-		//some operations
-		return volume+"00XN"+ number ; 
-		}
+			return (volume + "00XN" + number) ; 
+			}
 
-
-    //--------------------- 
-	//Build the mnemonic for Sceptar  
-	if (system == "SE")
+    //--------------------- Sceptar
+	else if (system == "SE"){
 		if (sub_system == "P") {
-
 			ostringstream convert;   // stream used for the conversion	
 			convert << std::setw(3) << std::setfill('0') << (crystal );      //  set the width to 3 (xyz), fill the blanks by zeros
 			number = convert.str(); // set 'Result' to the contents of the stream
-	
-		return (volume + "00XN" + number) ; 
+			return (volume + "00XN" + number) ; 
+			}
 		}
 
     //--------------------- 
 	//Griffin 	
 
     //--------------------- 
-	//Other detectors 	
+	//Other detectors
+	
+	//------------------ 
+	//Default
+	 return volume;  
 
 }
 
@@ -300,14 +301,14 @@ void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	// (Th,E)
 	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
 	fSpiceData->SetSpiceThetaEStripNbr(Ring) ;    
-	fSpiceData->SetSpiceThetaEEnergy(energy) ;     
+	fSpiceData->SetSpiceThetaEEnergy(energy/keV) ;     
 	fSpiceData->SetSpiceThetaEResEnergy(applied_resolution) ;
 
 
 	// (Ph,E)
 	fSpiceData->SetSpicePhiEDetectorNbr(1) ;
 	fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
-	fSpiceData->SetSpicePhiEEnergy(energy) ;
+	fSpiceData->SetSpicePhiEEnergy(energy/keV) ;
 	fSpiceData->SetSpicePhiEResEnergy(applied_resolution) ;
 
 	fSpiceData->SetPositionFirstHit(pos) ;				
@@ -340,18 +341,20 @@ void RootManager::SetS3Event(int eventNb, string mnemonic, int Ring, int Seg) {
 
 	// get the energy 			
 	double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+	double stDev = (SpiceResolution[1]*keV) * energy  + (SpiceResolution[0]*keV); // the result is in MeV
+	double applied_resolution = CLHEP::RandGauss::shoot(energy, stDev);  
 	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
 
 	// fill the S3Data object
 	// (Th,E)
 	fS3Data->SetS3ThetaEDetectorNbr(1) ; 
-	fS3Data->SetS3ThetaEStripNbr(Ring) ;    
-	fS3Data->SetS3ThetaEEnergy(energy) ;     
-
+	fS3Data->SetS3ThetaEStripNbr(Ring) ;	
+	fS3Data->SetS3ThetaEEnergy(energy/keV) ;     
+ 
 	// (Ph,E)
 	fS3Data->SetS3PhiEDetectorNbr(1) ;
 	fS3Data->SetS3PhiEStripNbr(Seg)  ;
-	fS3Data->SetS3PhiEEnergy(energy) ;
+	fS3Data->SetS3PhiEEnergy(applied_resolution/keV) ;
 
 	fS3Data->SetPositionFirstHit(pos) ;		
 
@@ -396,14 +399,16 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition() ;
     
 	// fill the PacesData object
+	Ring = Ring ; // irrelevant, in PACES we only have one "ring", should take off this parameter at some point.
 	fPacesData->SetPacesDetectorNbr(Seg) ; 
-	fPacesData->SetPacesEnergy(energy) ;    
+	fPacesData->SetPacesEnergy(energy/keV) ;    
     
     //pos.Dump();
     //getchar();
 	fPacesData->SetPositionFirstHit(pos) ;	
 
 }
+
 
 void RootManager::SetNewEvent(int eventNb, string mnemonic, int detector, int Seg)
 {
@@ -445,6 +450,7 @@ void RootManager::SetNewEvent(int eventNb, string mnemonic, int detector, int Se
 
 }
 
+
 void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, int Seg)
 {
 
@@ -485,10 +491,131 @@ void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, in
 
 }
 
+     void RootManager::ClearVariables(void){
+     
+		//printf("RootManager : ClearVariables .\n");    
+
+		// clear the Fragment 
+		//fFragment->ClearVariables();
+
+		// clear the HistoryData object
+		fHistoryData->ClearVariables();
+
+		// ClearVariables the SpiceData object
+		//fSpiceData->ClearVariables();
+		//fS3Data->ClearVariables();
+
+		// ClearVariables the PacesData object
+		//fPacesData->ClearVariables();
+
+		// clear the NewPaces 
+		fNewData->ClearVariables();
+
+		// clear Sceptar 
+		//fSceptarData->ClearVariables();
+
+		// ClearVariables the GriffinData object
+		//fGriffinData->ClearVariables();
+     }
+
+void RootManager::SetHistory( vector <TrackInformation*> info ){
+
+	for (unsigned iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
+		
+		//info.at(iInfo)->Print();
+		double x, y, z ;// dummy variabales  
+		
+		//primary information 		
+		fHistoryData->SetHistoryPrimaryID(info.at(iInfo)->GetOriginalTrackID())		;
+		fHistoryData->SetHistoryPrimaryPdg(info.at(iInfo)->GetOriginalPdg())		; 
+		fHistoryData->SetHistoryPrimaryEnergy(info.at(iInfo)->GetOriginalEnergy())  ; 
+		
+		x = info.at(iInfo)->GetOriginalPosition().getX(); 
+		y = info.at(iInfo)->GetOriginalPosition().getY(); 
+		z = info.at(iInfo)->GetOriginalPosition().getZ(); 
+		fHistoryData->SetHistoryPrimaryPositionVertex(x,y,z)  ;
+		 
+		x = info.at(iInfo)->GetOriginalMomentum().getX(); 
+		y = info.at(iInfo)->GetOriginalMomentum().getY(); 
+		z = info.at(iInfo)->GetOriginalMomentum().getZ(); 
+		fHistoryData->SetHistoryPrimaryMomentumVertex(x,y,z)  ; 	
+
+        // 1s timpact of the primary 
+		x = info.at(iInfo)->GetOriginalImpactMomentum().getX(); 
+		y = info.at(iInfo)->GetOriginalImpactMomentum().getY(); 
+		z = info.at(iInfo)->GetOriginalImpactMomentum().getZ(); 
+		fHistoryData->SetHistoryPrimaryMomentum1stImpact(x,y,z)	; 
+		
+		x = info.at(iInfo)->GetOriginalImpactPosition().getX(); 
+		y = info.at(iInfo)->GetOriginalImpactPosition().getY(); 
+		z = info.at(iInfo)->GetOriginalImpactPosition().getZ(); 
+		fHistoryData->SetHistoryPrimaryPosition1stImpact(x,y,z)	; 
+		fHistoryData->SetHistoryPrimaryVolume1stImpact(info.at(iInfo)->GetOriginalImpactVolume())		; 
+		
+		// Parent of the current track hitting the target
+		fHistoryData->SetHistoryParentID(info.at(iInfo)->GetCurrentParentID())	;
+
+		// the current track hitting the target information 
+		fHistoryData->SetHistoryCurrentID(info.at(iInfo)->GetCurrentTrackID())	;
+		fHistoryData->SetHistoryCurrentPdg(info.at(iInfo)->GetCurrentPdg())		; 
+		fHistoryData->SetHistoryCurrentEnergy(info.at(iInfo)->GetCurrentEnergyAtVertex())	; 
+		fHistoryData->SetHistoryCurrentCreatorProcess(info.at(iInfo)->GetCurrentProcess())	; 
+		fHistoryData->SetHistoryCurrentTime(info.at(iInfo)->GetCurrentTimeAtVertex())	; 
+		fHistoryData->SetHistoryCurrentVolume1stImpact(info.at(iInfo)->GetCurrentImpactVolume())		; 
+  
+
+		x = info.at(iInfo)->GetCurrentPositionAtVertex().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtVertex().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtVertex().getZ(); 
+		fHistoryData->SetHistoryCurrentPositionVertex(x,y,z)	; 
+		
+		x = info.at(iInfo)->GetCurrentImpactPosition().getX(); 
+		y = info.at(iInfo)->GetCurrentImpactPosition().getY(); 
+		z = info.at(iInfo)->GetCurrentImpactPosition().getZ(); 
+		fHistoryData->SetHistoryCurrentPosition1stImpact(x,y,z) ;
+		
+		x = info.at(iInfo)->GetCurrentPositionAtDetector().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtDetector().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtDetector().getZ(); 
+		fHistoryData->SetHistoryCurrentPositionDetector(x,y,z)	; 
+
+		x = info.at(iInfo)->GetCurrentPositionAtDeath().getX(); 
+		y = info.at(iInfo)->GetCurrentPositionAtDeath().getY(); 
+		z = info.at(iInfo)->GetCurrentPositionAtDeath().getZ();  
+		fHistoryData->SetHistoryCurrentPositionDeath(x,y,z)	;  
+
+
+
+		x = info.at(iInfo)->GetCurrentMomentumAtVertex().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtVertex().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtVertex().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumVertex(x,y,z)	; 
+
+		x = info.at(iInfo)->GetCurrentImpactMomentum().getX(); 
+		y = info.at(iInfo)->GetCurrentImpactMomentum().getY(); 
+		z = info.at(iInfo)->GetCurrentImpactMomentum().getZ(); 		
+		fHistoryData->SetHistoryCurrentMomentum1stImpact(x,y,z)	;
+		
+		x = info.at(iInfo)->GetCurrentMomentumAtDetector().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtDetector().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtDetector().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumDetector(x,y,z)	 ; 
+		
+		x = info.at(iInfo)->GetCurrentMomentumAtDeath().getX(); 
+		y = info.at(iInfo)->GetCurrentMomentumAtDeath().getY(); 
+		z = info.at(iInfo)->GetCurrentMomentumAtDeath().getZ(); 
+		fHistoryData->SetHistoryCurrentMomentumDeath(x,y,z)	; 
+
+		}
+       
+	//cin.get(); 
+}
+
 void RootManager::SetGriffinEvent(int Crystal)
 {	
+	Crystal = Crystal; 
 	//Stuff goes here
-	cout << " " << endl;		
+	//cout << " " << endl;		
 
 }
 
@@ -499,6 +626,8 @@ void RootManager::Close()
     fRootfile->Write();
     fRootfile->Close();    
 }
+
+
 
 
 

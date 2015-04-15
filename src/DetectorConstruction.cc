@@ -244,9 +244,9 @@ void DetectorConstruction::SetWorldMagneticField( G4ThreeVector vec )
     //expHallMagField->SetFieldValue(G4ThreeVector(vec.x(),vec.y(),vec.z()));
 }
 
-void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName)
+void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName, G4double z_offset, G4double z_rotation)
 {
-  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,0);
+  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,z_offset,z_rotation);
 }
 
 void DetectorConstruction::UpdateGeometry()
@@ -742,7 +742,11 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
   G4int segmentID=0;
   G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,-annularDetectorDistance); 
+
+  pSpice->PlaceDetectorMount(logicWorld,pos);
+  pSpice->PlaceAnnularClamps(logicWorld,pos);   
   pSpice->PlaceGuardRing(logicWorld, pos);
+
   for(int ring = 0; ring<nRings; ring++)
     {
       for(int Seg=0; Seg<NumberSeg; Seg++)

@@ -17,6 +17,7 @@ set(myROOTPacesclass 	TPacesData.cpp	)   		# comment if none
 set(myROOTNewclass 		    TNewData.cpp)  			    # comment if none 
 set(myROOTSceptarclass 		    TSceptarData.cpp)  			    # comment if none 
 set(myROOTGriffclass 	TGriffinData.cpp )  		# comment if none
+set(myROOTHistoryclass 	THistoryData.cpp	)   		# comment if none  
 set(myROOTFragmentclass 	TFragment.cpp	) 			# comment if none
 set(myROOTTigFragmentclass 	TTigFragment.cpp) 			# comment if none     
 #set(myROOTNewclass 	TNewData.cpp) 				# comment if none  
@@ -60,7 +61,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 #                   
 if(useROOT)
 	if(myROOTclass)
-	
+		
 		if(myROOTFragmentclass)
 		message(" --- compiling Fragment --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictFragment.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTFragmentclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Fragment_linkdef.h )
@@ -70,7 +71,7 @@ if(useROOT)
 		message(" --- compiling TigFragment --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictTigFragment.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTTigFragmentclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/TigFragment_linkdef.h )
 		endif(myROOTTigFragmentclass)
-		
+					
 		if(myROOTS3class)
 		message(" --- compiling S3 --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictS3.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTS3class} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/S3_linkdef.h )
@@ -101,6 +102,13 @@ if(useROOT)
 		EXECUTE_PROCESS(COMMAND rootcint -f dictGriffin.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTGriffclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Griffin_linkdef.h )
 		endif(myROOTGriffclass)
 
+		if(myROOTHistoryclass)
+		message(" --- compiling History --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictHistory.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTHistoryclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/History_linkdef.h )
+		endif(myROOTHistoryclass)
+	
+
+			
 		#if(myROOTNewclass)
 		#message(" --- compiling New --- ")
 		#EXECUTE_PROCESS(COMMAND rootcint -f dictNew.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTNewclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/New_linkdef.h)
@@ -202,7 +210,12 @@ if(useROOT)
 			message(" --- Linking :  dictGriffin.cxx --- ")
 		set(myROOTDict ${myROOTDict} dictGriffin.cxx)
 		endif(myROOTGriffclass)
-				
+
+		if(myROOTHistoryclass)
+			message(" --- Linking :  dictHistory.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictHistory.cxx)
+		endif(myROOTHistoryclass)
+										
 		if(myROOTNewclass)
 		message(" --- Linking :  dictNew.cxx --- ")
 		set(myROOTDict ${myROOTDict} dictNew.cxx)
@@ -212,7 +225,12 @@ if(useROOT)
 		message(" --- Linking :  dictSceptar.cxx --- ")
 		set(myROOTDict ${myROOTDict} dictSceptar.cxx)
 		endif(myROOTSceptarclass)
-		
+
+		#if(myROOTNewclass)
+		#	message(" --- Linking :  dictNew.cxx --- ")
+		#set(myROOTDict ${myROOTDict} dictNew.cxx)
+		#endif(myROOTNewclass)
+				
 		# This will replace the semicolons in a cmake list ";" to spaces " "	 
 		foreach(arg ${myROOTDict})
 			set(myROOTDictSPACED "${myROOTDictSPACED} ${arg}")

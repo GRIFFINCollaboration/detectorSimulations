@@ -74,18 +74,12 @@ EventAction::~EventAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::BeginOfEventAction(const G4Event* evt) {
-  
-  //cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << endl ;
-      
-  evtNb = evt->GetEventID();
-  
-  if (evtNb%printModulo == 0) 
-//    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
-    printf( " ---> Ev.# %5d\r", evtNb);
-    G4cout.flush();
-   
-    ClearVariables();
-    
+
+  //G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
+	evtNb = evt->GetEventID();
+	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
+	G4cout.flush();
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -134,14 +128,17 @@ void EventAction::EndOfEventAction(const G4Event*)
 		    
 		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
 		    //RootManager::instance()->FillHist(1000/keV);		//optional		    
-		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID /* <- this should be particle pdg */, 
+		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID , // trackID <- this should be particle pdg 
 												depEnergy, posx, posy, posz, 
 												originID, originPdg, originEnergy, 
 												originDirectionX, originDirectionY, originDirectionZ);
+												
         }	
     }
     
-    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event
+    if (depEnergy>0.0) {     // if condition satisfied Sort the HitCollection and make a physical event
+    	RootManager::instance()->ClearVariables(); 
+		RootManager::instance()->SetHistory( PrimaryInfo );
 		RootManager::instance()->SortEvent(evtNb);  
 		}
   
@@ -163,6 +160,7 @@ void EventAction::EndOfEventAction(const G4Event*)
   //G4int i =0;
   //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
 
+   ClearVariables();
 
 }
 
@@ -247,18 +245,21 @@ void EventAction::ClearVariables()
 
   void EventAction::SetPrimaryInfo(TrackInformation * info ){
  
-	 bool family = false ; 
-	 bool daughter = false ;
-	 bool copy = false ;
-	 
-	 unsigned iSize = 0; 
-	 unsigned nSize = PrimaryInfo.size() ; 
-	 
-	 //cout << " =============== Candidate info " << endl ;
-	 //cout << " Adress " << info << endl ;
-	 //info->Print(); 
-	 //cout << " ================================ "  << endl ;
-	 
+	/*
+	bool family = false ; 
+	bool daughter = false ;
+	bool copy = false ;
+
+	unsigned iSize = 0; 
+	unsigned nSize = PrimaryInfo.size() ; 
+	*/ 
+	
+	//cout << " =============== Candidate info " << endl ;
+	//cout << " Adress " << info << endl ;
+	//info->Print(); 
+	//cout << " ================================ "  << endl ;
+
+
 	/* cout << " ++++++++++++++++++++ content At the begining : " << nSize << endl ; 
 	 for ( unsigned iSize = 0 ; iSize < nSize ; iSize++) {
 		cout << " Adress " << PrimaryInfo.at(iSize) << endl ;
@@ -270,14 +271,15 @@ void EventAction::ClearVariables()
 	cout << " new  " << info->GetOriginalTrackID() << "  " ;	
 	cout << "      " << info->GetParentTrackID() << "  " ;			
 	cout << "      " << info->GetCurrentTrackID() << endl ;   
-     */	  	
+     */
+     
+     /*	  	
 	 for ( iSize = 0 ; iSize < nSize ; iSize++) {
 					
-	  	  	/*
-	  	  	cout << " old  " << PrimaryInfo.at(iSize)->GetOriginalTrackID() << "  " ;		
-	  	    cout << "      " << PrimaryInfo.at(iSize)->GetParentTrackID() << "  " ;		
-		  	cout << "      " << PrimaryInfo.at(iSize)->GetCurrentTrackID() << endl ;
-		  	*/
+	  	  
+	  	  //	cout << " old  " << PrimaryInfo.at(iSize)->GetOriginalTrackID() << "  " ;		
+	  	  // 	cout << "      " << PrimaryInfo.at(iSize)->GetParentTrackID() << "  " ;		
+		  //	cout << "      " << PrimaryInfo.at(iSize)->GetCurrentTrackID() << endl ;
 		  	
 		if (PrimaryInfo.at(iSize)->GetOriginalTrackID()==info->GetOriginalTrackID() ) {  //  same family
 	  		//cout << "Same family" << endl ;
@@ -303,22 +305,26 @@ void EventAction::ClearVariables()
 			//else {  		  	cout << " Not Same Information" << endl ;}
 
 	 	}	
+	 	*/
  	 	
  	 	//if (nSize>0 && iSize == nSize) cout << " at end of loop iSize : " << iSize << " nSize : "<< nSize<< endl ;
 
     	//if its a new track add it to the vector 
-  	 	 if (!daughter && !copy) {
+  	 	//if (!daughter && !copy)   	 		{
     		//cout << ">>>>>>>>>>>>>>>>>>>>> Add this info to the vector" << endl ; 
 	  	 	PrimaryInfo.push_back( new TrackInformation(info));
-	  	 	}
-	  	/* 	
- cout << " ++++++++++++++++++++ content At the end : " << endl ; 
+	  	 	// }
+	  	
+	  	/*	
+        cout << " ++++++++++++++++++++ content size  : " << PrimaryInfo.size() << endl ; 
+
  	 	 for ( unsigned iSize = 0 ; iSize < PrimaryInfo.size() ; iSize++) {
- 	 	  	cout << " Adress " << PrimaryInfo.at(iSize) << endl ;
 			PrimaryInfo.at(iSize)->Print();
 			}
 	  	 	cin.get(); 
-  	  	*/ 	  	 	  	 	
+
+	  	*/
+
   }
 
 void EventAction::AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
@@ -326,10 +332,10 @@ void EventAction::AddStepTracker(G4double eventNumber, G4double stepNumber, G4St
   						G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, 
   						G4double originDirectionX, G4double originDirectionY, G4double originDirectionZ, 
   						G4double originEnergy, G4int originPdg, G4int originID, G4int trackID) {
-  						/*
-						cout <<  "eventNumber " << eventNumber << endl  
-						 	 <<  "step Number " << stepNumber  << endl 
-						 	 <<  "volume " << volume  << endl  
+  						
+						 /*cout <<  "eventNumber " << eventNumber << endl  
+						 	 <<  "step Number " << stepNumber  << endl ;
+							 <<  "volume " << volume  << endl  
 						 	 <<  "cryNumber " << cryNumber  << endl 
 						 	 <<  "detNumber " << detNumber  << endl  
 						 	 <<  "depEnergy " << depEnergy  << endl 

@@ -46,6 +46,7 @@
 #include "G4UIcommand.hh"
 #include "G4UIparameter.hh"
 #include "G4UIcmdWithADouble.hh"
+#include "G4String.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -268,7 +269,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   
   SetSpiceResolutionVariablesCmd = new G4UIcommand("/DetSys/Spice/setResolution",this);
   SetSpiceResolutionVariablesCmd->SetGuidance("Set Resolution of SPICE Detection System");
-  G4UIparameter *parameter1,*parameter2, *parameter3;
+  G4UIparameter *parameter1,*parameter2;//, *parameter3;
   parameter1 = new G4UIparameter ("inter", 'd', false);
   SetSpiceResolutionVariablesCmd->SetParameter(parameter1);
   parameter2 = new G4UIparameter ("gain", 'd', false);
@@ -391,7 +392,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     Detector->SetWorldMagneticField(WorldMagneticFieldCmd->GetNew3VectorValue(newValue));
   }
   if( command == WorldTabMagneticFieldCmd ) {
-    Detector->SetTabMagneticField(newValue);
+    G4String path;
+    G4double z_offset, zrotation_offset;
+    const char* s = newValue;
+    std::istringstream is ((char*)s);
+    is>>path>>z_offset>>zrotation_offset;
+    Detector->SetTabMagneticField(path, z_offset, zrotation_offset ); // z in mm, angle in degree  
   }
   if( command == UpdateCmd ) { 
     Detector->UpdateGeometry(); 

@@ -24,10 +24,10 @@
 //
 //  Constructors:
 
-nonUniformMagneticField::nonUniformMagneticField(const char* fieldName, G4double zOffset)
+nonUniformMagneticField::nonUniformMagneticField(const char* fieldName="./", G4double zOffset=0., G4double zRotation=0.)
   :  fChordFinder(0), fStepper(0)
 {
-  fMagneticField = new TabulatedMagneticField(fieldName, zOffset);
+  fMagneticField = new TabulatedMagneticField(fieldName, zOffset, zRotation);
   GetGlobalFieldManager()->CreateChordFinder(fMagneticField);
 
 //  fFieldMessenger = new F03FieldMessenger(this) ;  

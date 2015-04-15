@@ -51,7 +51,7 @@ class TS3Data : public TObject {
    TS3Data();
    virtual ~TS3Data();
 
-   void   Clear();
+   void   ClearVariables();
    void   Dump() const;
 
 

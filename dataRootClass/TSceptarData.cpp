@@ -10,16 +10,15 @@ ClassImp(TSceptarData)
 
 TSceptarData::TSceptarData() 
 {
-    Clear();
+    ClearVariables();
 }
 
 TSceptarData::~TSceptarData()
 {
 }
 
-void TSceptarData::Clear()
+void TSceptarData::ClearVariables()
 {
-
     fSceptar_DetNbr.clear();
     fSceptar_Energy.clear();
 
@@ -30,7 +29,6 @@ void TSceptarData::Clear()
     fPdg.clear();
     fPositionFirstHit.clear();
     fEventNumber = -1 ;
-
 }
 
 void TSceptarData::Dump() const

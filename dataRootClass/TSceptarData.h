@@ -33,7 +33,7 @@ public:
     TSceptarData();
     virtual ~TSceptarData();
 
-    void Clear();
+    void ClearVariables();
     void Dump() const;
 
     /////////////////////             GETTERS             ////////////////////////

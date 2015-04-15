@@ -482,7 +482,7 @@ void DetectionSystemNew::BuildMagnetCover()
 	//Combine Layer two
     G4ThreeVector translate_plate_two_two(this->plate_two_one_length/2. - this->plate_two_two_length/2., 0, 0);
     G4UnionSolid* layer_two_combo = new G4UnionSolid("layer_two_combo", plate_two_one, plate_two_two, 0, translate_plate_two_two);
-/*
+
 	//Build layer three
     G4Box* plate_three_one = new G4Box("plate_three_one", this->plate_three_one_length/2.+this->magnet_cover_thickness, this->plate_three_one_thickness/2.+this->magnet_cover_thickness, this->plate_three_one_height/2.+this->magnet_cover_thickness);
     G4Box* plate_three_two = new G4Box("plate_three_two", this->plate_three_two_length/2.+this->magnet_cover_thickness, (this->plate_three_two_thickness + this->plate_three_one_thickness/2.+this->magnet_cover_thickness), this->plate_three_two_height/2.+this->magnet_cover_thickness);

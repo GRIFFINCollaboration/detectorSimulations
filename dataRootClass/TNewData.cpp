@@ -10,14 +10,14 @@ ClassImp(TNewData)
 
 TNewData::TNewData() 
 {
-    Clear();
+    ClearVariables();
 }
 
 TNewData::~TNewData()
 {
 }
 
-void TNewData::Clear()
+void TNewData::ClearVariables()
 {
 
     fNew_DetNbr.clear();

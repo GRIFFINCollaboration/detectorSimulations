@@ -24,13 +24,13 @@ ClassImp(TSpiceData)
 TSpiceData::TSpiceData()
 {
    // Default constructor
-   Clear();
+   ClearVariables();
 }
 
 TSpiceData::~TSpiceData() {}
 
 
-void TSpiceData::Clear()
+void TSpiceData::ClearVariables()
 {
    // DSSD
    // (Th,E)

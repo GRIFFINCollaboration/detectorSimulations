@@ -236,7 +236,7 @@ G4int DetectionSystemS3::BuildOuterGuardRing()
 {
 
   G4RotationMatrix* rotate = new G4RotationMatrix(angular_offset, 0, 0);  
-  G4double z_offset = this->s3_mount_thickness/2. /*+ this->frontDomeOffset (this offset was used historically for visu checking as far as I understood)*/;
+  G4double z_offset = this->S3DetCrystalThickness/2.; //this->s3_mount_thickness/2. + this->S3DetCrystalThickness/2. /*+ this->frontDomeOffset (this offset was used historically for visu checking as far as I understood)*/;
   G4ThreeVector move_offset(0, 0, -z_offset);
   move = move + move_offset ;
     

@@ -33,7 +33,7 @@ public:
     TNewData();
     virtual ~TNewData();
 
-    void Clear();
+    void ClearVariables();
     void Dump() const;
 
     /////////////////////             GETTERS             ////////////////////////
