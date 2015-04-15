@@ -32,12 +32,18 @@ RootManager::RootManager()
 	// Create objects to hold the data
 	//spice event
 	//fSpiceData = new TSpiceData();
-	fS3Data = new TS3Data();
+	//fS3Data = new TS3Data();
 	//
 	//fDetectorSpice = new DetectionSystemSpice();
 
     //Paces event 
 	//fPacesData = new TPacesData();
+
+    //New event
+    fNewData = new TNewData();
+
+	//SCEPTAR
+	//fSceptarData = new TSceptarData();
 	
 	//GRIFFIN Event
 	//fGriffinData = new TGriffinData();
@@ -75,12 +81,16 @@ void RootManager::SetTree(){
  	/*
 	At this stage you can define what branches are written in the tree
 	*/
-	fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
+	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
 	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//----------------
 	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
 	//fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
+	//----------------
+	fOutputTree->Branch("NewBranch", "TNewData", &fNewData);
+	//----------------
+	//fOutputTree->Branch("SceptarBranch","TSceptarData",&fSceptarData);
 	//----------------
 	// fOutputTree->Branch("GriffinBranch","TGriffinData",&fGriffinData);
 	//----------------
@@ -123,6 +133,25 @@ void RootManager::FillG4Hit(string volume, // Word representing the key used to 
 
 void RootManager::SortEvent(int eventNb) {
 
+	// clear the Fragment 
+	//fFragment->ClearVariables();
+
+	// clear the SpiceData object
+	//fSpiceData->ClearVariables();
+	//fS3Data->ClearVariables();
+
+	// clear the PacesData object
+	//fPacesData->ClearVariables();
+
+	//clear the New Object
+	//fNewData->ClearVariables();
+
+	//clear the Sceptar Object
+	//fSceptarData->ClearVariables();
+
+	// clear the GriffinData object
+	//	fGriffinData->ClearVariables();
+
 	// Sort Data from the map second element by getters and set them
 	std::map<string,RawG4Event>::iterator it;
 	for (std::map<string,RawG4Event>::iterator it=fGeantEvent.begin(); it!=fGeantEvent.end(); ++it) {
@@ -134,15 +163,23 @@ void RootManager::SortEvent(int eventNb) {
 
 		//Spice
 		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
-		if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		
 		//Paces
 		//if (system=="PAC") {
 		//	SetPacesEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//	fPacesData->Dump();
 		//	}
+
+        //NEW
+        if (system=="NEW") SetNewEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+
+        //Sceptar
+        //if (system=="SEP") SetSceptarEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		
 		//Griffin
 		//Need to put Griffin key here
+		
 		//New Detector
 		//if (system==XYZ) SetOtherDetectorEvent(key);
 		}
@@ -165,7 +202,7 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 
 	//Build the mnemonic for spice 
 	//---------------------  
-	if (system == "SP"){
+	if (system == "SP"){ // SPICE SiLi
 		if (sub_system == "I") {
 			detector = 9 - detector ; // (detector here = ring) spice is upstream the target, according to the mnemonics outer ring is '0' inner ring is 9.
 			ostringstream convert;   // stream used for the conversion	
@@ -173,11 +210,11 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 			number = convert.str(); // set 'Result' to the contents of the stream
 			return ( system + sub_system  + "00XN" + number) ; 
 			}
-		else if (sub_system == "E") {
+		else if (sub_system == "E") { // SPICE S3
 				return system + sub_system  +"00"+"XN"+ number ; 
 				}
 	 }		
-    //--------------------- 
+    //--------------------- PACES
 	else if (system == "PA" && sub_system == "C") {
 		// (detector here = ring), Paces has only one "ring",  =>  detector = 0 
 		ostringstream convert;   // stream used for the conversion	
@@ -186,7 +223,24 @@ string RootManager::BuildMnemonic(string volume, int detector, int crystal) {
 		//cout << " RootManager::BuildMnemonic : " << system + sub_system << number <<"XN00" << "  |  " << system + sub_system + number+"XN"+"00" << endl ; 
 		return system + sub_system  + number + "XN" + "00"; 
 		}
-		
+    //--------------------- New PACES  
+	else if (system == "NE" && sub_system == "W") {
+			detector = 4 - detector ; // New is upstream the target
+			ostringstream convert;   // stream used for the conversion	
+			convert << std::setw(3) << std::setfill('0') << (detector * 12 + crystal);      //  set the width to 3 (xyz), fill the blanks by zeros
+			number = convert.str(); // set 'Result' to the contents of the stream
+			return (volume + "00XN" + number) ; 
+			}
+
+    //--------------------- Sceptar
+	else if (system == "SE"){
+		if (sub_system == "P") {
+			ostringstream convert;   // stream used for the conversion	
+			convert << std::setw(3) << std::setfill('0') << (crystal );      //  set the width to 3 (xyz), fill the blanks by zeros
+			number = convert.str(); // set 'Result' to the contents of the stream
+			return (volume + "00XN" + number) ; 
+			}
+		}
 
     //--------------------- 
 	//Griffin 	
@@ -355,29 +409,116 @@ void RootManager::SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg)
 
 }
 
+
+void RootManager::SetNewEvent(int eventNb, string mnemonic, int detector, int Seg)
+{
+
+    //treat
+    fGeantEvent.at(mnemonic).SortPrimary();
+
+	fNewData->SetEventNumber(eventNb) ;
+    //get primary
+    //Pdg
+    int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult();
+    for( int i = 0 ; i<mult ; i++) {
+        fNewData->SetPrimaryPdg(fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
+    }
+
+    //Energy
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult();
+    for(int i = 0 ; i<mult ; i++){
+        fNewData->SetPrimaryEnergy(fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) );
+    }
+
+    //Momentum
+    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult();
+    for(int i = 0 ; i<mult ; i++){
+        fNewData->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+        fNewData->SetPrimaryPhi(fGeantEvent.at(mnemonic).GetPrimaryPhi(i) );
+    }
+
+    //get the energy
+    double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+    TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
+
+    //fill the NewData Object
+    fNewData->SetNewDetectorNbr(detector);
+    fNewData->SetNewEnergy(energy);
+    fNewData->SetPositionFirstHit(pos);
+
+	//fNewData->Dump();
+
+}
+
+
+void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, int Seg)
+{
+
+    //treat
+    fGeantEvent.at(mnemonic).SortPrimary();
+
+	fSceptarData->SetEventNumber(eventNb) ;
+    //get primary
+    //Pdg
+    int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult();
+    for( int i = 0 ; i<mult ; i++) {
+        fSceptarData->SetPrimaryPdg(fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
+    }
+
+    //Energy
+    mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult();
+    for(int i = 0 ; i<mult ; i++){
+        fSceptarData->SetPrimaryEnergy(fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) );
+    }
+
+    //Momentum
+    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult();
+    for(int i = 0 ; i<mult ; i++){
+        fSceptarData->SetPrimaryTheta(fGeantEvent.at(mnemonic).GetPrimaryTheta(i) ) ;
+        fSceptarData->SetPrimaryPhi(fGeantEvent.at(mnemonic).GetPrimaryPhi(i) );
+    }
+
+    //get the energy
+    double energy = fGeantEvent.at(mnemonic).GetFullEnergy();
+    TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
+
+    //fill the SceptarData Object
+    fSceptarData->SetSceptarDetectorNbr(detector);
+    fSceptarData->SetSceptarEnergy(energy);
+    fSceptarData->SetPositionFirstHit(pos);
+
+	//fSceptarData->Dump();
+
+}
+
      void RootManager::ClearVariables(void){
      
-     	//printf("RootManager : ClearVariables .\n");    
-     
-     // clear the Fragment 
+		//printf("RootManager : ClearVariables .\n");    
+
+		// clear the Fragment 
 		//fFragment->ClearVariables();
 
-	// clear the HistoryData object
+		// clear the HistoryData object
 		fHistoryData->ClearVariables();
-			
-	// ClearVariables the SpiceData object
+
+		// ClearVariables the SpiceData object
 		//fSpiceData->ClearVariables();
-		fS3Data->ClearVariables();
-	
-	// ClearVariables the PacesData object
+		//fS3Data->ClearVariables();
+
+		// ClearVariables the PacesData object
 		//fPacesData->ClearVariables();
 
-	// ClearVariables the GriffinData object
+		// clear the NewPaces 
+		fNewData->ClearVariables();
+
+		// clear Sceptar 
+		//fSceptarData->ClearVariables();
+
+		// ClearVariables the GriffinData object
 		//fGriffinData->ClearVariables();
      }
 
 void RootManager::SetHistory( vector <TrackInformation*> info ){
-
 
 	for (unsigned iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
 		

@@ -23,6 +23,12 @@ TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double z
   char buffer[256];
   file.getline(buffer,256);
   
+  if (!file.is_open()) {
+	  G4cout <<"\n\ncannot open file : " << filename <<"\n\n" ;
+	  G4cin.get();
+	  }
+	  
+
   // Read table dimensions 
   file >> nx >> ny >> nz; // Note dodgy order
 
@@ -75,6 +81,7 @@ TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double z
     }
   }
   file.close();
+
 
   maxx = xval * lenUnit;
   maxy = yval * lenUnit;

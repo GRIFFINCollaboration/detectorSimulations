@@ -68,6 +68,12 @@ private:
   
   //S3
   void SetDetAndCryNumberForS3Detector( G4String ) ;
+
+  //New
+  void SetDetAndCryNumberForNewDetector( G4String ) ;
+
+  //Sceptar
+  void SetDetAndCryNumberForSceptarDetector( G4String ) ;
   
   G4int FindTrueGriffinDetector(G4int);
 

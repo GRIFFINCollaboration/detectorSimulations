@@ -1480,17 +1480,17 @@ void ApparatusSpiceTargetChamber::PlacePhotonShield()
 	   + this->photon_shield_layer_three_thickness/2.
 	   + this->photon_shield_layer_two_thickness/2.
 	   + this->photon_shield_layer_one_thickness/2.);
-  //  photon_shield_layer_two_phys = new G4PVPlacement(rotate,move,photon_shield_layer_two_log,
-  //						   "photon_shield_layer_two", expHallLog,
-  //						   false,0);
+    photon_shield_layer_two_phys = new G4PVPlacement(rotate,move,photon_shield_layer_two_log,
+  						   "photon_shield_layer_two", expHallLog,
+  						   false,0);
   
   move.set(0,0, this->photon_shield_back_face_pos
 	   + this->photon_shield_layer_three_thickness/2. 
 	   + this->photon_shield_layer_two_thickness/2. 
 	   + this->photon_shield_layer_one_thickness/2.);
-  //  photon_shield_layer_three_phys = new G4PVPlacement(rotate,move,photon_shield_layer_three_log,
-  //						     "photon_shield_layer_three", expHallLog,
-  //						     false,0);
+    photon_shield_layer_three_phys = new G4PVPlacement(rotate,move,photon_shield_layer_three_log,
+  						     "photon_shield_layer_three", expHallLog,
+  						     false,0);
   
 }// end:PlacePhotonShield()
 

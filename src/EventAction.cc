@@ -74,7 +74,7 @@ EventAction::~EventAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::BeginOfEventAction(const G4Event* evt) {
-  
+
   //G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
 	evtNb = evt->GetEventID();
 	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
@@ -136,7 +136,7 @@ void EventAction::EndOfEventAction(const G4Event*)
         }	
     }
     
-    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
+    if (depEnergy>0.0) {     // if condition satisfied Sort the HitCollection and make a physical event
     	RootManager::instance()->ClearVariables(); 
 		RootManager::instance()->SetHistory( PrimaryInfo );
 		RootManager::instance()->SortEvent(evtNb);  
@@ -155,6 +155,7 @@ void EventAction::EndOfEventAction(const G4Event*)
   FillSpiceCryst() ;
   FillPacesCryst() ; 
   Fill8piCryst() ;
+  FillNewCryst() ;
 
   //G4int i =0;
   //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
@@ -171,14 +172,13 @@ void EventAction::EndOfEventAction(const G4Event*)
 //  //histoManager->FillHisto2D(1, x, y);
 //}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oo/*oOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
 
 void EventAction::ClearVariables()
 {
 
- //G4cout << ">>>>>>>>>>>>>>>>>>>> PrimaryInfo Cleared" << endl ; 
   PrimaryInfo.clear();
   
   if(histoManager->GetStepTrackerBool()) {
@@ -215,6 +215,8 @@ void EventAction::ClearVariables()
       SpiceCrystTrackDet[i]							= 0 ;
       PacesCrystEnergyDet[i]						= 0 ;
       PacesCrystTrackDet[i]							= 0 ;
+      NewCrystTrackDet[i]               			=0 ;
+      NewCrystEnergyDet[i]             				 =0 ;
       
       
   }
@@ -256,6 +258,7 @@ void EventAction::ClearVariables()
 	//cout << " Adress " << info << endl ;
 	//info->Print(); 
 	//cout << " ================================ "  << endl ;
+
 
 	/* cout << " ++++++++++++++++++++ content At the begining : " << nSize << endl ; 
 	 for ( unsigned iSize = 0 ; iSize < nSize ; iSize++) {
@@ -314,12 +317,14 @@ void EventAction::ClearVariables()
 	  	
 	  	/*	
         cout << " ++++++++++++++++++++ content size  : " << PrimaryInfo.size() << endl ; 
+
  	 	 for ( unsigned iSize = 0 ; iSize < PrimaryInfo.size() ; iSize++) {
 			PrimaryInfo.at(iSize)->Print();
 			}
 	  	 	cin.get(); 
+
 	  	*/
-  	  	 	  	 	  	 	
+
   }
 
 void EventAction::AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
@@ -600,6 +605,11 @@ void EventAction::FillPacesCryst()
     if(energySum > MINENERGYTHRES) {
       if(WRITEEDEPHISTOS)     histoManager->FillHisto(paces_crystal_edep_sum, energySum);
     }     
+}
+
+void EventAction::FillNewCryst() 
+{
+        
 }
 
 

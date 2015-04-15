@@ -57,6 +57,7 @@ class DetectionSystemS3;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
 class DetectionSystemLanthanumBromide;
+class DetectionSystemNew;
 
 class DetectionSystemBox;
 
@@ -135,6 +136,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
+
+    void AddDetectionSystemNew(G4int ndet);
+    void AddNewSquareDetector(G4int ndet);
     
     void SetSpiceResolutionVariables(G4double intercept, G4double gain);
     void AddDetectionSystemSpice(G4int nRings);

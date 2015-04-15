@@ -32,6 +32,8 @@ using namespace std ;
 #include "../dataRootClass/TGriffinData.h"
 #include "../dataRootClass/TPacesData.h"
 #include "../dataRootClass/THistoryData.h"
+#include "../dataRootClass/TNewData.h"
+#include "../dataRootClass/TSceptarData.h"
 
 
 class RootManager   {
@@ -61,8 +63,9 @@ class RootManager   {
         TS3Data*    fS3Data;   
         TPacesData* fPacesData;
         TGriffinData* fGriffinData;  
-        
         THistoryData* fHistoryData;
+        TNewData*       fNewData; 
+        TSceptarData*       fSceptarData; 
         TTigFragment* 	fFragment;    
 
     public:
@@ -98,6 +101,8 @@ class RootManager   {
        void SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg);
        void SetS3Event(int eventNb, string mnemonic, int Ring, int Seg);
        void SetPacesEvent(int eventNb, string mnemonic, int Ring, int Seg);
+       void SetNewEvent(int eventNb, string mnemonic, int detector, int Seg);
+       void SetSceptarEvent(int eventNb, string mnemonic, int detector, int Seg);
 
        
        void SetGriffinEvent(int key);
