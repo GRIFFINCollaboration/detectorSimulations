@@ -119,6 +119,8 @@ void TabulatedMagneticField::GetFieldValue(const double point[4],
 				      double *Bfield ) const
 {
 
+ //G4cout << "---> values x,y,z, t (GetFieldValue): " << point[0]/mm << " " << point[1]/mm << " " << point[2]/mm << " " << point[3]/nanosecond << " " << G4endl ; 
+	 
   double x = point[0];
   double y = point[1];
   double z = point[2] + fZoffset;

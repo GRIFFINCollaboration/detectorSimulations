@@ -120,41 +120,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
 // After the very first step
 	if (aStep->GetTrack()->GetCurrentStepNumber()== 1 ){ 
-        
-		if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()==0) { // if out of world 
-			
-			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {  // if original particle  (this information will be past by to all the descendants)
-				info->SetTagged(true);
-				info->SetOriginalImpactVolume("OOW");// Out Of World
-				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
-				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
-				}
-			else {	// if other particle  (this information will change with every new track)
-				info->SetCurrentImpactVolume("OOW");
-				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
-				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
-				//cin.get() ;
-				}
-			}
-		else {  // if NOT out of world 
-		    // if original particle (this information will be past by to all the descendants)
-			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {
-				info->SetOriginalImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
-				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
-				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
-				}
-			else {// if other particle (this information will change with every new track)
-				info->SetCurrentImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
-				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
-				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;  
-				}
-			}
-			
+       // If anything need to be done put it here...			
 		} 
 
-
-// Tag this track if the particle will hit the detector
-	
 // Get volume before and after for each step
 	G4String after = "VolAfter" ;
 	G4String before = "VolBefore" ;
@@ -166,26 +134,80 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		before = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
 		after = "OOW" ;	
 		}
-	
-// If the detector is touched get position and momentum (and time?)
-	
+		
+// If the primary hits the first volume get position and momentum and name of volume (and time?)
 	// Build the selection 
-	G4bool selection = 0 ; 
-	selection +=  (before.contains("SquareDetect") || after.contains("SquareDetect")) && !info->GetTagged(); 
-	selection +=  (before.contains("siDetS3") || after.contains("siDetS3")) && !info->GetTagged() ; 
+	G4bool selection_impact = (before=="World" && after!="World" ) ; 
+    
+    if ( selection_impact ) {
+		if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()==0) { // if out of world 
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {  // if original particle  (this information will be passed to all the descendants)
+				if (!info->GetTagOriginalImpact()){
+					info->SetTagged(true);
+					info->SetTagOriginalImpact(true);
+					info->SetOriginalImpactVolume("OOW");// Out Of World
+					info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+					info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+					}
+				}
+			else 
+				if(info->GetTagCurrentImpact()){	// if this a daughter particle  (this information will change with every new track)
+					info->SetTagCurrentImpact(true);
+					info->SetCurrentImpactVolume("OOW");
+					info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+					info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+					//cin.get() ;
+					}
+			}
+		else {  // if NOT out of world 
+		    // if original particle (this information will be past by to all the descendants)
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {
+				if (!info->GetTagOriginalImpact()){
+					info->SetTagOriginalImpact(true);
+					info->SetOriginalImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+					info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+					info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+					}
+				}
+			else {// if other particle (this information will change with every new track)
+				if (!info->GetTagOriginalImpact()){
+					info->SetTagCurrentImpact(true);
+					info->SetCurrentImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+					info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+					info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;  
+					}
+				}
+			}
+		}
+
+// Collect the original particle trajectory unitil it hits a volume 
+	// Build the selection for trajectory
+	G4bool selection_trajectory  =  (before.contains("World") && after.contains("World")) && (aStep->GetTrack()->GetCreatorProcess() == 0); 
+	if( selection_trajectory ){
+		// store position
+		info->SetOriginalTrajectoryElement(aStep->GetTrack()->GetPosition()) ; 
+		//G4cout << " Recorded " << aStep->GetTrack()->GetPosition() << G4endl ;
+		//G4cin.get();  
+		}
+				
+// Tag this track if the particle will hit the detector, get position and momentum (and time?)
+	// Build the selection 
+	G4bool selection_detector = 0 ; 
+	selection_detector +=  (before.contains("SquareDetect") || after.contains("SquareDetect")) && !info->GetTagged(); 
+	selection_detector +=  (before.contains("siDetS3") || after.contains("siDetS3")) && !info->GetTagged() ; 
  
- 
-	if( selection ){  	
+	if( selection_detector ){  	
 		// Get position and momentum
 		info->SetCurrentPositionAtDetector(aStep->GetTrack()->GetPosition()) ;  
 		info->SetCurrentMomentumAtDetector(aStep->GetTrack()->GetMomentum()) ;
 		info->SetTagged(true);
 		}
 
+
+		
 // this is the last step, in case the particle is tagged => add some new info and keep the track 
-	if (aStep->GetTrack()->GetTrackStatus() == 2 && info->GetTagged() ) {
-	
-		// Get position 
+	if (aStep->GetTrack()->GetTrackStatus() == 2 /*&& info->GetTagged()*/ ) { // uncomment get tagged to store only the particles hitting the detector
+			// Get position 
 		info->SetCurrentPositionAtDeath(aStep->GetTrack()->GetPosition()) ;  
 		info->SetCurrentMomentumAtDeath(aStep->GetTrack()->GetMomentum()) ;  
 		// Get Pdg 
@@ -204,15 +226,12 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 			info->SetCurrentProcess("source")  ;                     
 		
 		// Keep the track in the record
-		//cout << " <<<<<< Setting info >>>>>> " << endl ; 
 		eventaction->SetPrimaryInfo( info ) ;
-		//cout << " <<<<<< <<<<<< >>>>>> >>>>>> " << endl ; 
-		
-		//clear the parts unrelated to the original particle information, and untag for the new track 
-		info->PartialClear();  // info->SetTagged(false); included 
-
+		//info->Print(); 
+		//cin.get(); 
+		//clear the parts unrelated to the original particle information, and untag to prepare for the new track 
+		info->PartialClear(); 
 		}
-
 
   G4int 	OriginID = info->GetOriginalTrackID() ;  
   G4int 	OriginPdg = info->GetOriginalPdg() ;     

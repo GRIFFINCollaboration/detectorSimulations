@@ -15,10 +15,13 @@ Clear() ;
 void TrackInformation::Clear()
 {
     Tagged = false;
-    
+    TagOriginalImpact= false; 
+    TagCurrentImpact= false;    
+     
     originalTrackID = -1;
     originalPdg = -1;
     originalPosition = G4ThreeVector(-1.,-1.,-1.);
+    originalTrajectory.clear();
     originalMomentum = G4ThreeVector(-1.,-1.,-1.);
     originalEnergy = -1;
     originalTime = -1;
@@ -57,7 +60,8 @@ void TrackInformation::Clear()
 void TrackInformation::PartialClear()
 {
     Tagged = false;
- 
+    TagCurrentImpact= false; 
+     
     currentProcess = -1;
 	currentTrackID = -1;
     currentparentTrackID = -1 ;
@@ -87,11 +91,15 @@ TrackInformation::TrackInformation(const G4Track* aTrack)
 {
 
     //G4cout<< " this is a track with a parent ID = " <<aTrack->GetParentID()<<G4endl;
-    Tagged = false; 
+    Tagged = false;
+    TagOriginalImpact= false; 
+    TagCurrentImpact= false; 
+     
     originalParentID = aTrack->GetParentID();
     originalTrackID = aTrack->GetTrackID();
     originalPdg = aTrack->GetDefinition()->GetPDGEncoding();
     originalPosition = aTrack->GetVertexPosition();
+    originalTrajectory.push_back(aTrack->GetVertexPosition()); // initiate 
     originalMomentum = aTrack->GetVertexMomentumDirection();
     originalEnergy = aTrack->GetVertexKineticEnergy();
     originalTime = aTrack->GetGlobalTime();
@@ -120,12 +128,15 @@ TrackInformation::TrackInformation(const TrackInformation* aTrackInfo)
   : G4VUserTrackInformation()
 {
     Tagged = aTrackInfo->Tagged;
-    
+    TagOriginalImpact= aTrackInfo->TagOriginalImpact; 
+    TagCurrentImpact= aTrackInfo->TagCurrentImpact;
+         
     //original at source     
     originalParentID = aTrackInfo->originalParentID;
     originalTrackID = aTrackInfo->originalTrackID;
     originalPdg = aTrackInfo->originalPdg;
     originalPosition = aTrackInfo->originalPosition;
+    originalTrajectory = aTrackInfo->originalTrajectory;
     originalMomentum = aTrackInfo->originalMomentum;
     originalEnergy = aTrackInfo->originalEnergy;
     originalTime = aTrackInfo->originalTime;
@@ -172,7 +183,7 @@ void TrackInformation::Print() const
    	G4cout	<< " This Track is tagged !! " << Tagged  << G4endl ; 
    	else 
    	   	G4cout	<< " No tagging is set " << Tagged  << G4endl ; 
-   	   	
+
     G4cout	<< " at Source " << G4endl
     		<< "    Position          " << originalPosition << G4endl  
     		<< "    Momentum          " << originalMomentum << G4endl  
@@ -182,10 +193,20 @@ void TrackInformation::Print() const
 			<< "Original track Energy " << originalEnergy << G4endl
 			<< "Original track Time   " << originalTime << G4endl ;
 
+    G4cout	<< " ----- Original Trajectory till first impact ----- " << G4endl ;
+    for(unsigned i = 0 ; i < originalTrajectory.size() ; i++ ){
+        G4cout	<< "     " << originalTrajectory.at(i) << G4endl ;
+        if (i>5) break ; // cout only the first 5 positions 
+    }			
+
     G4cout	<< " ----- Original after first impact ----- " << G4endl ;			
     G4cout	<< " at Volume            " << originalImpactVolume  << G4endl		
     		<< "    Position          " << originalImpactPosition << G4endl ; 
     G4cout	<< "    Momentum          " << originalImpactMomentum  << G4endl ;
+     if (TagOriginalImpact)
+   	G4cout	<< " tagged !! " << TagOriginalImpact  << G4endl ; 
+   	else 
+   	   	G4cout	<< " Not Tagged " << TagOriginalImpact  << G4endl ; 
 
     G4cout	<< " +++++ Secondaries +++++ " << G4endl ;			
     G4cout	<< "Current track Process " << currentProcess  << G4endl  
@@ -202,7 +223,11 @@ void TrackInformation::Print() const
     G4cout	<< " at 1st impact        " << currentImpactVolume  << G4endl		
     		<< "    Position          " << currentImpactPosition << G4endl ; 
     G4cout	<< "    Momentum          " << currentImpactMomentum  << G4endl ;
-    
+     if (TagCurrentImpact)
+   	G4cout	<< " tagged !! " << TagCurrentImpact  << G4endl ; 
+   	else 
+   	   	G4cout	<< " Not Tagged " << TagCurrentImpact  << G4endl ; 
+   	   	
     G4cout	<< " at Detector " << G4endl
     		<< "    Position          " << currentPositionAtDetector << G4endl  
     		<< "    Momentum          " << currentMomentumAtDetector << G4endl ;  

@@ -43,6 +43,8 @@
 #include "HistoManager.hh" 
 #include "RootManager.hh"
 
+#include "G4StepLimiterBuilder.hh" // mhd [06 May 2015],  
+
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
@@ -70,6 +72,7 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(detector);
   //
   PhysicsList* physics = new PhysicsList;
+  //physics->RegisterPhysics(new G4StepLimiterBuilder()); // Mhd 06 May 2015, to reduce step length , check 
   runManager->SetUserInitialization(physics);
   //
   TrackingAction* tracking_action = new TrackingAction(); // MHD 19 April 2013

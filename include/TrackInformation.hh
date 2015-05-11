@@ -38,6 +38,7 @@ class TrackInformation : public G4VUserTrackInformation
     G4int                 originalTrackID;
     G4int				  originalPdg;
     G4ThreeVector         originalPosition;
+    vector<G4ThreeVector> originalTrajectory; // till first impact 
     G4ThreeVector         originalMomentum;
     G4double              originalEnergy;
     G4double              originalTime;
@@ -70,14 +71,19 @@ class TrackInformation : public G4VUserTrackInformation
     vector<G4String>      SecondariesBirthVolume; 
     vector<G4String>      SecondariesDeathVolume; 
     vector<G4int>         SecondariesPdg;         
-    
-    G4bool                Tagged;  
+
+	G4bool                Tagged;  
+	G4bool                TagOriginalImpact; // used to tag the storage for first impact 
+	G4bool                TagCurrentImpact;  // used to tag the storage for first impact
       
   public:
      
   //Getters
   //Original particle at source 
     inline G4bool GetTagged(void) const {return Tagged;}
+    inline G4bool GetTagOriginalImpact(void) const {return TagOriginalImpact;}
+    inline G4bool GetTagCurrentImpact(void) const {return TagCurrentImpact;}
+    
     inline G4int GetOriginalParentID(void) const {return originalParentID;}
     inline G4int GetOriginalTrackID(void) const {return originalTrackID;}
     inline G4int GetOriginalPdg(void) const {return originalPdg;}
@@ -89,7 +95,7 @@ class TrackInformation : public G4VUserTrackInformation
     inline G4String      GetOriginalImpactVolume(void) { return originalImpactVolume; }
     inline G4ThreeVector GetOriginalImpactMomentum(void) { return originalImpactMomentum; }
     inline G4ThreeVector GetOriginalImpactPosition(void) { return originalImpactPosition; }
-
+    inline vector<G4ThreeVector> GetOriginalTrajectory(void) { return originalTrajectory;}
 // Secondaries
     inline G4String GetCurrentProcess(void) const {return currentProcess;}
     inline G4int GetCurrentParentID(void) const {return currentparentTrackID;}
@@ -124,12 +130,15 @@ class TrackInformation : public G4VUserTrackInformation
     inline G4ThreeVector GetCurrentImpactPosition(void) { return currentImpactPosition; }
      
     //Setters
-    inline void   SetTagged( G4bool tag) { Tagged = tag ;} 
+    inline void   	SetTagged( G4bool tag) { Tagged = tag ;} 
+    inline void		SetTagOriginalImpact(G4bool tag) { TagOriginalImpact = tag ;}
+    inline void 	SetTagCurrentImpact(G4bool tag)  { TagCurrentImpact = tag ;}    
         
         // original 
     inline void SetOriginalImpactVolume(G4String vol ) { originalImpactVolume = vol ; }
     inline void SetOriginalImpactMomentum(G4ThreeVector momentum) { originalImpactMomentum = momentum;}
     inline void SetOriginalImpactPosition(G4ThreeVector position) { originalImpactPosition = position;}
+    inline void SetOriginalTrajectoryElement(G4ThreeVector position) { originalTrajectory.push_back(position);}
 	   // secondaries
 	inline void SetCurrentProcess(G4String process) { currentProcess = process ;}
 	inline void SetCurrentParentID(int id) { currentparentTrackID = id ;}

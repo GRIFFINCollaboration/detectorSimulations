@@ -31,7 +31,7 @@ RootManager::RootManager()
 
 	// Create objects to hold the data
 	//spice event
-	//fSpiceData = new TSpiceData();
+	fSpiceData = new TSpiceData();
 	//fS3Data = new TS3Data();
 	//
 	//fDetectorSpice = new DetectionSystemSpice();
@@ -40,7 +40,7 @@ RootManager::RootManager()
 	//fPacesData = new TPacesData();
 
     //New event
-    fNewData = new TNewData();
+    //fNewData = new TNewData();
 
 	//SCEPTAR
 	//fSceptarData = new TSceptarData();
@@ -82,13 +82,13 @@ void RootManager::SetTree(){
 	At this stage you can define what branches are written in the tree
 	*/
 	//fOutputTree->Branch("S3Branch","TS3Data",&fS3Data);
-	//fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
+	fOutputTree->Branch("SpiceBranch","TSpiceData",&fSpiceData); 
 	//----------------
 	//fOutputTree->Branch("TTigFragment","TTigFragment",&fFragment, 1000, 99);
 	//----------------
 	//fOutputTree->Branch("PacesBranch","TPacesData",&fPacesData);
 	//----------------
-	fOutputTree->Branch("NewBranch", "TNewData", &fNewData);
+	//fOutputTree->Branch("NewBranch", "TNewData", &fNewData);
 	//----------------
 	//fOutputTree->Branch("SceptarBranch","TSceptarData",&fSceptarData);
 	//----------------
@@ -502,14 +502,14 @@ void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, in
 		fHistoryData->ClearVariables();
 
 		// ClearVariables the SpiceData object
-		//fSpiceData->ClearVariables();
+		fSpiceData->ClearVariables();
 		//fS3Data->ClearVariables();
 
 		// ClearVariables the PacesData object
 		//fPacesData->ClearVariables();
 
 		// clear the NewPaces 
-		fNewData->ClearVariables();
+		//fNewData->ClearVariables();
 
 		// clear Sceptar 
 		//fSceptarData->ClearVariables();
@@ -520,15 +520,34 @@ void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, in
 
 void RootManager::SetHistory( vector <TrackInformation*> info ){
 
+bool filled = false ; 
+
 	for (unsigned iInfo = 0 ; iInfo < info.size() ;  iInfo ++ ) {
 		
 		//info.at(iInfo)->Print();
 		double x, y, z ;// dummy variabales  
-		
+		vector<G4ThreeVector> trajectory ; // for the first primary charged particle, typically the emitted electron from the source  
+
 		//primary information 		
 		fHistoryData->SetHistoryPrimaryID(info.at(iInfo)->GetOriginalTrackID())		;
 		fHistoryData->SetHistoryPrimaryPdg(info.at(iInfo)->GetOriginalPdg())		; 
 		fHistoryData->SetHistoryPrimaryEnergy(info.at(iInfo)->GetOriginalEnergy())  ; 
+		
+		if (info.at(iInfo)->GetOriginalPdg()==11 && info.at(iInfo)->GetCurrentParentID() == 0 && (!filled) ){ // make sure it's a charged electron and a primary particle
+			trajectory = info.at(iInfo)->GetOriginalTrajectory() ; 
+			for (unsigned iTer = 0 ; iTer < trajectory.size() ; iTer++ ) {
+				x = trajectory.at(iTer).getX(); 
+				y = trajectory.at(iTer).getY(); 
+				z = trajectory.at(iTer).getZ();
+				//G4cout << iTer << " (setting) " << trajectory.at(iTer) << G4endl ; 	
+				fHistoryData->SetHistoryPrimaryTrajectory(x,y,z)  ;
+				//G4cin.get(); 
+				if (trajectory.at(iTer).mag()> 300*mm) { /* G4cout << " maximum mag reached  " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ;*/ break; } // only store the trajectory with a sphere radius of 150 mm 
+				if(iTer>999) { /*G4cout << " maximum iteration reached  " << iTer << " " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ; */ break ; } // only store 100 steps
+				}
+			//G4cin.get(); 
+			filled = true ; 
+			}
 		
 		x = info.at(iInfo)->GetOriginalPosition().getX(); 
 		y = info.at(iInfo)->GetOriginalPosition().getY(); 
@@ -607,7 +626,8 @@ void RootManager::SetHistory( vector <TrackInformation*> info ){
 		fHistoryData->SetHistoryCurrentMomentumDeath(x,y,z)	; 
 
 		}
-       
+		
+	//fHistoryData->Dump();    
 	//cin.get(); 
 }
 

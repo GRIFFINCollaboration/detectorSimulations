@@ -203,11 +203,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                     0,                  //its mother  volume
                                     false,              //no boolean operation
                                     0);                 //copy number  
-  
+ 
+  // limit the maximum steplength in the world, 
+  // this is useful to map the magnetic field of the lens
+  // [mhd - 07 May 2015 ]
+  //------------------------
+   G4double maxStep = 1.0*mm;
+   fStepLimit = new G4UserLimits(maxStep); 
+   logicWorld->SetUserLimits(fStepLimit);   
+  //------------------------
+        
   // Visualization Attributes
-
   logicWorld->SetVisAttributes (G4VisAttributes::Invisible); // The following block of code works too. 
-  
 //  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
 //  worldVisAtt->SetForceWireframe(true);
 //  worldVisAtt->SetVisibility(this->world_vis);

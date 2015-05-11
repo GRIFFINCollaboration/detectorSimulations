@@ -79,7 +79,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt) {
 	evtNb = evt->GetEventID();
 	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
 	G4cout.flush();
-
+	//G4cin.get() ;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -136,10 +136,10 @@ void EventAction::EndOfEventAction(const G4Event*)
         }	
     }
     
-    if (depEnergy>0.0) {     // if condition satisfied Sort the HitCollection and make a physical event
-    	RootManager::instance()->ClearVariables(); 
+    if (1 /*depEnergy>0.0*/) {     // if condition satisfied Sort the HitCollection and make a physical event
+        RootManager::instance()->ClearVariables(); 
 		RootManager::instance()->SetHistory( PrimaryInfo );
-		RootManager::instance()->SortEvent(evtNb);  
+		RootManager::instance()->SortEvent(evtNb); 
 		}
   
   FillParticleType() ; 
@@ -315,15 +315,13 @@ void EventAction::ClearVariables()
 	  	 	PrimaryInfo.push_back( new TrackInformation(info));
 	  	 	// }
 	  	
-	  	/*	
+			/*	
         cout << " ++++++++++++++++++++ content size  : " << PrimaryInfo.size() << endl ; 
-
  	 	 for ( unsigned iSize = 0 ; iSize < PrimaryInfo.size() ; iSize++) {
 			PrimaryInfo.at(iSize)->Print();
 			}
 	  	 	cin.get(); 
-
-	  	*/
+			*/
 
   }
 

@@ -87,9 +87,7 @@ PhysicsList::PhysicsList() :
 
   // EM physics
   fEmPhysicsList = new G4EmStandardPhysics();
-  
-
-
+       
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -131,8 +129,6 @@ void PhysicsList::ConstructProcess()
     }
   }
   if (fHadPhysicsList) fHadPhysicsList->ConstructProcess();
-  G4cout << "### PhysicsList::ConstructProcess is done" << G4endl;
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -167,6 +163,11 @@ void PhysicsList::SelectPhysicsList(const G4String& name)
       G4cout << "PhysicsList WARNING wrong or unkonwn <"
              << name << "> Physics " << G4endl;
   }
+  
+  // Reconstruct the processes in case of modification  [mhd - 07 May 2015 ]  
+  ConstructProcess();
+  
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

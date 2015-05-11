@@ -147,6 +147,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void UseTIGRESSPositions( G4bool input )                  {useTigressPositions = input;};
   private:
   
+    G4UserLimits* fStepLimit;            // pointer to user step limits
   	MagneticField* worldMagField;
 
     G4double  WorldSizeX;

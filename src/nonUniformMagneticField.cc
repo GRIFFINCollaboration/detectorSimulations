@@ -35,7 +35,8 @@ nonUniformMagneticField::nonUniformMagneticField(const char* fieldName="./", G4d
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
  
   //  fMinStep     = 0.25*mm ; // minimal step of 1 mm is default
-  fMinStep     = 0.001*mm ; // minimal step of 1 mm is default
+  //fMinStep     = 0.001*mm ; // minimal step of 1 mm is default
+  fMinStep     = 5*mm ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
 
   fFieldManager = GetGlobalFieldManager();

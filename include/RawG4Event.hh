@@ -46,7 +46,7 @@ map<double,int> 	fMapPrimaryPhi;
 
 
 /********************************************
-C O N S T R U C T O R -  D E S T R U C T E R 
+C O N S T R U C T O R -  D E S T R U C T O R 
 *********************************************/
  public:
 RawG4Event(void );
