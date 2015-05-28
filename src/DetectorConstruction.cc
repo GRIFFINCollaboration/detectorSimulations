@@ -93,8 +93,11 @@ DetectorConstruction::DetectorConstruction() :
     physiWorld( 0 )
 {
 
-	WorldSizeX  = WorldSizeY = WorldSizeZ = 10.0*m;
-
+  WorldSizeX  = WorldSizeY = WorldSizeZ = 10.0*m;
+  G4GeometryManager::GetInstance()->SetWorldMaximumExtent(WorldSizeX);//specify\
+  the surface tolerance to be relative to the extent of the world volume \
+  This can only be called once!
+	
   box_mat = "G4_WATER";
   box_thickness = 0.0*mm;
   box_inner_dimensions = G4ThreeVector(0.0*mm,0.0*mm,0.0*mm);
@@ -173,12 +176,13 @@ DetectorConstruction::~DetectorConstruction()
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
 
-	// Replaced by ConstructDetectionSystems
+  // Replaced by ConstructDetectionSystems
 	
   // Experimental hall (world volume)
   // search the world material by its name
-  
+ 
   G4GeometryManager::GetInstance()->OpenGeometry();
+
   G4PhysicalVolumeStore::GetInstance()->Clean();
   G4LogicalVolumeStore::GetInstance()->Clean();
   G4SolidStore::GetInstance()->Clean();
@@ -189,7 +193,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4cout << " ----> Material " << matWorldName << " not found, cannot build world! " << G4endl;
     return 0;
   }
-  
+  	
   solidWorld = new G4Box("World", WorldSizeX/2,WorldSizeY/2,WorldSizeZ/2);
   
   logicWorld = new G4LogicalVolume(solidWorld,		//its solid
@@ -208,7 +212,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // this is useful to map the magnetic field of the lens
   // [mhd - 07 May 2015 ]
   //------------------------
-   G4double maxStep = 1.0*mm;
+   G4double maxStep = 10.*mm;
    fStepLimit = new G4UserLimits(maxStep); 
    logicWorld->SetUserLimits(fStepLimit);   
   //------------------------
@@ -237,7 +241,8 @@ void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 	WorldSizeX = vec.x() ;
 	WorldSizeY = vec.y() ; 
 	WorldSizeZ = vec.z() ;
-  UpdateGeometry(); // auto update
+ 
+	UpdateGeometry(); // auto update
 }
 
 void DetectorConstruction::SetWorldVis( G4bool vis )

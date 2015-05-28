@@ -111,6 +111,8 @@ void PhysListEmLowEnergy::ConstructProcess()
 {
   // Add EM Processes from G4EmLivermorePhysics builder
 
+G4cout << " PhysListEmLowEnergy::Construct Process " << G4endl ; 
+
   theParticleIterator->reset();
    
   while( (*theParticleIterator)() ){
@@ -175,8 +177,10 @@ void PhysListEmLowEnergy::ConstructProcess()
       eBrem->AddEmModel(0, theBremLivermore);
       pmanager->AddProcess(eBrem, -1,-3, 3);
      
+      G4cout << " PhysListEmLowEnergy::Construct Process e- " << G4endl ; 
         // Add the step limiter [mhd - 07 May 2015]                
          // This will reduce the maximum step length made by the e-
+         // however it gives warnings and occasional crushes
        G4StepLimiter* StepLimiter = new G4StepLimiter(); 
        pmanager->AddDiscreteProcess(StepLimiter);    
               
@@ -197,8 +201,10 @@ void PhysListEmLowEnergy::ConstructProcess()
       pmanager->AddProcess(new G4eBremsstrahlung, -1,-3, 3);      
       pmanager->AddProcess(new G4eplusAnnihilation,0,-1, 4);
 
+     G4cout << " PhysListEmLowEnergy::Construct Process e+ " << G4endl ; 
         // Add the step limiter [mhd - 07 May 2015]                
          // This will reduce the maximum step length made by the e+
+         // however it gives warnings and occasional crushes
        G4StepLimiter* StepLimiter = new G4StepLimiter(); 
        pmanager->AddDiscreteProcess(StepLimiter);  
        

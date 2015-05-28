@@ -70,14 +70,12 @@ void RootManager::SetTree(){
 
 
 	//Creating the tree ;
-	printf("RootManager : Setting the Tree.\n");    
 	fOutputTree = new TTree("Simulated_Data","Simulated Data Tree");
 	if(!fOutputTree) {
 		cout << "\nCould not create Simulated Data Tree in root file" << endl;
 		exit(-1);
 		}
 	fOutputTree->SetAutoSave(100000);
-	
  	/*
 	At this stage you can define what branches are written in the tree
 	*/
@@ -96,11 +94,9 @@ void RootManager::SetTree(){
 	//----------------
 	fOutputTree->Branch("HistoryBranch","THistoryData",&fHistoryData);
 	//----------------
-		
 	/*
 	Other detector branches goes here
 	*/
- 	
  } 
 
 void RootManager::FillHist(double temp) {
@@ -162,7 +158,7 @@ void RootManager::SortEvent(int eventNb) {
 		//if (1) SetFragmentEvent(it->first); // take all the event in the fragment tree
 
 		//Spice
-		//if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+		if (system=="SPI") SetSpiceEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		//if (system=="SPE") SetS3Event(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 		
 		//Paces
@@ -172,7 +168,7 @@ void RootManager::SortEvent(int eventNb) {
 		//	}
 
         //NEW
-        if (system=="NEW") SetNewEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
+        //if (system=="NEW") SetNewEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
 
         //Sceptar
         //if (system=="SEP") SetSceptarEvent(eventNb, it->first, it->second.GetDetector(), it->second.GetCrystal());
@@ -269,20 +265,22 @@ void RootManager::SetFragmentEvent(string mnemonic) {
 
 void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg) {	
 	// treat
+
 	fGeantEvent.at(mnemonic).SortPrimary();			
 
 	fSpiceData->SetEventNumber(eventNb) ;
 	// get primary
-	// Pdg	
+	// Pdg
+
 	int mult = fGeantEvent.at(mnemonic).GetPrimaryPdgMult(); // inside this particular pad 
     for (int i = 0 ; i<mult ;  i++ )
 	fSpiceData->SetPrimaryPdg( fGeantEvent.at(mnemonic).GetPrimaryPdg(i) ) ;
 
 	// Energy      
     mult = fGeantEvent.at(mnemonic).GetPrimaryEnergyMult(); // this should be the same as above
-	for (int i = 0 ; i<mult ;  i++ )	{
+	for (int i = 0 ; i<mult ;  i++ )	
 	fSpiceData->SetPrimaryEnergy( fGeantEvent.at(mnemonic).GetPrimaryEnergy(i) ) ;
-	}
+	
 
 	// Momentum
 	    mult = fGeantEvent.at(mnemonic).GetPrimaryThetaMult(); // this should be the same as above
@@ -296,7 +294,7 @@ void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	double stDev = SpiceResolution[1] * energy + SpiceResolution[0];
 	double applied_resolution = CLHEP::RandGauss::shoot(energy, stDev); 
 	TVector3 pos = fGeantEvent.at(mnemonic).GetSecondHitPosition() ;
-	
+
 	// fill the SpiceData object
 	// (Th,E)
 	fSpiceData->SetSpiceThetaEDetectorNbr(1) ; 
@@ -310,8 +308,8 @@ void RootManager::SetSpiceEvent(int eventNb, string mnemonic, int Ring, int Seg)
 	fSpiceData->SetSpicePhiEStripNbr(Seg)  ;
 	fSpiceData->SetSpicePhiEEnergy(energy/keV) ;
 	fSpiceData->SetSpicePhiEResEnergy(applied_resolution) ;
+	fSpiceData->SetPositionFirstHit(pos) ;			
 
-	fSpiceData->SetPositionFirstHit(pos) ;				
 }
 
 
@@ -442,6 +440,7 @@ void RootManager::SetNewEvent(int eventNb, string mnemonic, int detector, int Se
     TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
 
     //fill the NewData Object
+    Seg=Seg; // avoid warning for now
     fNewData->SetNewDetectorNbr(detector);
     fNewData->SetNewEnergy(energy);
     fNewData->SetPositionFirstHit(pos);
@@ -483,6 +482,7 @@ void RootManager::SetSceptarEvent(int eventNb, string mnemonic, int detector, in
     TVector3 pos = fGeantEvent.at(mnemonic).GetFirstHitPosition();
 
     //fill the SceptarData Object
+    Seg=Seg; // avoid warning for now
     fSceptarData->SetSceptarDetectorNbr(detector);
     fSceptarData->SetSceptarEnergy(energy);
     fSceptarData->SetPositionFirstHit(pos);
@@ -541,10 +541,12 @@ bool filled = false ;
 				z = trajectory.at(iTer).getZ();
 				//G4cout << iTer << " (setting) " << trajectory.at(iTer) << G4endl ; 	
 				fHistoryData->SetHistoryPrimaryTrajectory(x,y,z)  ;
-				//G4cin.get(); 
-				if (trajectory.at(iTer).mag()> 300*mm) { /* G4cout << " maximum mag reached  " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ;*/ break; } // only store the trajectory with a sphere radius of 150 mm 
-				if(iTer>999) { /*G4cout << " maximum iteration reached  " << iTer << " " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ; */ break ; } // only store 100 steps
+				//G4cin.get();
+				// only store the trajectory with a sphere radius of 150 mm or only store 100 steps
+				if (trajectory.at(iTer).mag()> 300*mm) { /* G4cout << " maximum mag reached  " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ;*/ break; } 
+				if(iTer>999) { /*G4cout << " maximum iteration reached  " << iTer << " " << trajectory.at(iTer).mag() << G4endl ; G4cin.get() ; */ break ; } 
 				}
+			//fHistoryData->SetHistoryPrimaryTrajectoryLine();// here we can add a color function of energy 	
 			//G4cin.get(); 
 			filled = true ; 
 			}

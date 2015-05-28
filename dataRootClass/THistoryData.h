@@ -29,7 +29,9 @@ class THistoryData : public TObject {
 vector<Int_t>		fHistoryPrimaryID; 
 vector<Int_t> 		fHistoryPrimaryPdg; // the type of the particle generated in the source e.g. pdg = 22 (gamma) in  0 --> gamma (primary) --> e-   --> gamma  --> e-
 vector<Double_t>	fHistoryPrimaryEnergy; 
-vector<TVector3> 	fHistoryPrimaryTrajectory; // NOTA BENE : Only for the first emitted primary charged particle! useful for e-/e+ in a magnetic field.
+vector<Double_t> 	fHistoryPrimaryTrajectoryX; // NOTA BENE : Only for the first emitted primary charged particle! useful for e-/e+ in a magnetic field.
+vector<Double_t> 	fHistoryPrimaryTrajectoryY; // NOTA BENE : Only for the first emitted primary charged particle! useful for e-/e+ in a magnetic field.
+vector<Double_t> 	fHistoryPrimaryTrajectoryZ; // NOTA BENE : Only for the first emitted primary charged particle! useful for e-/e+ in a magnetic field.
 
 vector<TVector3> 	fHistoryPrimaryPositionVertex;
 vector<TVector3> 	fHistoryPrimaryMomentumVertex;
@@ -71,7 +73,9 @@ inline Int_t    	GetHistoryMult(void)		    { return fHistoryPrimaryEnergy.size()
 inline Double_t		GetHistoryPrimaryID(int i)		{  return fHistoryPrimaryID.at(i); }
 inline Int_t 		GetHistoryPrimaryPdg(int i)		{  return fHistoryPrimaryPdg.at(i); } 
 inline Double_t		GetHistoryPrimaryEnergy(int i)	{  return fHistoryPrimaryEnergy.at(i); } 
-inline TVector3		GetHistoryPrimaryTrajectory(int i)			{  return fHistoryPrimaryTrajectory.at(i); } 
+inline Double_t		GetHistoryPrimaryTrajectoryX(int i)			{  return fHistoryPrimaryTrajectoryX.at(i); } 
+inline Double_t		GetHistoryPrimaryTrajectoryY(int i)			{  return fHistoryPrimaryTrajectoryY.at(i); } 
+inline Double_t		GetHistoryPrimaryTrajectoryZ(int i)			{  return fHistoryPrimaryTrajectoryZ.at(i); } 
 
 inline TVector3	GetHistoryPrimaryPositionVertex(int i)			{  return fHistoryPrimaryPositionVertex.at(i); } 
 inline TVector3	GetHistoryPrimaryMomentumVertex(int i)			{  return fHistoryPrimaryMomentumVertex.at(i); }
@@ -102,7 +106,11 @@ inline TVector3	GetHistoryCurrentMomentumDeath(int i)		{  return fHistoryCurrent
 inline void		SetHistoryPrimaryID(Double_t i)		{  fHistoryPrimaryID.push_back(i); }
 inline void 	SetHistoryPrimaryPdg(Int_t i)		{  fHistoryPrimaryPdg.push_back(i); } 
 inline void		SetHistoryPrimaryEnergy(Double_t i)	{  fHistoryPrimaryEnergy.push_back(i); } 
-inline void		SetHistoryPrimaryTrajectory(Double_t x, Double_t y, Double_t z)	{ fHistoryPrimaryTrajectory.push_back(TVector3(x,y,z)); } 
+inline void		SetHistoryPrimaryTrajectory(Double_t x, Double_t y, Double_t z)	{ 
+									fHistoryPrimaryTrajectoryX.push_back(x); 
+									fHistoryPrimaryTrajectoryY.push_back(y); 	
+									fHistoryPrimaryTrajectoryZ.push_back(z); 
+									} 
 
 inline void		SetHistoryPrimaryPositionVertex(Double_t x, Double_t y, Double_t z)			{   fHistoryPrimaryPositionVertex.push_back(TVector3(x,y,z)); } 
 inline void		SetHistoryPrimaryMomentumVertex(Double_t x, Double_t y, Double_t z)			{   fHistoryPrimaryMomentumVertex.push_back(TVector3(x,y,z)); }

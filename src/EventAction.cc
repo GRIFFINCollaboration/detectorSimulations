@@ -75,7 +75,7 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event* evt) {
 
-  //G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
+  	//G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
 	evtNb = evt->GetEventID();
 	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
 	G4cout.flush();
@@ -137,9 +137,10 @@ void EventAction::EndOfEventAction(const G4Event*)
     }
     
     if (1 /*depEnergy>0.0*/) {     // if condition satisfied Sort the HitCollection and make a physical event
-        RootManager::instance()->ClearVariables(); 
-		RootManager::instance()->SetHistory( PrimaryInfo );
-		RootManager::instance()->SortEvent(evtNb); 
+        RootManager::instance()->ClearVariables();     
+		RootManager::instance()->SetHistory( PrimaryInfo );   
+		RootManager::instance()->SortEvent(evtNb);   
+		//G4cin.get(); 
 		}
   
   FillParticleType() ; 

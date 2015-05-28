@@ -32,8 +32,10 @@ void THistoryData::ClearVariables(){
 	fHistoryPrimaryID.clear(); 
 	fHistoryPrimaryPdg.clear(); 
 	fHistoryPrimaryEnergy.clear(); 
-	fHistoryPrimaryTrajectory.clear();
-	
+	fHistoryPrimaryTrajectoryX.clear();
+	fHistoryPrimaryTrajectoryY.clear();
+	fHistoryPrimaryTrajectoryZ.clear();
+				
 	fHistoryPrimaryPositionVertex.clear();
 	fHistoryPrimaryMomentumVertex.clear();
 	fHistoryPrimaryPosition1stImpact.clear();
@@ -61,6 +63,7 @@ void THistoryData::ClearVariables(){
 
 }
 
+	   
 
 void THistoryData::Dump() const
 {
@@ -78,8 +81,8 @@ void THistoryData::Dump() const
       cout << "Primary Energy: " << fHistoryPrimaryEnergy[i] << endl;
 		
 		cout << " History Primary Trajectory    : " << endl ;  
-	for (UShort_t i = 0; i < fHistoryPrimaryTrajectory.size(); i++){
-		//cout << i << "  " << fHistoryPrimaryTrajectory[i].X() << " " << fHistoryPrimaryTrajectory[i].Y() << " " << fHistoryPrimaryTrajectory[i].Z() << endl;	
+	for (UShort_t i = 0; i < fHistoryPrimaryTrajectoryX.size(); i++){
+		cout << i << "  " << fHistoryPrimaryTrajectoryX[i] << " " << fHistoryPrimaryTrajectoryY[i] << " " << fHistoryPrimaryTrajectoryZ[i] << endl;	
 		if (i>10) break ; // only show the first 10 elements
 		}
  

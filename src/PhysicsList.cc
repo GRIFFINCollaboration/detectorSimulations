@@ -87,7 +87,10 @@ PhysicsList::PhysicsList() :
 
   // EM physics
   fEmPhysicsList = new G4EmStandardPhysics();
-       
+  
+  // SteplimiterBilder
+  fStepLimiterBuilder  = new G4StepLimiterBuilder();
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -97,6 +100,7 @@ PhysicsList::~PhysicsList()
   delete fPMessenger;
   delete fRaddecayList;
   delete fEmPhysicsList;
+  delete fStepLimiterBuilder;
   if (fHadPhysicsList) delete fHadPhysicsList;
   if (fNhadcomp > 0) {
     for(G4int i=0; i<fNhadcomp; i++) {
@@ -122,6 +126,8 @@ void PhysicsList::ConstructProcess()
   // decays
   fParticleList->ConstructProcess();
   fRaddecayList->ConstructProcess();
+  //
+  fStepLimiterBuilder->ConstructProcess();
   // had
   if (fNhadcomp > 0) {
     for(G4int i=0; i<fNhadcomp; i++) {
@@ -138,6 +144,7 @@ void PhysicsList::SelectPhysicsList(const G4String& name)
   if (verboseLevel>1) {
     G4cout << "PhysicsList::SelectPhysicsList: <" << name << ">" << G4endl;
   }
+      G4cout << "PhysicsList::SelectPhysicsList: <" << name << ">" << G4endl;
   // default  Had physics
   if (name == "Hadron" && !fHadPhysicsList) {
     fHadPhysicsList = new PhysListHadron("hadron");
@@ -163,11 +170,10 @@ void PhysicsList::SelectPhysicsList(const G4String& name)
       G4cout << "PhysicsList WARNING wrong or unkonwn <"
              << name << "> Physics " << G4endl;
   }
-  
+       
   // Reconstruct the processes in case of modification  [mhd - 07 May 2015 ]  
   ConstructProcess();
-  
-  
+    
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

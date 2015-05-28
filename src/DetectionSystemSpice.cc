@@ -114,6 +114,7 @@ G4int DetectionSystemSpice::Build()
   BuildDetectorMount();
   BuildAnnularClamps();
   
+  
   return 1;
 } // end Build
 
@@ -132,7 +133,7 @@ G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Three
   rotate->rotateZ(-210*deg-angle); // the axis are inverted, this operation will correct for it  [MHD : 03 April 2014]
   
   assemblySiRing[ringNumber]->MakeImprint(exp_hall_log, move, rotate, SegmentNumber);
-  
+ 
   return 1;
 }
 

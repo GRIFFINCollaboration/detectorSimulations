@@ -76,7 +76,6 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(detector);
   //
   PhysicsList* physics = new PhysicsList;
-  //physics->RegisterPhysics(new G4StepLimiterBuilder()); // Mhd 06 May 2015, to reduce step length , check 
   runManager->SetUserInitialization(physics);
   //
   TrackingAction* tracking_action = new TrackingAction(); // MHD 19 April 2013
@@ -146,7 +145,7 @@ int main(int argc,char** argv)
 	// mhd [12 May 2015], create gdml file for visulaisation in ROOT 
 	G4VPhysicalVolume* pWorld = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();
 	G4GDMLParser parser;
-	parser.Write("g4Detector.gdml", pWorld);
+	parser.Write("g4SpiceS3.gdml", pWorld);
 		
   // Job termination
   // Free the store: user actions, physics_list and detector_description are

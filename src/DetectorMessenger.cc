@@ -48,6 +48,7 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4String.hh"
 
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
@@ -546,6 +547,7 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == UseTIGRESSPositionsCmd ) {
     Detector->UseTIGRESSPositions(UseTIGRESSPositionsCmd->GetNewBoolValue(newValue));
   }
+	
 
 }
 
