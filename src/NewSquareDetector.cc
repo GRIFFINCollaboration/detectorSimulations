@@ -27,7 +27,7 @@ NewSquareDetector::NewSquareDetector()
 
 {
 
-	this->detector_alignment = 2; // 1 for vertical, 2 for horizontal
+	this->detector_alignment = 1; // 1 for parallel to beam axis, 2 for perpindicular to beam axis
 
 
     ///////////////////////////////
@@ -43,15 +43,19 @@ NewSquareDetector::NewSquareDetector()
    	 	// Dimensions for Crystal //
     	////////////////////////////
 
-	    this->square_segment_element_length = 25*mm ; //50*mm for horizontal detector size, 25mm for vertical detector
-	    this->square_segment_element_width = 50*mm ;    // 36*mm for horizontal detector size , 50mm for vertical detector	
-	    this->square_segment_thickness = 5*mm ; //thickness in X-Y plane 5mm for horizontal and 1mm possible for vertical
+	    this->square_segment_element_length = 25*mm ; //50*mm for perpindicular to beam axis detector size, 25mm for parallel to beam axis detector
+	    this->square_segment_element_width = 55*mm ;    // 36*mm for perpindicular to beam axis detector size , 50mm for parallel to beam axis detector	
+	    this->square_segment_thickness = 5*mm ; //thickness in X-Y plane 5mm for perpindicular to beam axis and 1mm possible for parallel to beam axis
 
    	 	//////////////////////////////////////////////////
    	 	// How far back the detector is from the target //
     	//////////////////////////////////////////////////
 
-    	this->SquareDetectorDistance = - 93*mm; // -75*mm for horizontal detector size, -93mm for vertical detector
+    	this->SquareDetectorDistance = - 93*mm; // -75*mm for perpindicular to beam axis detector size, -93mm for parallel to beam axis detector
+		this->SquareDetectorRotationXY = 22.5*deg;
+		this->SquareDetectorRotationZ = 22.5*deg;
+
+		this->SquareDetectorCorrection = ((this->square_segment_element_width*sin(this->SquareDetectorRotationZ))+(this->square_segment_thickness*sin(this->SquareDetectorRotationZ))  )*mm;
 
 	}
 
@@ -61,15 +65,16 @@ NewSquareDetector::NewSquareDetector()
    	 	// Dimensions for Crystal //
     	////////////////////////////
 
-	    this->square_segment_element_length = 50*mm ; //50*mm for horizontal detector size, 25mm for vertical detector
-	    this->square_segment_element_width = 36*mm ;    // 36*mm for horizontal detector size , 50mm for vertical detector	
-	    this->square_segment_thickness = 5*mm ; //thickness in X-Y plane 5mm for horizontal and 1mm possible for vertical
+	    this->square_segment_element_length = 50*mm ; //50*mm for perpindicular to beam axis detector size, 25mm for parallel to beam axis detector
+	    this->square_segment_element_width = 36*mm ;    // 36*mm for perpindicular to beam axis detector size , 50mm for parallel to beam axis detector	
+	    this->square_segment_thickness = 5*mm ; //thickness in X-Y plane 5mm for perpindicular to beam axis and 1mm possible for parallel to beam axis
 
    	 	//////////////////////////////////////////////////
    	 	// How far back the detector is from the target //
     	//////////////////////////////////////////////////
 
-    	this->SquareDetectorDistance = - 75*mm; // -75*mm for horizontal detector size, -93mm for vertical detector
+    	this->SquareDetectorDistance = - 75*mm; // -75*mm for perpindicular to beam axis detector size, -93mm for parallel to beam axis detector
+		this->SquareDetectorRotationXY = 22.5*deg;
 
 	}
 
@@ -101,8 +106,8 @@ NewSquareDetector::NewSquareDetector()
     this->BeamPipeYDistanceGR = -7*mm;
 
     // Active Area of Detector
-    this->BeamPipeXDistanceD = (BeamPipeXDistanceGR + square_guard_ring_depth)*mm;
-    this->BeamPipeYDistanceD = (BeamPipeYDistanceGR - square_guard_ring_depth)*mm;
+    this->BeamPipeXDistanceD =  (BeamPipeXDistanceGR + square_guard_ring_depth)*mm;
+    this->BeamPipeYDistanceD =  (BeamPipeYDistanceGR - square_guard_ring_depth)*mm;
 
 }
 
@@ -131,7 +136,7 @@ G4int NewSquareDetector::Build()
     this->assembly = new G4AssemblyVolume();
 
 	if(this->detector_alignment == 1){
-    	for(int detectorID=1; detectorID<5; detectorID++)
+    	for(int detectorID=1; detectorID<(this->no_detectors+1); detectorID++)
     	{
 
         	this->assemblySquareDet[detectorID] = new G4AssemblyVolume();
@@ -144,7 +149,7 @@ G4int NewSquareDetector::Build()
 	}
 
 	else{
-    	for(int detectorID=1; detectorID<5; detectorID++)
+    	for(int detectorID=1; (this->no_detectors+1); detectorID++)
     	{
 
         	this->assemblySquareDet[detectorID] = new G4AssemblyVolume();
@@ -237,15 +242,15 @@ G4int NewSquareDetector::BuildGuardRing1(G4int detectorID)
 
     // Define rotation and movement of  a singular Guard Ring before creating logical volume
     G4ThreeVector xdirection 	= G4ThreeVector(1,0,0);
-    G4double x_position		    = this->square_guard_ring_thickness/2;
+    G4double x_position		    = (this->square_guard_ring_thickness/2)*mm +5*mm ;// - this->square_guard_ring_depth+2*mm;
     G4ThreeVector xmove 		= x_position * xdirection;
 
 	G4ThreeVector zdirection 	= G4ThreeVector(0,0,1);
-    G4double z_position		    = (this->square_segment_element_width/2)    ;
+    G4double z_position		    = (this->square_segment_element_width/2) -2*mm   ;
     G4ThreeVector zmove 		= z_position * zdirection;
 
     G4ThreeVector ydirection 	= G4ThreeVector(0,1,0);
-    G4double y_position		    = (this->square_segment_element_length/2);
+    G4double y_position		    = (this->square_segment_element_length/2) +1*mm ;
     G4ThreeVector ymove 		= y_position * ydirection;
 
 
@@ -344,16 +349,16 @@ G4int NewSquareDetector::BuildDetectorFace1(G4int detectorID)
 
     // Define rotation and movement of the first segment away from the origin
     G4ThreeVector xdirection 	= G4ThreeVector(1,0,0);
-    G4double x_position		    = -((this->square_segment_element_length/2) - this->square_guard_ring_depth - (((this->square_segment_element_length - (this->square_guard_ring_depth *2))/this->no_x_segments)/2) - this->square_guard_ring_thickness/2) *mm;
+    G4double x_position		    = -((this->square_segment_element_length/2) - this->square_guard_ring_depth - (((this->square_segment_element_length - (this->square_guard_ring_depth *2))/this->no_x_segments)/2) - this->square_guard_ring_thickness/2) *mm +5*mm;
 
     G4ThreeVector xalign        = x_position * xdirection;
 
     G4ThreeVector zdirection 	= G4ThreeVector(0,0,1);
-    G4double z_position		    =(((this->square_segment_element_width )/this->no_y_segments)/2)+(this->square_guard_ring_depth/2)+(this->square_guard_ring_depth/6)*mm;
+    G4double z_position		    =(((this->square_segment_element_width )/this->no_y_segments)/2)+(this->square_guard_ring_depth/2)+(this->square_guard_ring_depth/6)*mm-2*mm;
     G4ThreeVector zalign        = z_position * zdirection;
 
     G4ThreeVector ydirection 	= G4ThreeVector(0,1,0);
-    G4double y_position		    = (this->square_segment_element_length/2)*mm;
+    G4double y_position		    = (this->square_segment_element_length/2)*mm +1*mm ;
     G4ThreeVector yalign        = y_position * ydirection;
 
 
@@ -486,15 +491,21 @@ G4int NewSquareDetector::PlaceDetector(G4LogicalVolume* exp_hall_log, G4int dete
 
     //Define movement of Logical volume in relation to target/source (z-axis)
     G4double SquareDetectorTargetDistance = this->SquareDetectorDistance;
-    G4ThreeVector move(0,0,SquareDetectorTargetDistance); 
+    G4double SquareDetectorCorrection = this->SquareDetectorCorrection;
+  	G4ThreeVector move = TranslateDetectors(detector,SquareDetectorCorrection, SquareDetectorTargetDistance);
 
     //Define the rotation to create the detector plates
     G4RotationMatrix* rotate = new G4RotationMatrix;
 
 	if(this->detector_alignment == 1){
-   	 	rotate->rotateZ((((360.*deg/this->no_detectors) * detector)));}
+
+   	 	rotate->rotateX(this->SquareDetectorRotationZ);
+
+   	 	rotate->rotateZ((((360.*deg/this->no_detectors) * detector)-this->SquareDetectorRotationXY));}
+
+
 	else{
-		rotate->rotateZ((((360.*deg/this->no_detectors) * detector)+55*deg));}
+		rotate->rotateZ((((360.*deg/this->no_detectors) * detector)+this->SquareDetectorRotationXY));}
 
     // Build physical volume of the detectors
     assemblySquareDet[detector]->MakeImprint(exp_hall_log, move, rotate, detector);
@@ -507,15 +518,21 @@ G4int NewSquareDetector::PlaceGuardRing(G4LogicalVolume* exp_hall_log , G4int de
 
     //Define movement of Logical volume in relation to target/source (z-axis)
     G4double SquareDetectorTargetDistance = this->SquareDetectorDistance;
-    G4ThreeVector move(0,0,SquareDetectorTargetDistance); 
+    G4double SquareDetectorCorrection = this->SquareDetectorCorrection;
+  	G4ThreeVector move = TranslateDetectors(detector,SquareDetectorCorrection, SquareDetectorTargetDistance);
+
 
     //Define the rotation to create the detector guard rings
     G4RotationMatrix* rotate = new G4RotationMatrix;
 
 	if(this->detector_alignment == 1){
-   	 	rotate->rotateZ((((360.*deg/this->no_detectors) * detector)));}
+
+
+   	 	rotate->rotateX(this->SquareDetectorRotationZ);	
+   	 	rotate->rotateZ((((360.*deg/this->no_detectors) * detector)-this->SquareDetectorRotationXY));
+	}
 	else{
-		rotate->rotateZ((((360.*deg/this->no_detectors) * detector)+55*deg));}
+		rotate->rotateZ((((360.*deg/this->no_detectors) * detector)+this->SquareDetectorRotationXY));}
 
     // Build physical volume of the guard rings
     assemblyGuardRing[detector]->MakeImprint(exp_hall_log, move, rotate, detector);
@@ -527,6 +544,14 @@ G4int NewSquareDetector::PlaceGuardRing(G4LogicalVolume* exp_hall_log , G4int de
 
 
 
+G4ThreeVector NewSquareDetector::TranslateDetectors(G4int copyID, G4double movement, G4double z_position)
+{
+  G4double x_position(0);
+  G4double y_position(0);
+    x_position = movement*sin(-((copyID)*90.*deg));
+    y_position = movement*cos((copyID)*90.*deg);
+  return G4ThreeVector(x_position, y_position, z_position);
+}
 
 
 

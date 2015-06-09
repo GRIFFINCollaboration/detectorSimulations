@@ -18,7 +18,7 @@ class DetectorMessenger;
 #define LAYER1_COL 0.7,0.0,0.8
 #define LAYER2_COL 0.7,0.2,0.8
 #define LAYER3_COL 0.7,0.4,0.8
-#define NDFEB_COL 0.7,0.3,0.3
+#define NDFEB_COL 0.7,0.1,0.1
 #define MAGCOV_COL 0.3,0.3,0.3
 
 
@@ -126,19 +126,22 @@ class DetectionSystemNew
     G4double photon_shield_beam_cut_inner_radius;
     G4double photon_shield_beam_cut_height;
 
+	G4double photon_shield_rotation;
+	G4double photon_shield_cut_angle;
+
 
     //////////////
     // Magnets: //
     //////////////
 
-    G4double plate_one_one_thickness;
-    G4double plate_one_one_length;
-    G4double plate_one_one_height;
+    G4double plate_one_thickness;
+    G4double plate_one_length;
+    G4double plate_one_height;
     G4double plate_one_one_lower_height;
     G4double plate_one_edge_x;
-    G4double plate_one_two_thickness;
-    G4double plate_one_two_length;
-    G4double plate_one_two_height;
+    G4double plate_two_thickness;
+    G4double plate_two_length;
+    G4double plate_two_height;
 
     G4double plate_two_one_thickness;
     G4double plate_two_one_length;
@@ -157,7 +160,10 @@ class DetectionSystemNew
     G4double plate_three_two_height;
 
     G4double distance_from_target;
-    G4double cutting_box_angle;
+    G4double top_cutting_box_angle;
+    G4double bottom_cutting_box_angle;
+	G4double top_cutting_box_lowering_height;
+	G4double bottom_cutting_box_raising_height;
 	G4double magnet_cover_thickness;
   
 

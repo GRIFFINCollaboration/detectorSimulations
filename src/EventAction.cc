@@ -136,7 +136,7 @@ void EventAction::EndOfEventAction(const G4Event*)
         }	
     }
     
-    if (depEnergy>0.0) {     // if condition satisfied Sort the HitCollection and make a physical event
+    if (1/*depEnergy>0.0*/) {     // if condition satisfied Sort the HitCollection and make a physical event
     	RootManager::instance()->ClearVariables(); 
 		RootManager::instance()->SetHistory( PrimaryInfo );
 		RootManager::instance()->SortEvent(evtNb);  

@@ -609,13 +609,17 @@ void PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay( G4Event* myEvent
   // RandFlat::shoot(m,n) excludes m and n itself!
   betaDecayRandomiser = RandFlat::shoot(0.,100.);
   levelProbSum=0;
+
+
+
   while( (levelProbSum += levelScheme[i][4]) < betaDecayRandomiser )
     {
       i++;
+
       // make sure that i is running only through table elements
       if( i==nLevels )
 		{
-		  G4cout << "Total beta decay probability found = " <<levelProbSum<< endl;
+		  G4cout << "Total beta decay probability found = " << levelProbSum << endl;
 		  i=0;
 		  levelProbSum=0;
 		  betaDecayRandomiser = RandFlat::shoot(0.,100.);
@@ -630,9 +634,9 @@ void PrimaryGeneratorAction::EmissionForRadioactiveSourceDecay( G4Event* myEvent
   // there is no difference between e- and e+
   // is the probability normalised to 100?
   // !!CHECK!!
-  // betaEmissionRandomiser = RandFlat::shoot(0.,100.);
-  // if(betaEmissionRandomiser <= levelScheme[i][6])
-  // EmitBetaForSourceDecay(levelScheme[i][7],myEvent);
+   betaEmissionRandomiser = RandFlat::shoot(0.,100.);
+   if(betaEmissionRandomiser <= levelScheme[i][6])
+   EmitBetaForSourceDecay(levelScheme[i][7],myEvent);
   
   while(i!=0)
     {     
@@ -732,7 +736,7 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
   
   // ignore first blank line
   string buffer;
-  getline(file,buffer); G4cout <<"skipping this line :" <<buffer << endl; 
+  getline(file,buffer); G4cout <<"0 skipping this line :" <<buffer << endl; 
   
   // read in number of levels
   file >> nLevels >> nTransPerLevel >> nParam >> bindingEnergyK >> bindingEnergyL1 >> bindingEnergyL2 >> bindingEnergyL3;
@@ -745,8 +749,9 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
   G4cout << " [binding energies "<< bindingEnergyK<< " " << bindingEnergyL1 << " " <<bindingEnergyL2<< " " << bindingEnergyL3 << "]" << endl;
   	
   // jump two lines to line 5
-  getline(file,buffer);  	G4cout <<"skipping this line :" <<buffer << endl; 
-  getline(file,buffer);     G4cout <<"skipping this line :" <<buffer << endl; 
+  getline(file,buffer);  	G4cout <<"1 skipping this line :" <<buffer << endl; 
+  getline(file,buffer);     G4cout <<"2 skipping this line :" <<buffer << endl; 
+
   // Read in the energies & intensities of the K, L lines
   G4int shellFrom [24] = {3,2,1,6,10,5,12,7,17,26,8,7,7,12,6,5,19,9,12,10,11,19,4,4};
   G4int shellTo [24] = {0,0,0,0,0,0,0,0,0,0,3,3,2,3,1,1,3,3,2,1,1,2,2,3};
@@ -764,6 +769,7 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 	  file >> KXRayEnergy[k];
 	  KXRayOrigin[k]=shellFrom[i];
 	  
+
 	  fKXRayEnergy.push_back(KXRayEnergy[k]);
 	  fKXRayOrigin.push_back(shellFrom[i]);
 	  
@@ -773,7 +779,8 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 	{
 	  file >> L1XRayEnergy[l1];
 	  L1XRayOrigin[l1]=shellFrom[i];
-	  
+	
+
 	  fL1XRayEnergy.push_back(L1XRayEnergy[l1]);
 	  fL1XRayOrigin.push_back(shellFrom[i]);
 	  
@@ -783,7 +790,8 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 	{
 	  file >> L2XRayEnergy[l2];
 	  L2XRayOrigin[l2]=shellFrom[i];
-	  
+
+
 	  fL2XRayEnergy.push_back(L2XRayEnergy[l2]);
 	  fL2XRayOrigin.push_back(shellFrom[i]);
 	  
@@ -793,7 +801,8 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 	{
 	  file >> L3XRayEnergy[l3];
 	  L3XRayOrigin[l3]=shellFrom[i];
-	  
+
+
 	  fL3XRayEnergy.push_back(L3XRayEnergy[l3]);
 	  fL3XRayOrigin.push_back(shellFrom[i]);
 	  
@@ -801,7 +810,7 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
 	}
 	
     }
-  getline(file,buffer); G4cout <<"skipping this line :" <<buffer << endl; 
+  getline(file,buffer); G4cout <<"3 skipping this line :" <<buffer << endl; 
   
 
   for(G4int i=0;i<24;i++)
@@ -827,19 +836,25 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
    
     
   // Skip two more lines and read in the Auger intensities	
-  getline(file,buffer);  G4cout <<"skipping this line :" <<buffer << endl; 
-  getline(file,buffer);  G4cout <<"skipping this line :" <<buffer << endl; 
+  getline(file,buffer);  G4cout <<"4 skipping this line :" <<buffer << endl; 
+  getline(file,buffer);  G4cout <<"5 skipping this line :" <<buffer << endl; 
   // table of Auger electrons resulting from recombination to K shell:
   // augerRecFrom gives the level, from which the recombination happens
   // augerEjecFrom gives the level, from which the Auger electron is ejected
   // The numbering goes L1 - 1, L2 - 3, L3 - 3, M1 - 4, etc.
   for(G4int i = 0; i<48; i++)
-    	{ file >> dumDouble;  fAugerIntensity.push_back(dumDouble) ; }
+    	{ file >> dumDouble; 
+
+			fAugerIntensity.push_back(dumDouble) ; 
+			}
  
   //skip line  
-  getline(file,buffer); G4cout <<"skipping this line :" <<buffer << endl;
+  getline(file,buffer); G4cout <<"6 skipping this line :" <<buffer << endl;
   for(G4int i = 0; i<48; i++)
-   	    { file >> dumDouble;  fAugerEnergy.push_back(dumDouble) ; }
+   	    { file >> dumDouble;  
+
+			fAugerEnergy.push_back(dumDouble) ; 
+			}
  
    	  
   // set up storage space for table for magnetic field
@@ -854,10 +869,10 @@ void PrimaryGeneratorAction::LevelSchemeReader( const char* filename )
   G4cout << "Level scheme storage set." << endl;
 
   // skip another 3 lines
-  getline(file,buffer);  	G4cout <<"skipping this line :" <<buffer << endl;
-  getline(file,buffer);     G4cout <<"skipping this line :" <<buffer << endl;
-  getline(file,buffer);     G4cout <<"skipping this line :" <<buffer << endl;
-  getline(file,buffer);     G4cout <<"skipping this line :" <<buffer << endl;
+  getline(file,buffer);  	G4cout <<"7 skipping this line :" <<buffer << endl;
+  getline(file,buffer);     G4cout <<"8 skipping this line :" <<buffer << endl;
+  getline(file,buffer);     G4cout <<"9 skipping this line :" <<buffer << endl;
+  getline(file,buffer);     G4cout <<"10 skipping this line :" <<buffer << endl;
   G4cout << "reading in data" << endl;
 
   // resize vectors

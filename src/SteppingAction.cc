@@ -153,8 +153,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		} 
 
 
+//Tag this particle for any event 
+ info->SetTagged(true); 
+
 // Tag this track if the particle will hit the detector
-	
 // Get volume before and after for each step
 	G4String after = "VolAfter" ;
 	G4String before = "VolBefore" ;
@@ -179,7 +181,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		// Get position and momentum
 		info->SetCurrentPositionAtDetector(aStep->GetTrack()->GetPosition()) ;  
 		info->SetCurrentMomentumAtDetector(aStep->GetTrack()->GetMomentum()) ;
-		info->SetTagged(true);
+		//info->SetTagged(true);
 		}
 
 // this is the last step, in case the particle is tagged => add some new info and keep the track 
@@ -210,7 +212,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		
 		//clear the parts unrelated to the original particle information, and untag for the new track 
 		info->PartialClear();  // info->SetTagged(false); included 
-
 		}
 
 

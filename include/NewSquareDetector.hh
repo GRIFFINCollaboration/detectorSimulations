@@ -5,7 +5,7 @@
 #include "globals.hh"
 
 #define SIL_COL 0.1,0.9,0.9
-#define GUARD_COL 0.9,0.1,0.9
+#define GUARD_COL 0.1,0.1,0.9
 
 class NewSquareDetector
 {
@@ -62,7 +62,11 @@ class NewSquareDetector
     G4double BeamPipeXDistanceD;
     G4double BeamPipeYDistanceD;
 	G4int detector_alignment;
+	G4double SquareDetectorRotationXY;
+	G4double SquareDetectorRotationZ;
+	G4double SquareDetectorCorrection;
 
+	G4ThreeVector TranslateDetectors(G4int,G4double,G4double);
 
 
     ///////////////////////////////////

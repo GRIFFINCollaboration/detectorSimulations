@@ -33,7 +33,7 @@
 
 ////////////////////////////////////////////////
 // building and placing the different parts   //
-// of the  chamber 		          //
+// of the  chamber 		        			  //
 // including chamber itself, magnets and      //
 // mounts for magnets and detectors           //
 // not including detectors                    //
@@ -43,8 +43,8 @@
 DetectionSystemNew::DetectionSystemNew()
 {
 
-	this->detector_alignment = 2; // 1 for vertical, 2 for horizontal
-    this->NUMBER_OF_MAGNETS  = 4;
+	this->detector_alignment = 1; // 1 for parallel to beam axis, 2 for perpindicular to beam axis
+    this->NUMBER_OF_MAGNETS  = 8;
 	this->no_magnet_layer = 3;
     
     ///////////////////////////////////////////////////////////////////////////
@@ -90,44 +90,26 @@ DetectionSystemNew::DetectionSystemNew()
 
     this->chamber_cut_out_inner_radius = 0*mm;
     this->chamber_cut_out_outer_radius = 35*mm;
-    this->chamber_cut_out_height = 200*mm;
+    this->chamber_cut_out_height = 300*mm;
 
 
     /////////////
     // Magnets //
     /////////////
 
-    this->plate_one_one_thickness = 3.4*mm;
-    this->plate_one_one_length = 62*mm;  //SPICE = 75*mm;
-    this->plate_one_one_height = 30*mm; // z-component
-    this->plate_one_one_lower_height = 20*mm;
+    this->plate_one_thickness = 3.4*mm;
+    this->plate_one_length = 82*mm;  //SPICE = 75*mm;
+    this->plate_one_height = 60*mm; // z-component
 
-    this->plate_one_two_thickness = 5*mm;
-    this->plate_one_two_length = 40*mm; //SPICE =  55*mm;
-    this->plate_one_two_height = 30*mm;
+    this->plate_two_thickness = 5*mm;
+    this->plate_two_length = 32*mm; //SPICE =  55*mm;
+    this->plate_two_height = 60*mm;
 
-
-    this->plate_two_one_thickness = 3.4*mm;
-    this->plate_two_one_length = 52*mm;  //SPICE = 75*mm;
-    this->plate_two_one_height = 20*mm; // z-component
-
-    this->plate_two_two_thickness = 5*mm;
-    this->plate_two_two_length = 30*mm; //SPICE =  55*mm;
-    this->plate_two_two_height = 20*mm;
-
-
-    this->plate_three_one_thickness = 3.4*mm;
-    this->plate_three_one_length = 42*mm;  //SPICE = 75*mm;
-    this->plate_three_one_height = 10*mm; // z-component
-
-    this->plate_three_two_thickness = 5*mm;
-    this->plate_three_two_length = 20*mm; //SPICE =  55*mm;
-    this->plate_three_two_height = 10*mm;
-
-
-    this->cutting_box_angle = 45*deg;
+    this->top_cutting_box_angle = 65*deg;
+    this->bottom_cutting_box_angle = 65*deg;
+	this->top_cutting_box_lowering_height = 55*mm;
+	this->bottom_cutting_box_raising_height = 25*mm;
     this->distance_from_target = 4*mm; // in z-direction
-    this->plate_one_edge_x = (93*mm - this->plate_one_one_length); // 92mm is radius of chamber
 
 
 	///////////////////
@@ -144,9 +126,15 @@ DetectionSystemNew::DetectionSystemNew()
     this->photon_shield_layer_one_thickness = (25)*mm;
     this->photon_shield_layer_two_thickness = (4)*mm;
     this->photon_shield_layer_three_thickness = (1)*mm;
-    this->photon_shield_target_distance = (25)*mm;
-	this->detector_full_width = (89)*mm;
+    this->photon_shield_target_distance = (7)*mm;
 	this->detector_target_distance = (75)*mm;
+
+	if(this->detector_alignment == 1){
+		this->detector_full_width = (62)*mm;
+		this->photon_shield_rotation = 22.5*deg ;}
+	else{
+		this->detector_full_width = (86)*mm;
+		this->photon_shield_rotation = -22.5*deg ;}
 
     ///////////////////////////////////
     // Photon Shielding Beam Cut Out //
@@ -225,7 +213,7 @@ void DetectionSystemNew::Build(G4LogicalVolume* exp_hall_log)
     ///////////////////////////////////////////////////
 
     BuildChamber();
-//    BuildColdFinder();
+//    BuildColdFinger();
     BuildMagnet();
     BuildPhotonShield();
 ///    BuildBiasPlate();
@@ -295,7 +283,7 @@ void DetectionSystemNew::BuildChamber()
     G4Tubs* chamber_cut_out = new G4Tubs("chamber_cut_out", cut_out_inner_radius, cut_out_outer_radius, cut_out_height, 0*deg, 360*deg);
 
     //Putting Chamber components together
-    G4ThreeVector zTrans(0,0,-((cylinder_height*2)+40*mm));
+    G4ThreeVector zTrans(0,0,-((cylinder_height*2)+51*mm));
     G4UnionSolid* chamber_solid = new G4UnionSolid("chamber_solid", chamber_hemisphere, chamber_cylinder,0,zTrans);
     G4SubtractionSolid* final_chamber = new G4SubtractionSolid("final_chamber", chamber_solid, chamber_cut_out);
 
@@ -324,269 +312,123 @@ void DetectionSystemNew::BuildMagnet()
     G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(NDFEB_COL));
     vis_att->SetVisibility(true);
 
-    //Build layer one Plate One
-    G4Box* plate_one_one_pre_cut = new G4Box("plate_one_one_pre_cut", this->plate_one_one_length/2., this->plate_one_one_thickness/2., this->plate_one_one_height/2.);
-    G4Box* plate_one_one_cut_box = new G4Box("plate_one_one_cut_box", this->plate_one_one_length/2., this->plate_one_one_thickness/2. + 1., this->plate_one_one_height/2.);
+
+	//Building the middle plate primary volume, middle plate made with cylinder with same radius as chamber and then cut to size
+	G4Tubs* plate_one_pre_cut = new G4Tubs("plate_one_pre_cut", 0., this->chamber_hemisphere_inner_radius, this->plate_one_thickness/2, 0., 90*deg);
+	G4Box* plate_one_cut_box = new G4Box("plate_one_cut_box", this->chamber_hemisphere_inner_radius, this->chamber_hemisphere_inner_radius, this->plate_one_thickness +1);
+
+	//Setting the cut translations to make middle plate the correct size
+	G4double translate_cut_x_height_top = this->chamber_hemisphere_inner_radius -1 ;
+	G4double translate_cut_z_height_top = -(this->chamber_hemisphere_inner_radius) + this->distance_from_target;
+	G4ThreeVector translate_cut_height_top(translate_cut_x_height_top, translate_cut_z_height_top, 0);
+
+	G4double translate_cut_x_height_bottom = this->chamber_hemisphere_inner_radius -1 ;
+	G4double translate_cut_z_height_bottom = this->chamber_hemisphere_inner_radius + this->distance_from_target + this->plate_one_height;
+	G4ThreeVector translate_cut_height_bottom(translate_cut_x_height_bottom, translate_cut_z_height_bottom, 0);
+
+	G4double translate_cut_x_length = -this->chamber_hemisphere_inner_radius + (this->chamber_hemisphere_inner_radius - this->plate_one_length) ;
+	G4double translate_cut_z_length = this->chamber_hemisphere_inner_radius - 1 ;
+	G4ThreeVector translate_cut_length(translate_cut_x_length, translate_cut_z_length, 0);
+
+	//Making the cuts from the magnets
+	G4SubtractionSolid* plate_one_temp1 = new G4SubtractionSolid("plate_one_temp1", plate_one_pre_cut, plate_one_cut_box, 0 , translate_cut_height_top);
+	G4SubtractionSolid* plate_one_temp2 = new G4SubtractionSolid("plate_one_temp2", plate_one_temp1, plate_one_cut_box, 0 , translate_cut_height_bottom);
+	G4SubtractionSolid* plate_one_temp3 = new G4SubtractionSolid("plate_one_temp3", plate_one_temp2, plate_one_cut_box, 0 , translate_cut_length);
+
+    //Build angled cut box
+    G4Box* plate_one_angle_cut_box = new G4Box("plate_one_angle_cut_box", this->plate_one_length/2., this->plate_one_height/2., this->plate_one_thickness/2. + 1.);
     
-    // ( Cut box is rotated and moved, exact movement calculated below )
-    G4double angle_to_corner = atan(this->plate_one_one_length/this->plate_one_one_height);
-    G4double hypotenuse_to_corner = sqrt(pow(this->plate_one_one_height/2., 2) + pow(this->plate_one_one_length/2., 2));
+    // ( Top Cut box is rotated and moved, exact movement calculated below )
+    G4double angle_to_corner = atan(this->plate_one_length/this->plate_one_height);
+    G4double hypotenuse_to_corner = sqrt(pow(this->plate_one_height/2., 2) + pow(this->plate_one_length/2., 2));
     G4double angle_difference, translate_cut_x, translate_cut_z;
 
-    if (angle_to_corner < this->cutting_box_angle)
-    {
-        angle_difference = this->cutting_box_angle - angle_to_corner;
-        translate_cut_x = (hypotenuse_to_corner * sin(angle_difference)) + this->plate_one_one_length/2.;
-        translate_cut_z = (hypotenuse_to_corner * cos(angle_difference)) - this->plate_one_one_height/2. + this->plate_one_one_lower_height;
-    }
+	if (angle_to_corner < this->top_cutting_box_angle)
+	{
+		angle_difference = this->top_cutting_box_angle - angle_to_corner;
+		translate_cut_x = -(hypotenuse_to_corner * sin(angle_difference)) +(this->chamber_hemisphere_inner_radius - this->plate_one_length) ;
+		translate_cut_z = (hypotenuse_to_corner * cos(angle_difference))- this->distance_from_target - this->top_cutting_box_lowering_height;
+																						
+	}
+	else if (angle_to_corner > this->top_cutting_box_angle)
+	{
+		angle_difference = angle_to_corner - this->top_cutting_box_angle;
+		translate_cut_x = (this->chamber_hemisphere_inner_radius - this->plate_one_length) + (hypotenuse_to_corner * sin(angle_difference));
+		translate_cut_z = (hypotenuse_to_corner * cos(angle_difference)) - this->distance_from_target - this->top_cutting_box_lowering_height;
+																						
+	}
 
-    else if (angle_to_corner > this->cutting_box_angle)
-    {
-        angle_difference = angle_to_corner - this->cutting_box_angle;
-        translate_cut_x = this->plate_one_one_length/2 - (hypotenuse_to_corner * sin(angle_difference));
-        translate_cut_z = (hypotenuse_to_corner * cos(angle_difference)) - this->plate_one_one_height/1.2 + this->plate_one_one_lower_height;
-    }
-
-    G4ThreeVector translate_cut_box(-translate_cut_x, 0, translate_cut_z);
+    G4ThreeVector translate_cut_box(translate_cut_x, -translate_cut_z, 0);
     G4RotationMatrix* rotate_cut_box = new G4RotationMatrix;
-    rotate_cut_box->rotateY(this->cutting_box_angle);
-    G4SubtractionSolid* plate_one_one = new G4SubtractionSolid("plate_one_one", plate_one_one_pre_cut, plate_one_one_cut_box,
+    rotate_cut_box->rotateZ(this->top_cutting_box_angle);
+    G4SubtractionSolid* plate_one_temp4 = new G4SubtractionSolid("plate_one_temp4", plate_one_temp3, plate_one_angle_cut_box,
     rotate_cut_box, translate_cut_box);
 
-    //Build layer one Plate Two
-    G4Box* plate_one_two = new G4Box("plate_one_two", this->plate_one_two_length/2., (this->plate_one_two_thickness + this->plate_one_one_thickness/2.), this->plate_one_two_height/2.);
-    
-    //Combine layer one Plates
-    G4ThreeVector translate_plate_one_two(this->plate_one_one_length/2. - this->plate_one_two_length/2., 0, 0);
 
 
-	if(this->no_magnet_layer == 1){
-    G4UnionSolid* fullmagnet1 = new G4UnionSolid("fullmagnet1", plate_one_one, plate_one_two, 0, translate_plate_one_two);
+    // ( Bottom Cut box is rotated and moved, exact movement calculated below )
+    G4double angle_to_corner_bottom = atan(this->plate_one_length/this->plate_one_height);
+    G4double hypotenuse_to_corner_bottom = sqrt(pow(this->plate_one_height/2., 2) + pow(this->plate_one_length/2., 2));
+    G4double angle_difference_bottom, translate_cut_x_bottom, translate_cut_z_bottom;
 
-    //Logical Volume
-    G4Material* magnet_material = G4Material::GetMaterial(this->magnet_material);
-    magnet_log = new G4LogicalVolume(fullmagnet1, magnet_material, "magnet_log", 0, 0, 0);
-    magnet_log->SetVisAttributes(vis_att);}
+	if (angle_to_corner < this->bottom_cutting_box_angle)
+	{
+		angle_difference_bottom = this->bottom_cutting_box_angle - angle_to_corner_bottom;
+		translate_cut_x_bottom = -(hypotenuse_to_corner_bottom * sin(angle_difference_bottom)) +(this->chamber_hemisphere_inner_radius - this->plate_one_length) ;
+		translate_cut_z_bottom = -(hypotenuse_to_corner_bottom * cos(angle_difference_bottom))- this->distance_from_target - this->plate_one_height + this->bottom_cutting_box_raising_height;
+																						
+	}
+	else if (angle_to_corner > this->bottom_cutting_box_angle)
+	{
+		angle_difference_bottom = angle_to_corner_bottom - this->bottom_cutting_box_angle;
+		translate_cut_x_bottom = (this->chamber_hemisphere_inner_radius - this->plate_one_length) + (hypotenuse_to_corner_bottom * sin(angle_difference_bottom));
+		translate_cut_z_bottom = -(hypotenuse_to_corner_bottom * cos(angle_difference_bottom)) - this->distance_from_target - this->plate_one_height + this->bottom_cutting_box_raising_height;
+																						
+	}
 
-	else if(this->no_magnet_layer == 2){
-    G4UnionSolid* layer_one_combo = new G4UnionSolid("layer_one_combo", plate_one_one, plate_one_two, 0, translate_plate_one_two);
-
-	//Build layer two
-    G4Box* plate_two_one = new G4Box("plate_two_one", this->plate_two_one_length/2., this->plate_two_one_thickness/2., this->plate_two_one_height/2.);
-    G4Box* plate_two_two = new G4Box("plate_two_two", this->plate_two_two_length/2., (this->plate_two_two_thickness + this->plate_two_one_thickness/2.), this->plate_two_two_height/2.);
-
-	//Combine Layer two
-    G4ThreeVector translate_plate_two_two(this->plate_two_one_length/2. - this->plate_two_two_length/2., 0, 0);
-    G4UnionSolid* layer_two_combo = new G4UnionSolid("layer_two_combo", plate_two_one, plate_two_two, 0, translate_plate_two_two);
-
-    G4ThreeVector translate_layer_two(-((this->plate_one_one_length/2)-(this->plate_two_one_length/2)), 0, -(this->plate_one_one_height-this->plate_two_one_height/4));
-    G4UnionSolid* fullmagnet2 = new G4UnionSolid("fullmagnet2", layer_one_combo, layer_two_combo, 0, translate_layer_two);
-
-    //Logical Volume
-    G4Material* magnet_material = G4Material::GetMaterial(this->magnet_material);
-    magnet_log = new G4LogicalVolume(fullmagnet2, magnet_material, "magnet_log", 0, 0, 0);
-    magnet_log->SetVisAttributes(vis_att);}
+    G4ThreeVector translate_cut_box_bottom(translate_cut_x_bottom, -translate_cut_z_bottom, 0);
+    G4RotationMatrix* rotate_cut_box_bottom = new G4RotationMatrix;
+    rotate_cut_box_bottom->rotateZ(360*deg-this->bottom_cutting_box_angle);
+    G4SubtractionSolid* plate_one = new G4SubtractionSolid("plate_one", plate_one_temp4, plate_one_angle_cut_box,
+    rotate_cut_box_bottom, translate_cut_box_bottom);
 
 
-	else if(this->no_magnet_layer == 3){
-	G4UnionSolid* layer_one_combo = new G4UnionSolid("layer_one_combo", plate_one_one, plate_one_two, 0, translate_plate_one_two);
 
-	//Build layer two
-    G4Box* plate_two_one = new G4Box("plate_two_one", this->plate_two_one_length/2., this->plate_two_one_thickness/2., this->plate_two_one_height/2.);
-    G4Box* plate_two_two = new G4Box("plate_two_two", this->plate_two_two_length/2., (this->plate_two_two_thickness + this->plate_two_one_thickness/2.), this->plate_two_two_height/2.);
+	//Building the paddles primary volume, paddles made with cylinder with same radius as chamber and then cut to size
+	G4double paddle_thickness = (this->plate_two_thickness + this->plate_one_thickness/2.);
 
-	//Combine Layer two
-    G4ThreeVector translate_plate_two_two(this->plate_two_one_length/2. - this->plate_two_two_length/2., 0, 0);
-    G4UnionSolid* layer_two_combo = new G4UnionSolid("layer_two_combo", plate_two_one, plate_two_two, 0, translate_plate_two_two);
+	G4Tubs* plate_two_pre_cut = new G4Tubs("plate_two_pre_cut", 0., this->chamber_hemisphere_inner_radius, paddle_thickness, 0., 90*deg);
+	G4Box* plate_two_cut_box = new G4Box("plate_two_cut_box", this->chamber_hemisphere_inner_radius, this->chamber_hemisphere_inner_radius, paddle_thickness +1);
 
-	//Build layer three
-    G4Box* plate_three_one = new G4Box("plate_three_one", this->plate_three_one_length/2., this->plate_three_one_thickness/2., this->plate_three_one_height/2.);
-    G4Box* plate_three_two = new G4Box("plate_three_two", this->plate_three_two_length/2., (this->plate_three_two_thickness + this->plate_three_one_thickness/2.), this->plate_three_two_height/2.);
+	//Setting the cut translations to make middle plate the correct size
+	G4double translate_cut_x_height_top2 = this->chamber_hemisphere_inner_radius -1 ;
+	G4double translate_cut_z_height_top2 = -(this->chamber_hemisphere_inner_radius) + this->distance_from_target;
+	G4ThreeVector translate_cut_height_top2(translate_cut_x_height_top2, translate_cut_z_height_top2, 0);
 
-	//Combine layer three
-    G4ThreeVector translate_plate_three_two(this->plate_three_one_length/2. - this->plate_three_two_length/2., 0, 0);
-    G4UnionSolid* layer_three_combo = new G4UnionSolid("layer_three_combo", plate_three_one, plate_three_two, 0, translate_plate_three_two);
+	G4double translate_cut_x_height_bottom2 = this->chamber_hemisphere_inner_radius -1 ;
+	G4double translate_cut_z_height_bottom2 = this->chamber_hemisphere_inner_radius + this->distance_from_target + this->plate_two_height;
+	G4ThreeVector translate_cut_height_bottom2(translate_cut_x_height_bottom2, translate_cut_z_height_bottom2, 0);
 
-	
-	//Combine all three layers
-    G4ThreeVector translate_layer_two(-((this->plate_one_one_length/2)-(this->plate_two_one_length/2)), 0, -(this->plate_one_one_height-this->plate_two_one_height/4));
-    G4UnionSolid* layers_two = new G4UnionSolid("layers_two",  layer_one_combo, layer_two_combo, 0, translate_layer_two);
+	G4double translate_cut_x_length2 = -this->chamber_hemisphere_inner_radius + (this->chamber_hemisphere_inner_radius - this->plate_two_length) ;
+	G4double translate_cut_z_length2 = this->chamber_hemisphere_inner_radius - 1 ;
+	G4ThreeVector translate_cut_length2(translate_cut_x_length2, translate_cut_z_length2, 0);
 
-    G4ThreeVector translate_layer_three(-((this->plate_one_one_length/2)-(this->plate_three_one_length/2)), 0, -(this->plate_one_one_height+this->plate_two_one_height/2));
-    G4UnionSolid* fullmagnet3 = new G4UnionSolid("fullmagnet3", layers_two, layer_three_combo, 0,translate_layer_three);
+	//Making the cuts from the magnets
+	G4SubtractionSolid* plate_two_temp1 = new G4SubtractionSolid("plate_two_temp1", plate_two_pre_cut, plate_two_cut_box, 0 , translate_cut_height_top2);
+	G4SubtractionSolid* plate_two_temp2 = new G4SubtractionSolid("plate_two_temp2", plate_two_temp1, plate_two_cut_box, 0 , translate_cut_height_bottom2);
+	G4SubtractionSolid* plate_two = new G4SubtractionSolid("plate_two", plate_two_temp2, plate_two_cut_box, 0 , translate_cut_length2);
+
+	//Combine the plates to make the magnet
+	G4UnionSolid* fullmagnet = new G4UnionSolid("fullmagnet", plate_one, plate_two);
 
 
     //Logical Volume
     G4Material* magnet_material = G4Material::GetMaterial(this->magnet_material);
-    magnet_log = new G4LogicalVolume(fullmagnet3, magnet_material, "magnet_log", 0, 0, 0);
-    magnet_log->SetVisAttributes(vis_att);}
+    magnet_log = new G4LogicalVolume(fullmagnet, magnet_material, "magnet_log", 0, 0, 0);
+    magnet_log->SetVisAttributes(vis_att);
 
 
 } // end:BuildCollectorMagnet()
-
-
-
-//////////////////
-// Magnet Cover //
-/////////////////
-
-
-/*
-void DetectionSystemNew::BuildMagnetCover()
-{
-
-    //Visualisation
-    G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(MAGCOV_COL));
-    vis_att->SetVisibility(true);
-
-    //Build layer one Plate One
-    G4Box* plate_one_one_pre_cut = new G4Box("plate_one_one_pre_cut", this->plate_one_one_length/2.+this->magnet_cover_thickness, this->plate_one_one_thickness/2.+this->magnet_cover_thickness, this->plate_one_one_height/2.+this->magnet_cover_thickness);
-    G4Box* plate_one_one_cut_box = new G4Box("plate_one_one_cut_box", this->plate_one_one_length/2.+this->magnet_cover_thickness, this->plate_one_one_thickness/2. + 1.+this->magnet_cover_thickness, this->plate_one_one_height/2.+this->magnet_cover_thickness);
-    
-    // ( Cut box is rotated and moved, exact movement calculated below )
-    G4double angle_to_corner = atan((this->plate_one_one_length+this->magnet_cover_thickness)/(this->plate_one_one_height+this->magnet_cover_thickness));
-    G4double hypotenuse_to_corner = sqrt(pow(this->plate_one_one_height/2.+this->magnet_cover_thickness, 2) + pow(this->plate_one_one_length/2.+this->magnet_cover_thickness, 2));
-    G4double angle_difference, translate_cut_x, translate_cut_z;
-
-    if (angle_to_corner < this->cutting_box_angle)
-    {
-        angle_difference = this->cutting_box_angle - angle_to_corner;
-        translate_cut_x = (hypotenuse_to_corner * sin(angle_difference)) + this->plate_one_one_length/2.+this->magnet_cover_thickness;
-        translate_cut_z = (hypotenuse_to_corner * cos(angle_difference)) - this->plate_one_one_height/2.-this->magnet_cover_thickness + this->plate_one_one_lower_height;
-    }
-
-    else if (angle_to_corner > this->cutting_box_angle)
-    {
-        angle_difference = angle_to_corner - this->cutting_box_angle;
-        translate_cut_x = this->plate_one_one_length/2.+this->magnet_cover_thickness - (hypotenuse_to_corner * sin(angle_difference));
-        translate_cut_z = (hypotenuse_to_corner * cos(angle_difference)) - this->plate_one_one_height/2.-this->magnet_cover_thickness + this->plate_one_one_lower_height;
-    }
-
-    G4ThreeVector translate_cut_box(-translate_cut_x, 0, translate_cut_z);
-    G4RotationMatrix* rotate_cut_box = new G4RotationMatrix;
-    rotate_cut_box->rotateY(this->cutting_box_angle);
-    G4SubtractionSolid* plate_one_one = new G4SubtractionSolid("plate_one_one", plate_one_one_pre_cut, plate_one_one_cut_box,
-    rotate_cut_box, translate_cut_box);
-
-    //Build layer one Plate Two
-    G4Box* plate_one_two = new G4Box("plate_one_two", this->plate_one_two_length/2.+this->magnet_cover_thickness, (this->plate_one_two_thickness + this->plate_one_one_thickness/2.+this->magnet_cover_thickness), this->plate_one_two_height/2.+this->magnet_cover_thickness);
-    
-    //Combine layer one Plates
-    G4ThreeVector translate_plate_one_two(this->plate_one_one_length/2. - this->plate_one_two_length/2., 0, 0);
-    G4UnionSolid* layer_one_combo = new G4UnionSolid("layer_one_combo", plate_one_one, plate_one_two, 0, translate_plate_one_two);
-
-	//Build layer two
-    G4Box* plate_two_one = new G4Box("plate_two_one", this->plate_two_one_length/2.+this->magnet_cover_thickness, this->plate_two_one_thickness/2.+this->magnet_cover_thickness, this->plate_two_one_height/2.+this->magnet_cover_thickness/2);
-    G4Box* plate_two_two = new G4Box("plate_two_two", this->plate_two_two_length/2.+this->magnet_cover_thickness, (this->plate_two_two_thickness + this->plate_two_one_thickness/2.+this->magnet_cover_thickness), this->plate_two_two_height/2.+this->magnet_cover_thickness/2);
-
-	//Combine Layer two
-    G4ThreeVector translate_plate_two_two(this->plate_two_one_length/2. - this->plate_two_two_length/2., 0, 0);
-    G4UnionSolid* layer_two_combo = new G4UnionSolid("layer_two_combo", plate_two_one, plate_two_two, 0, translate_plate_two_two);
-
-	//Build layer three
-    G4Box* plate_three_one = new G4Box("plate_three_one", this->plate_three_one_length/2.+this->magnet_cover_thickness, this->plate_three_one_thickness/2.+this->magnet_cover_thickness, this->plate_three_one_height/2.+this->magnet_cover_thickness);
-    G4Box* plate_three_two = new G4Box("plate_three_two", this->plate_three_two_length/2.+this->magnet_cover_thickness, (this->plate_three_two_thickness + this->plate_three_one_thickness/2.+this->magnet_cover_thickness), this->plate_three_two_height/2.+this->magnet_cover_thickness);
-
-	//Combine layer three
-    G4ThreeVector translate_plate_three_two(this->plate_three_one_length/2. - this->plate_three_two_length/2., 0, 0);
-    G4UnionSolid* layer_three_combo = new G4UnionSolid("layer_three_combo", plate_three_one, plate_three_two, 0, translate_plate_three_two);
-
-	
-	//Combine all three layers
-    G4ThreeVector translate_layer_two(-((this->plate_one_one_length/2)-(this->plate_two_one_length/2)), 0, -(this->plate_one_one_height-this->plate_two_one_height/4+this->magnet_cover_thickness*2));
-    G4UnionSolid* layers_two = new G4UnionSolid("layers_two", layer_one_combo, layer_two_combo, 0, translate_layer_two);
-
-    G4ThreeVector translate_layer_three(-((this->plate_one_one_length/2)-(this->plate_three_one_length/2)), 0, -(this->plate_one_one_height+this->plate_two_one_height/2));
-    G4UnionSolid* magnetcoversolid = new G4UnionSolid("magnetcoversolid", layers_two,layer_three_combo, 0,translate_layer_three);
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////				RE-BUILD MAGNETS			////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////Asymetric4paddleALNICOmiddleNEOpaddle.txt///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //Build layer one Plate One
-    G4Box* magnet_plate_one_one_pre_cut = new G4Box("magnet_plate_one_one_pre_cut", this->plate_one_one_length/2., this->plate_one_one_thickness/2., this->plate_one_one_height/2.);
-    G4Box* magnet_plate_one_one_cut_box = new G4Box("magnet_plate_one_one_cut_box", this->plate_one_one_length/2., this->plate_one_one_thickness/2. + 1., this->plate_one_one_height/2.);
-    
-    // ( Cut box is rotated and moved, exact movement calculated below )
-    G4double magnet_angle_to_corner = atan(this->plate_one_one_length/this->plate_one_one_height);
-    G4double magnet_hypotenuse_to_corner = sqrt(pow(this->plate_one_one_height/2., 2) + pow(this->plate_one_one_length/2., 2));
-    G4double magnet_angle_difference, magnet_translate_cut_x, magnet_translate_cut_z;
-
-    if (magnet_angle_to_corner < this->cutting_box_angle)
-    {
-        magnet_angle_difference = this->cutting_box_angle - angle_to_corner;
-        magnet_translate_cut_x = (magnet_hypotenuse_to_corner * sin(magnet_angle_difference)) + this->plate_one_one_length/2.;
-        magnet_translate_cut_z = (magnet_hypotenuse_to_corner * cos(magnet_angle_difference)) - this->plate_one_one_height/2. + this->plate_one_one_lower_height;
-    }
-
-    else if (magnet_angle_to_corner > this->cutting_box_angle)
-    {
-        magnet_angle_difference = magnet_angle_to_corner - this->cutting_box_angle;
-        magnet_translate_cut_x = this->plate_one_one_length/2. - (magnet_hypotenuse_to_corner * sin(magnet_angle_difference));
-        magnet_translate_cut_z = (magnet_hypotenuse_to_corner * cos(magnet_angle_difference)) - this->plate_one_one_height/2. + this->plate_one_one_lower_height;
-    }
-
-    G4ThreeVector magnet_translate_cut_box(-magnet_translate_cut_x, 0, magnet_translate_cut_z);
-    G4RotationMatrix* magnet_rotate_cut_box = new G4RotationMatrix;T
-    magnet_rotate_cut_box->rotateY(this->cutting_box_angle);
-    G4SubtractionSolid* magnet_plate_one_one = new G4SubtractionSolid("magnet_plate_one_one", magnet_plate_one_one_pre_cut, magnet_plate_one_one_cut_box,
-    magnet_rotate_cut_box, magnet_translate_cut_box);
-
-    //Build layer one Plate Two
-    G4Box* magnet_plate_one_two = new G4Box("magnet_plate_one_two", this->plate_one_two_length/2., (this->plate_one_two_thickness + this->plate_one_one_thickness/2.), this->plate_one_two_height/2.);
-    
-    //Combine layer one Plates
-    G4ThreeVector magnet_translate_plate_one_two(this->plate_one_one_length/2. - this->plate_one_two_length/2., 0, 0);
-    G4UnionSolid* magnet_layer_one_combo = new G4UnionSolid("magnet_layer_one_combo", magnet_plate_one_one, magnet_plate_one_two, 0, magnet_translate_plate_one_two);
-
-	//Build layer two
-    G4Box* magnet_plate_two_one = new G4Box("magnet_plate_two_one", this->plate_two_one_length/2., this->plate_two_one_thickness/2., this->plate_two_one_height/2.);
-    G4Box* magnet_plate_two_two = new G4Box("magnet_plate_two_two", this->plate_two_two_length/2., (this->plate_two_two_thickness + this->plate_two_one_thickness/2.), this->plate_two_two_height/2.);
-
-	//Combine Layer two
-    G4ThreeVector magnet_translate_plate_two_two(this->plate_two_one_length/2. - this->plate_two_two_length/2., 0, 0);
-    G4UnionSolid* magnet_layer_two_combo = new G4UnionSolid("magnet_layer_two_combo", magnet_plate_two_one, magnet_plate_two_two, 0, translate_plate_two_two);
-
-	//Build layer three
-    G4Box* magnet_plate_three_one = new G4Box("magnet_plate_three_one", this->plate_three_one_length/2., this->plate_three_one_thickness/2., this->plate_three_one_height/2.);
-    G4Box* magnet_plate_three_two = new G4Box("magnet_plate_three_two", this->plate_three_two_length/2., (this->plate_three_two_thickness + this->plate_three_one_thickness/2.), this->plate_three_two_height/2.);
-
-	//Combine layer three
-    G4ThreeVector magnet_translate_plate_three_two(this->plate_three_one_length/2. - this->plate_three_two_length/2., 0, 0);
-    G4UnionSolid* magnet_layer_three_combo = new G4UnionSolid("magnet_layer_three_combo", magnet_plate_three_one, magnet_plate_three_two, 0, translate_plate_three_two);
-
-	
-	//Combine all three layers
-    G4ThreeVector magnet_translate_layer_two(-((this->plate_one_one_length/2)-(this->plate_two_one_length/2)), 0, -(this->plate_one_one_height-this->plate_two_one_height/4));
-    G4UnionSolid* magnet_layers_two = new G4UnionSolid("magnet_layers_two", magnet_layer_one_combo, magnet_layer_two_combo, 0, magnet_translate_layer_two);
-
-    G4ThreeVector magnet_translate_layer_three(-((this->plate_one_one_length/2)-(this->plate_three_one_length/2)), 0, -(this->plate_one_one_height+this->plate_two_one_height/2));
-    G4UnionSolid* fullmagnet = new G4UnionSolid("fullmagnet", magnet_layers_two,magnet_layer_three_combo, 0,magnet_translate_layer_three);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	G4ThreeVector movemagnets(this->magnet_cover_thickness,this->magnet_cover_thickness,this->magnet_cover_thickness);
-	G4SubtractionSolid* fullmagnetcover = new G4SubtractionSolid("fullmagnetcover", magnetcoversolid,fullmagnet,0,movemagnets);
-
-
-    //Logical Volume
-    G4Material* magnet_cover_material = G4Material::GetMaterial(this->magnet_cover_material);
-    magnet_cover_log = new G4LogicalVolume(layers_two, magnet_cover_material, "magnet_cover_log", 0, 0, 0);
-    magnet_cover_log->SetVisAttributes(vis_att);
-
-
-} // end:BuildCollectorMagnetCover()
-*/
-
-
-
-
-
-
 
 
 
@@ -621,10 +463,10 @@ void DetectionSystemNew::BuildPhotonShield()
 
 
 	//Defining the angle made with the z plane from target edge to detector edge
-	G4double phi = atan(((detector_full_width / 2)- cut_outer_radius)/detector_target_distance);
+	G4double phi = atan((detector_full_width - cut_outer_radius/2)/detector_target_distance);
 
 	//Defining the First layer x-y plane dimensions using Phi (Uses trig to add on extra length due to small right angle triangle in trapezium)
-	G4double layer_one_face_xy_dimension = (cut_outer_radius + (2 * (tan(phi)*target_distance)))/2;
+	G4double layer_one_face_xy_dimension = (cut_outer_radius/2 + (tan(phi)*target_distance));
 	G4double layer_one_base_xy_dimension = (layer_one_face_xy_dimension +  (tan(phi)*layer_one_thickness));
 
 	//Defining the Second layer x-y plane dimensions using Phi (Uses trig to add on extra length due to small right angle triangle in trapezium)
@@ -727,31 +569,31 @@ void DetectionSystemNew::PlaceChamber()
 void DetectionSystemNew::PlacePhotonShield()
 {
 
-    G4double z_position_layer_one = -this->photon_shield_target_distance;
+    G4double z_position_layer_one = -(this->photon_shield_target_distance+this->photon_shield_layer_one_thickness/2) ;
     G4ThreeVector move1(0,0,z_position_layer_one);
 	G4RotationMatrix* rotate1= new G4RotationMatrix;	
 	if(this->detector_alignment == 1){
-	rotate1->rotateZ(0.*deg);}
+	rotate1->rotateZ(this->photon_shield_rotation);}
 	else{
-	rotate1->rotateZ(35.*deg);}
+	rotate1->rotateZ(this->photon_shield_rotation);}
     photon_shield_layer_one_phys = new G4PVPlacement(rotate1,move1,photon_shield_layer_one_log, "photon_shield_layer_one",expHallLog, false,0);
 
-    G4double z_position_layer_two = -(this->photon_shield_target_distance+this->photon_shield_layer_one_thickness/2+(this->photon_shield_layer_two_thickness/2));
+    G4double z_position_layer_two = -(this->photon_shield_target_distance+this->photon_shield_layer_one_thickness+(this->photon_shield_layer_two_thickness/2));
     G4ThreeVector move2(0,0,z_position_layer_two);
 	G4RotationMatrix* rotate2= new G4RotationMatrix;
 	if(this->detector_alignment == 1){
-	rotate2->rotateZ(0.*deg);}
+	rotate2->rotateZ(this->photon_shield_rotation);}
 	else{
-	rotate2->rotateZ(35.*deg);}
+	rotate2->rotateZ(this->photon_shield_rotation);}
     photon_shield_layer_two_phys = new G4PVPlacement(rotate2,move2,photon_shield_layer_two_log, "photon_shield_layer_two",expHallLog, false,0);
 
-    G4double z_position_layer_three = -(this->photon_shield_target_distance+this->photon_shield_layer_one_thickness/2+this->photon_shield_layer_two_thickness+(this->photon_shield_layer_three_thickness/2));
+    G4double z_position_layer_three = -(this->photon_shield_target_distance+this->photon_shield_layer_one_thickness+this->photon_shield_layer_two_thickness+(this->photon_shield_layer_three_thickness/2));
     G4ThreeVector move3(0,0,z_position_layer_three);
 	G4RotationMatrix* rotate3= new G4RotationMatrix;
 	if(this->detector_alignment == 1){
-	rotate3->rotateZ(0.*deg);}
+	rotate3->rotateZ(this->photon_shield_rotation);}
 	else{
-	rotate3->rotateZ(35.*deg);}
+	rotate3->rotateZ(this->photon_shield_rotation);}
     photon_shield_layer_three_phys = new G4PVPlacement(rotate3,move3,photon_shield_layer_three_log, "photon_shield_layer_three",expHallLog, false,0);
 
 
@@ -765,20 +607,19 @@ void DetectionSystemNew::PlacePhotonShield()
 void DetectionSystemNew::PlaceMagnet(G4int copyID)
 {
 
-  // ** Position Co-ordinates
-  G4double magnetPosX = this->plate_one_edge_x + this->plate_one_one_length/2./*+this->magnet_cover_thickness;*/;
-  G4double magnetPosZ = -(this->distance_from_target + this->plate_one_one_height/2.); 
+  	// ** Position Co-ordinates
+  	G4double magnetPosX = 0*mm;
+  	G4double magnetPosZ = 0*mm; 
 
-  G4RotationMatrix* rotation;
-  rotation = RotateMagnets(copyID);
-  G4double radial_position = magnetPosX; 
+  	G4RotationMatrix* rotation;
+  	rotation = RotateMagnets(copyID);
+  	G4double radial_position = magnetPosX; 
  
-  G4ThreeVector move = TranslateMagnets(copyID, radial_position, magnetPosZ);
+  	G4ThreeVector move = TranslateMagnets(copyID, radial_position, magnetPosZ);
 
-  // ** Physical Volume
-  magnet_phys = new G4PVPlacement(rotation, move, magnet_log,
-				  "collector_magnet",expHallLog,
-				  false,0);
+  	// ** Physical Volume
+  	magnet_phys = new G4PVPlacement(rotation, move, magnet_log,
+		"collector_magnet",expHallLog,false,0);
 				  
 } // end:PlaceMagnet()
 
@@ -786,27 +627,26 @@ void DetectionSystemNew::PlaceMagnet(G4int copyID)
 /////////////
 // Magnets //
 /////////////
-
+/*
 void DetectionSystemNew::PlaceMagnetCover(G4int copyID)
 {
 
-  // ** Position Co-ordinates
-  G4double magnetPosX = this->plate_one_edge_x + this->plate_one_one_length/2.; /*- this->magnet_cover_thickness;*/
-  G4double magnetPosZ = -(this->distance_from_target + this->plate_one_one_height/2.); 
+  	// ** Position Co-ordinates
+  	G4double magnetPosX = this->plate_one_edge_x + this->plate_one_length/2.; - this->magnet_cover_thickness;
+  	G4double magnetPosZ =(this->distance_from_target + this->plate_one_height/2.); 
 
-  G4RotationMatrix* rotation;
-  rotation = RotateMagnets(copyID);
-  G4double radial_position = magnetPosX; 
+  	G4RotationMatrix* rotation;
+  	rotation = RotateMagnets(copyID);
+  	G4double radial_position = magnetPosX; 
  
-  G4ThreeVector move = TranslateMagnets(copyID, radial_position, magnetPosZ);
+  	G4ThreeVector move = TranslateMagnets(copyID, radial_position, magnetPosZ);
 
-  // ** Physical Volume
-  magnet_cover_phys = new G4PVPlacement(rotation, move, magnet_cover_log,
-				  "collector_magnet_cover",expHallLog,
-				  false,0);
+  	// ** Physical Volume
+  	magnet_cover_phys = new G4PVPlacement(rotation, move, magnet_cover_log,
+				  "collector_magnet_cover",expHallLog, false,0);
 				  
 } // end:PlaceMagnetCover()
-
+*/
 
 
 
@@ -821,7 +661,8 @@ G4RotationMatrix* DetectionSystemNew::RotateMagnets(G4int copyID)
   G4RotationMatrix* rotate = new G4RotationMatrix;
   if(this->NUMBER_OF_MAGNETS == 8) 
 {
-  	rotate->rotateZ(-(copyID+0.5)*45.*deg);
+  	rotate->rotateZ(-(copyID)*45.*deg);
+  	rotate->rotateX(90.*deg);
 	/*if(copyID==0){
   	rotate->rotateZ(350.*deg);}
 	else if(copyID==1){
@@ -853,6 +694,7 @@ if(copyID==0){
 }
   else {
   	rotate->rotateZ(-(copyID+0.5)*90.*deg);
+  	rotate->rotateX(90.*deg);
 	/*if(copyID==0){
   	rotate->rotateZ(330.*deg);}
 	else if(copyID==1){
@@ -872,8 +714,8 @@ G4ThreeVector DetectionSystemNew::TranslateMagnets(G4int copyID, G4double radial
   G4double x_position(0);
   G4double y_position(0);
   if(this->NUMBER_OF_MAGNETS ==8){
-    x_position = radial_position*cos((copyID+0.5)*45.*deg);
-    y_position = radial_position*sin((copyID+0.5)*45.*deg);
+    x_position = radial_position*cos((copyID)*45.*deg);
+    y_position = radial_position*sin((copyID)*45.*deg);
 	/* if(copyID==0){
 	x_position = radial_position*cos(10.*deg);
     y_position = radial_position*sin(10.*deg);}
