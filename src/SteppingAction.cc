@@ -81,30 +81,23 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 
   G4int particleType = 0;
-  G4int volNameOver9;
-  G4int evntNb;
-
+  G4int evntNb = 0 ;
   det = 0;
   cry = 0;
-
-  stepNumber++;
 
   // Get volume of the current step
   G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   G4String volname = volume->GetName();
-
-  // Get the process of the current step  (PreStep or Poststep??)
-  //G4String process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
-     
+   
   // collect energy and track length step by step
   // As it's called more than once, get the Track and assign to variable
   G4double edep = aStep->GetTotalEnergyDeposit();
   G4double ekin = aStep->GetPreStepPoint()->GetKineticEnergy();
 
 	G4Track* theTrack = aStep->GetTrack();
-  G4double stepl = 0.;
-  if (theTrack->GetDefinition()->GetPDGCharge() != 0.)
-    stepl = aStep->GetStepLength();
+	G4double stepl = 0.;
+	if (theTrack->GetDefinition()->GetPDGCharge() != 0.)
+		stepl = aStep->GetStepLength();
 
   // Track particle type in EVERY step
   //G4cout << "Particle name = " << aStep->GetTrack()->GetParticleDefinition()->GetParticleName() << G4endl;
@@ -117,45 +110,129 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   eventaction->AddParticleType(particleType);
   evntNb =  eventaction->GetEventNumber();
-  //G4cout << "Found Edep = " << edep/keV << " keV in " << volname << G4endl;
-  // example volname
-  //volname = av_1_impr_6_sodium_iodide_crystal_block_log_pv_0
-  
-  // Get initial momentum direction & energy of particle
-  G4int trackID = theTrack->GetTrackID();
-  G4int parentID = theTrack->GetParentID();
-  
-  // The vertex corresponds to where the particle has been created anywhere in the chamber
-  //G4double initialDirectionX = theTrack->GetVertexMomentumDirection().getX();
-  //G4double initialDirectionY = theTrack->GetVertexMomentumDirection().getY();
-  //G4double initialDirectionZ = theTrack->GetVertexMomentumDirection().getZ();
-  //G4double initialEnergy = theTrack->GetVertexKineticEnergy();
-	// if (parentID == 0) initialEnergy = theTrack->GetVertexKineticEnergy();
-
-
+   
   // Get the track (extra) information , mainly about the primary particle, but could be used for other stuff
   TrackInformation* info = (TrackInformation*)(aStep->GetTrack()->GetUserInformation()); 
-  //info->Print(); // for inspection
-  // The Origin corresponds to the information about the primary particle (exclusively from the source)
+  //info->SetTagged(false);
+
+
+// ------------- add information to the track info --------------------
+
+// After the very first step
+	if (aStep->GetTrack()->GetCurrentStepNumber()== 1 ){ 
+        
+		if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()==0) { // if out of world 
+			
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {  // if original particle  (this information will be past by to all the descendants)
+				info->SetTagged(true);
+				info->SetOriginalImpactVolume("OOW");// Out Of World
+				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				}
+			else {	// if other particle  (this information will change with every new track)
+				info->SetCurrentImpactVolume("OOW");
+				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				//cin.get() ;
+				}
+			}
+		else {  // if NOT out of world 
+		    // if original particle (this information will be past by to all the descendants)
+			if (aStep->GetTrack()->GetCreatorProcess() == 0 ) {
+				info->SetOriginalImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+				info->SetOriginalImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetOriginalImpactMomentum(aStep->GetTrack()->GetMomentum()) ;
+				}
+			else {// if other particle (this information will change with every new track)
+				info->SetCurrentImpactVolume(aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName());
+				info->SetCurrentImpactPosition(aStep->GetTrack()->GetPosition()) ;  
+				info->SetCurrentImpactMomentum(aStep->GetTrack()->GetMomentum()) ;  
+				}
+			}
+			
+		} 
+
+
+//Tag this particle for any event 
+ info->SetTagged(true); 
+
+// Tag this track if the particle will hit the detector
+// Get volume before and after for each step
+	G4String after = "VolAfter" ;
+	G4String before = "VolBefore" ;
+	if ( aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()!=0) {
+		before = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		after  = aStep->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		}
+	else {
+		before = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetName() ; 
+		after = "OOW" ;	
+		}
+	
+// If the detector is touched get position and momentum (and time?)
+	
+	// Build the selection 
+	G4bool selection = 0 ; 
+	selection +=  (before.contains("SquareDetect") || after.contains("SquareDetect")) && !info->GetTagged(); 
+	selection +=  (before.contains("siDetS3") || after.contains("siDetS3")) && !info->GetTagged() ; 
+ 
+ 
+	if( selection ){  	
+		// Get position and momentum
+		info->SetCurrentPositionAtDetector(aStep->GetTrack()->GetPosition()) ;  
+		info->SetCurrentMomentumAtDetector(aStep->GetTrack()->GetMomentum()) ;
+		//info->SetTagged(true);
+		}
+
+// this is the last step, in case the particle is tagged => add some new info and keep the track 
+	if (aStep->GetTrack()->GetTrackStatus() == 2 && info->GetTagged() ) {
+	
+		// Get position 
+		info->SetCurrentPositionAtDeath(aStep->GetTrack()->GetPosition()) ;  
+		info->SetCurrentMomentumAtDeath(aStep->GetTrack()->GetMomentum()) ;  
+		// Get Pdg 
+		info->SetCurrentPdg(aStep->GetTrack()->GetDefinition()->GetPDGEncoding());
+		// Get Energy and time of the track at vertex 
+		info->SetCurrentEnergyAtVertex(aStep->GetTrack()->GetVertexKineticEnergy());
+		info->SetCurrentTimeAtVertex(aStep->GetTrack()->GetGlobalTime()); // in ns
+		// Get Vertex of the track 
+		info->SetCurrentPositionAtVertex(aStep->GetTrack()->GetVertexPosition());
+		// Get momentum at the vertex 
+		info->SetCurrentMomentumAtVertex(aStep->GetTrack()->GetVertexMomentumDirection());                
+		// Get the creator process
+		if(aStep->GetTrack()->GetCreatorProcess()!=0)
+			info->SetCurrentProcess(aStep->GetTrack()->GetCreatorProcess()->GetProcessName());
+		else
+			info->SetCurrentProcess("source")  ;                     
+		
+		// Keep the track in the record
+		//cout << " <<<<<< Setting info >>>>>> " << endl ; 
+		eventaction->SetPrimaryInfo( info ) ;
+		//cout << " <<<<<< <<<<<< >>>>>> >>>>>> " << endl ; 
+		
+		//clear the parts unrelated to the original particle information, and untag for the new track 
+		info->PartialClear();  // info->SetTagged(false); included 
+		}
+
+
   G4int 	OriginID = info->GetOriginalTrackID() ;  
   G4int 	OriginPdg = info->GetOriginalPdg() ;     
-  G4double 	OriginEnergy = info->GetOriginalEnergy() ;  // Kinetic Energy                                     
+  G4double 	OriginEnergy = info->GetOriginalEnergy() ; // Kinetic Energy                  
   G4ThreeVector OriginMoment = info->GetOriginalMomentum() ;    
-   
+ 
   G4StepPoint* point1 = aStep->GetPreStepPoint();
   G4StepPoint* point2 = aStep->GetPostStepPoint();
 
   G4ThreeVector pos1 = point1->GetPosition();
   G4ThreeVector pos2 = point2->GetPosition();
 
-  G4double time1 = point1->GetGlobalTime();
+  //G4double time1 = point1->GetGlobalTime();
   G4double time2 = point2->GetGlobalTime();
 
-			
-
+  G4int trackID = theTrack->GetTrackID();
+  
   size_t found;
   G4String search;
-  G4int searchLength;
 
   // Grid Cell
   found = volname.find("gridcell");
@@ -241,21 +318,42 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   // Sceptar
   found = volname.find("sceptar_square_scintillator_log");
   if (edep != 0 && found!=G4String::npos) {
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddSceptarSquareCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForSceptarDetector(volname);
+      eventaction->AddSceptarSquareCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "SEP", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
   }
 
   found = volname.find("sceptar_angled_scintillator_log");
   if (edep != 0 && found!=G4String::npos) {
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddSceptarAngledCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForSceptarDetector(volname);
+      eventaction->AddSceptarAngledCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "SEP", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
   }
 
   // Paces
   found = volname.find("paces_silicon_block_log");
   if (edep != 0 && found!=G4String::npos) {   
-      SetDetNumberForGenericDetector(volname);
-      eventaction->AddPacesCrystDet(edep,stepl,det-1);
+      SetDetAndCryNumberForPacesDetector(volname);
+      eventaction->AddPacesCrystDet(edep,stepl,det);
+      eventaction->AddStepTracker(evntNb, stepNumber, "PAC", cry, det, edep, 
+      pos2.x(), pos2.y(), pos2.z(), time2, 
+      OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
+      OriginEnergy, OriginPdg, OriginID, trackID);  
+  }
+
+  // New Paces
+  found = volname.find("SquareDetect");
+  if(edep !=0 && found!=G4String::npos){
+    SetDetAndCryNumberForNewDetector(volname);
+    eventaction->AddNewCrystDet(edep,stepl,det);
+    eventaction->AddStepTracker(evntNb, stepNumber, "NEW", cry, det, edep, 
+    pos2.x(), pos2.y(), pos2.z(), time2, 
+    OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
+    OriginEnergy, OriginPdg, OriginID, trackID);
+
+//cout << edep << endl ; 
+//cin.get() ; 
+
   }
   
   //SPICE  
@@ -263,7 +361,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
       SetDetAndCryNumberForSpiceDetector(volname);
       eventaction->AddSpiceCrystDet(edep,stepl,det);
-      eventaction->AddStepTracker(evntNb, stepNumber, "SPI", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
+      eventaction->AddStepTracker(evntNb, stepNumber, "SPI", cry, det, edep, 
+      pos2.x(), pos2.y(), pos2.z(), time2, 
+      OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
+      OriginEnergy, OriginPdg, OriginID, trackID);
   }
   
   //S3 of SPICE
@@ -271,9 +372,16 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   if (edep != 0 && found!=G4String::npos) {
 	SetDetAndCryNumberForS3Detector(volname);
 	eventaction->AddSpiceCrystDet(edep,stepl,det);
-	eventaction->AddStepTracker(evntNb, stepNumber, "SPE", cry, det, edep, pos2.x(), pos2.y(), pos2.z(), time2, OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), OriginEnergy, OriginPdg, OriginID, trackID);
+	eventaction->AddStepTracker(evntNb, stepNumber, "SPE", cry, det, edep, 
+	pos2.x(), pos2.y(), pos2.z(), time2, 
+	OriginMoment.getX(), OriginMoment.getY(), OriginMoment.getZ(), 
+	OriginEnergy, OriginPdg, OriginID, trackID);
   }
-
+ 
+ 
+   stepNumber++;
+ 
+ 
 }
 
 void SteppingAction::SetDetAndCryNumberForGriffinComponent(G4String volname)
@@ -349,7 +457,6 @@ void SteppingAction::SetDetAndCryNumberForSpiceDetector(G4String volname)
    dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
    det = atoi(dummy.c_str()); // ring 
 
-
     //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cin.get();
@@ -374,6 +481,84 @@ void SteppingAction::SetDetAndCryNumberForS3Detector(G4String volname)
 
     //G4cout << " in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
     //G4cin.get();
+}
+
+
+void SteppingAction::SetDetAndCryNumberForPacesDetector(G4String volname)
+{
+    // the volume name contains five underscrores : av_xxx_impr_SegmentID_siDetSpiceRing_RingID_etc...
+    G4String dummy="";                          
+    size_t UnderScoreIndex[6];
+    size_t old = -1 ;  
+    for (int i = 0 ; i < 6 ; i++ ){
+		UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+		old = UnderScoreIndex[i] ;
+		}
+
+   dummy = volname.substr (UnderScoreIndex[2]+1,UnderScoreIndex[3]-UnderScoreIndex[2]-1); // select the substring between the underscores 
+   cry = atoi(dummy.c_str()) ; // in paces, start counting from 1 
+   
+   dummy = volname.substr (UnderScoreIndex[4]+1,UnderScoreIndex[5]-UnderScoreIndex[4]-1);
+   det = atoi(dummy.c_str()); // ring 
+   
+    //G4cout << " (Stepping action) in " << volname <<  " segment = " << cry << " ring = " << det << G4endl;
+    //G4cin.get();
+}
+
+void SteppingAction::SetDetAndCryNumberForNewDetector(G4String volname)
+{
+    //the volume name contains eight underscores
+    G4String dummy="";
+    size_t UnderScoreIndex[8];
+    size_t old = -1;
+    for (int i=0; i<8 ; i++){
+        UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+        old=UnderScoreIndex[i];
+    	}
+    
+
+// cout << volname << endl ; 
+//cin.get() ; 
+
+    dummy = volname.substr (UnderScoreIndex[7]+1, UnderScoreIndex[8]-UnderScoreIndex[7]-1);
+    cry = atoi(dummy.c_str())  ;
+
+    dummy = volname.substr (UnderScoreIndex[4]+1, UnderScoreIndex[5]-UnderScoreIndex[4]-1);
+    det = atoi(dummy.c_str()) ;
+
+
+// cout << cry << "  " << det  << endl ; 
+//cin.get() ; 
+
+
+}
+
+void SteppingAction::SetDetAndCryNumberForSceptarDetector(G4String volname)
+{
+    //the volume name contains eight underscores
+    G4String dummy="";
+    size_t UnderScoreIndex[9];
+    size_t old = -1;
+    for (int i=0; i<9 ; i++){
+        UnderScoreIndex[i] = volname.find_first_of("_",old+1);
+        old=UnderScoreIndex[i];
+    }
+    
+
+// cout << volname << endl ; 
+//cin.get() ; 
+
+    dummy = volname.substr (UnderScoreIndex[2]+1, UnderScoreIndex[3]-UnderScoreIndex[2]-1);
+    cry = atoi(dummy.c_str())  ;
+
+    dummy = volname.substr (UnderScoreIndex[0]+1, UnderScoreIndex[1]-UnderScoreIndex[0]-1);
+    det = atoi(dummy.c_str()) ;
+
+
+ //cout << cry << "  " << det  << endl ; 
+//cin.get() ; 
+
+
 }
 
 

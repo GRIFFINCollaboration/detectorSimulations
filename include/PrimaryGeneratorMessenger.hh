@@ -70,7 +70,7 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit*     radiusCmd;
     G4UIcmdWithAString*            particleCmd;
     G4UIcommand*                   ionCmd;
-    G4UIcommand*									 rangeCmd;
+    G4UIcommand*				   rangeCmd;
     G4UIcmdWithAString*            betaPlusEmissionCmd;
     G4UIcmdWithAString*            betaMinusEmissionCmd;
     G4UIcmdWithAString*            radioactiveBetaDecayCmd;

@@ -38,7 +38,7 @@ DetectionSystemS3::DetectionSystemS3() :
     //-----------------------------//
     this->S3DetCrystalOuterDiameter = 70.*mm;
     this->S3DetCrystalInnerDiameter = 22.*mm;
-    this->S3DetCrystalThickness = .15*mm;
+    this->S3DetCrystalThickness = 1.0*mm; // .15*mm
     this->S3DetRadialSegments = 24.;
     this->S3DetPhiSegments = 32.;
 
@@ -47,6 +47,17 @@ DetectionSystemS3::DetectionSystemS3() :
     //-----------------------------//
     this->S3DetGuardRingOuterDiameter = 76*mm;
     this->S3DetGuardRingInnerDiameter = 20*mm;
+    
+  // -------------------------
+  // Dimensions of Si-CD Mount
+  // -------------------------
+  this->s3_mount_material = "Peek"; //?
+  this->s3_mount_length = 120*mm;
+  this->s3_mount_thickness = 2.3*mm;
+  this->s3_active_radius = 35*mm;
+  this->s3_mount_chamfer = 28.284*mm;
+  this->s3_mount_centre_to_chamfer = 70.711*mm;
+  
 }
 
 DetectionSystemS3::~DetectionSystemS3()
@@ -54,7 +65,8 @@ DetectionSystemS3::~DetectionSystemS3()
     delete [] siDetS3Ring_log;
     delete S3InnerGuardRing_log;
     delete S3OuterGuardRing_log;
-
+    delete s3_mount_log;
+ 	delete s3_mount_phys;
 }
 
 //---------------------------------------------------------//
@@ -71,23 +83,25 @@ G4int DetectionSystemS3::Build()
 		BuildSiliconWafer(ringID);		// Build Silicon Ring	
 	} // end for(int ringID)
 
-	// Build Guard Rings    
+	// Build Guard Rings and Mounting PCB   
 	BuildInnerGuardRing();
 	BuildOuterGuardRing();
-
+	BuildS3Mount();
+	
   return 1;
 }
 
 //---------------------------------------------------------//
 // "place" function called in DetectorMessenger            //
 // if detector is added                                    //
-//---------------------------------------------------------//
-G4int DetectionSystemS3::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4int ringNumber, G4int Seg, G4int detectorNumber)
+//---------------------------------------------------------//logicWorld, pos, rotate , ring, Seg, detID
+G4int DetectionSystemS3::PlaceDetector(G4LogicalVolume* exp_hall_log, G4ThreeVector move,  G4double angle_offset, G4int ringNumber, G4int Seg, G4int detectorNumber)
 {
-  G4RotationMatrix* rotate = new G4RotationMatrix;
   G4int NumberSeg = (G4int)this->S3DetPhiSegments;
-  G4double angle = (360./NumberSeg)*(Seg-0.5)*deg;
+  G4RotationMatrix* rotate = new G4RotationMatrix;
+  G4double angle = ( (360./NumberSeg)*(Seg-0.5) + angle_offset )*deg  ;
   rotate->rotateZ(angle);
+  
   assemblyS3Ring[ringNumber]->MakeImprint(exp_hall_log, move, rotate, detectorNumber);
 
   return 1;
@@ -218,6 +232,22 @@ G4int DetectionSystemS3::BuildOuterGuardRing()
 }
 
 
+  void DetectionSystemS3::PlaceS3Mount(G4LogicalVolume* exp_hall_log, G4ThreeVector move, G4double angular_offset)
+{
+
+  G4RotationMatrix* rotate = new G4RotationMatrix(angular_offset, 0, 0);  
+  G4double z_offset = this->S3DetCrystalThickness/2.; //this->s3_mount_thickness/2. + this->S3DetCrystalThickness/2. /*+ this->frontDomeOffset (this offset was used historically for visu checking as far as I understood)*/;
+  G4ThreeVector move_offset(0, 0, -z_offset);
+  move = move + move_offset ;
+    
+  s3_mount_phys = new G4PVPlacement(rotate, move, s3_mount_log,
+				    "s3_mount", exp_hall_log, false, 0);
+  
+} // end::PlaceS3Mount()
+
+
+
+
 ///////////////////////////////////////////////////////
 // Build one segment of S3
 // the geometry depends on the distance from the center
@@ -237,4 +267,43 @@ G4Tubs* DetectionSystemS3::BuildCrystal(G4int RingID)
 
   return crystal_block;
 }//end ::BuildCrystal
+
+void DetectionSystemS3::BuildS3Mount() {
+
+  // ** Visualisation
+  G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(PEEK_COL));
+  vis_att->SetVisibility(true);
+
+  // ** Dimensions
+  G4double half_length = this->s3_mount_length/2.;
+  G4double half_thickness = this->s3_mount_thickness/2.;
+  // Chamfer
+  G4double chamfer_half_length = this->s3_mount_chamfer/2.;
+  // Active Area Cut
+  G4double active_radius = this->s3_active_radius;
+  
+  // ** Shapes
+  G4Box* s3mount_box = new G4Box("s3_mount_box", half_length, half_length, half_thickness);
+  G4Box* chamfer_cut = new G4Box("chamber_cut", chamfer_half_length, chamfer_half_length, chamfer_half_length);
+  G4Tubs* active_cut = new G4Tubs("active_cut", 0, active_radius, chamfer_half_length, 0, 360*deg);
+  
+  G4double plane_offset = (this->s3_mount_centre_to_chamfer + chamfer_half_length) / sqrt(2.);
+  G4ThreeVector trans(plane_offset, plane_offset, 0);
+  G4RotationMatrix* rotate = new G4RotationMatrix(45*deg, 0, 0);
+  G4SubtractionSolid* s3_mount0 = new G4SubtractionSolid("s3_mount0", s3mount_box, chamfer_cut, rotate, trans);
+  trans.setX(-plane_offset);
+  G4SubtractionSolid* s3_mount1 = new G4SubtractionSolid("s3_mount1", s3_mount0, chamfer_cut, rotate, trans);
+  trans.setY(-plane_offset);
+  G4SubtractionSolid* s3_mount2 = new G4SubtractionSolid("s3_mount2", s3_mount1, chamfer_cut, rotate, trans);
+  trans.setX(plane_offset);
+  G4SubtractionSolid* s3_mount3 = new G4SubtractionSolid("s3_mount3", s3_mount2, chamfer_cut, rotate, trans);
+  G4SubtractionSolid* s3_mount = new G4SubtractionSolid("s3_mount", s3_mount3, active_cut);
+  
+  // ** Logical
+  G4Material* s3_mount_material = G4Material::GetMaterial(this->s3_mount_material);
+  s3_mount_log = new G4LogicalVolume(s3_mount, s3_mount_material, "s3_mount_log", 0, 0, 0);
+  s3_mount_log->SetVisAttributes(vis_att);
+  
+} // end::BuildS3Mount()
+
 

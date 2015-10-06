@@ -14,7 +14,7 @@ class nonUniformMagneticField
 
 public:
 
-  nonUniformMagneticField(const char* fieldName, double zOffset); // field read from file
+  nonUniformMagneticField(const char* fieldName, double zOffset, double zRotation); // field read from file
   ~nonUniformMagneticField() ;
       
   void SetStepperType( G4int i) { fStepperType = i ; }

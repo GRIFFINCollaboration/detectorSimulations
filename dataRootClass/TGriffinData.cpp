@@ -24,13 +24,13 @@ ClassImp(TGriffinData)
 TGriffinData::TGriffinData()
 {
         // Default constructor
-        Clear();
+        ClearVariables();
 }
 
 TGriffinData::~TGriffinData() {}
 
 
-void TGriffinData::Clear()
+void TGriffinData::ClearVariables()
 {
         fDetNbr.clear();
         fPrimaryEnergy.clear();

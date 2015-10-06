@@ -333,6 +333,20 @@ void HistoManager::book()
         filename  = "paces_crystal_edep_det" + detString;
         MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
     }
+
+	// new detector
+    filename  = "new_crystal_edep";
+    MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
+
+    filename  = "new_crystal_edep_sum";
+    MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
+
+    for (G4int i=0; i < MAXNUMDET; i++) {
+        detString = G4intToG4String(i);
+
+        filename  = "new_crystal_edep_det" + detString;
+        MakeHisto(analysisManager, filename,  title, xmin, xmax, nbins);
+    }
     }
 
   ///////////////////////////////////////////////////////////////////

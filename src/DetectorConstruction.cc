@@ -70,6 +70,8 @@
 #include "DetectionSystemSpice.hh"
 #include "DetectionSystemS3.hh"
 #include "DetectionSystemPaces.hh"
+#include "DetectionSystemNew.hh"
+#include "NewSquareDetector.hh"
 #include "DetectionSystemSodiumIodide.hh"
 #include "DetectionSystemLanthanumBromide.hh"
 #include "ApparatusGenericTarget.hh"
@@ -242,9 +244,9 @@ void DetectorConstruction::SetWorldMagneticField( G4ThreeVector vec )
     //expHallMagField->SetFieldValue(G4ThreeVector(vec.x(),vec.y(),vec.z()));
 }
 
-void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName)
+void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName, G4double z_offset, G4double z_rotation)
 {
-  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,0);
+  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,z_offset,z_rotation);
 }
 
 void DetectorConstruction::UpdateGeometry()
@@ -740,7 +742,11 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
   G4int segmentID=0;
   G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,-annularDetectorDistance); 
+
+  pSpice->PlaceDetectorMount(logicWorld,pos);
+  pSpice->PlaceAnnularClamps(logicWorld,pos);   
   pSpice->PlaceGuardRing(logicWorld, pos);
+
   for(int ring = 0; ring<nRings; ring++)
     {
       for(int Seg=0; Seg<NumberSeg; Seg++)
@@ -751,21 +757,23 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
     } // end for(int ring = 0; ring<nRings; ring++)
 }
 
-void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
+void DetectorConstruction::AddDetectionSystemS3(G4int nRings = 24, G4double posX = 0 , G4double posY = 0 , G4int posZ = 21, G4double AngleOffset = 20)
 {
 	DetectionSystemS3* pS3 = new DetectionSystemS3();
 	pS3->Build();
 	
-  G4int NumberSeg = 32; // Segments in Phi
-  G4int detID=0;
-  G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
-  G4ThreeVector pos(0,0,S3DetectorDistance); 
-  pS3->PlaceGuardRing(logicWorld, pos);
+	G4int detID=0;
+	G4int NumberSeg = 32; // Segments in Phi
+	
+	G4ThreeVector pos(posX*mm,posY*mm,posZ*mm); 
+	pS3->PlaceS3Mount(logicWorld, pos, AngleOffset);
+  	pS3->PlaceGuardRing(logicWorld, pos);
+  	
   for(int ring = 0; ring<nRings; ring++)
 	{
 		for(int Seg=0; Seg<NumberSeg; Seg++)
 		{
-			pS3->PlaceDetector(logicWorld, pos, ring, Seg, detID);
+			pS3->PlaceDetector(logicWorld, pos, AngleOffset , ring, Seg, detID);
 			detID++;
 		} // end for(int Seg=0; Seg<NumberSeg; Seg++)
 	} // end for(int ring = 0; ring<nRings; ring++)
@@ -778,3 +786,30 @@ void DetectorConstruction::AddDetectionSystemPaces(G4int ndet)
 	
 	pPaces->PlaceDetector( logicWorld, ndet ) ;
 }
+
+void DetectorConstruction::AddDetectionSystemNew(G4int ndet)
+{
+   //Create Target Chamber
+   DetectionSystemNew* pNew = new DetectionSystemNew();
+   pNew->Build( logicWorld );
+//   pNew->Place( logicWorld) ;
+
+}
+
+void DetectorConstruction::AddNewSquareDetector(G4int nDet)
+{
+  	NewSquareDetector* pNewSquare = new NewSquareDetector();
+	pNewSquare->Build();
+	
+  
+    for(int detector = 1; detector<(nDet+1); detector++)
+    {
+        pNewSquare->PlaceGuardRing(logicWorld, detector);
+
+
+        pNewSquare->PlaceDetector(logicWorld, detector);
+		
+    }
+} //end NewSquareDetector
+
+

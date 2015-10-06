@@ -1,6 +1,6 @@
 #include"TFragment.h"
 
-ClassImp(TFragment);
+ClassImp(TFragment)
 
 TFragment::TFragment()
 {

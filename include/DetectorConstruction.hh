@@ -57,6 +57,7 @@ class DetectionSystemS3;
 class DetectionSystemPaces;
 class DetectionSystemSodiumIodide;
 class DetectionSystemLanthanumBromide;
+class DetectionSystemNew;
 
 class DetectionSystemBox;
 
@@ -77,7 +78,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldDimensions( G4ThreeVector );
     void SetWorldVis( G4bool );
     void SetWorldMagneticField( G4ThreeVector );
-    void SetTabMagneticField(G4String);
+    void SetTabMagneticField(G4String, G4double, G4double);
 
     void SetGenericTargetMaterial( G4String );
     void SetGenericTargetDimensions( G4ThreeVector );
@@ -135,10 +136,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void AddDetectionSystemSceptar(G4int ndet);
     void AddDetectionSystemPaces(G4int ndet);
+
+    void AddDetectionSystemNew(G4int ndet);
+    void AddNewSquareDetector(G4int ndet);
     
     void SetSpiceResolutionVariables(G4double intercept, G4double gain);
     void AddDetectionSystemSpice(G4int nRings);
-    void AddDetectionSystemS3(G4int nRings);
+    void AddDetectionSystemS3(G4int nRings, G4double posX, G4double posY, G4int posZ, G4double AngleOffset);
 
     void UseTIGRESSPositions( G4bool input )                  {useTigressPositions = input;};
   private:

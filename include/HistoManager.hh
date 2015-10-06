@@ -456,7 +456,30 @@ enum HISTONAME
     paces_crystal_edep_det16,
     paces_crystal_edep_det17,
     paces_crystal_edep_det18,
-    paces_crystal_edep_det19
+    paces_crystal_edep_det19,
+    new_crystal_edep,		
+// This is probably the wrong number of detectors for new.
+    new_crystal_edep_sum,
+    new_crystal_edep_det0,
+    new_crystal_edep_det1,
+    new_crystal_edep_det2,
+    new_crystal_edep_det3,
+    new_crystal_edep_det4,
+    new_crystal_edep_det5,
+    new_crystal_edep_det6,
+    new_crystal_edep_det7,
+    new_crystal_edep_det8,
+    new_crystal_edep_det9,
+    new_crystal_edep_det10,
+    new_crystal_edep_det11,
+    new_crystal_edep_det12,
+    new_crystal_edep_det13,
+    new_crystal_edep_det14,
+    new_crystal_edep_det15,
+    new_crystal_edep_det16,
+    new_crystal_edep_det17,
+    new_crystal_edep_det18,
+    new_crystal_edep_det19
 
 };
 

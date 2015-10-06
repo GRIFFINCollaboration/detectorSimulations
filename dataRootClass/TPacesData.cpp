@@ -1,10 +1,8 @@
 /*****************************************************************************
- * Original Author: N. de Sereville  contact address: deserevi@ipno.in2p3.fr *
- * Modified by    : Mhd Moukaddam  contact address: moukaddam@triumf.ca      *
+ * Original Author    : Mhd Moukaddam  contact address: moukaddam@triumf.ca  *
  *---------------------------------------------------------------------------*
  * Decription: This class stores the results of the G4 simulation for the    *
- *             S3 detector. And was adapted from S1 detector Class.        *
- *             in th NPTOOL project                                          *
+ *             PACESdetector. And was adapted from S1 detector Class.        *
  *             This class derives from TObject (ROOT) and its aim is to be   *
  *             stored in the output TTree of the G4 simulation               *
  *---------------------------------------------------------------------------*
@@ -16,30 +14,23 @@
 #include <iostream>
 using namespace std;
 
-#include "TS3Data.h"
+#include "TPacesData.h"
 
 
-ClassImp(TS3Data)
+ClassImp(TPacesData)
 
-TS3Data::TS3Data() {
+TPacesData::TPacesData() {
    ClearVariables();
 }
 
-TS3Data::~TS3Data() {
+TPacesData::~TPacesData() {
 }
 
 
-void TS3Data::ClearVariables() {
-   // DSSD
-   // (Th,E)
-   fS3_Theta_DetNbr.clear();
-   fS3_Theta_StripNbr.clear();
-   fS3_Theta_Energy.clear();
-
-   // (Ph,E)
-   fS3_Phi_DetNbr.clear();
-   fS3_Phi_StripNbr.clear();
-   fS3_Phi_Energy.clear();
+void TPacesData::ClearVariables() {
+ 
+   fPaces_DetNbr.clear();
+   fPaces_Energy.clear();
 
    fPrimaryTheta.clear(); 
    fPrimaryPhi.clear();  
@@ -51,21 +42,18 @@ void TS3Data::ClearVariables() {
 }
 
 
-void TS3Data::Dump() const
+void TPacesData::Dump() const
 {
-   cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event : " << fEventNumber <<  "XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+   cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event : " << fEventNumber <<  " XXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 
    // DSSD
    // (Th,E)
-   cout << "S3_MultThE = " << fS3_Theta_DetNbr.size() << endl;
-   for (UShort_t i = 0; i < fS3_Theta_DetNbr.size(); i++)
-      cout << "DetThE: " << fS3_Theta_DetNbr[i] << " StripThE: " << fS3_Theta_StripNbr[i] << " EnergyTh: " << fS3_Theta_Energy[i] << endl;
-
-   // (Ph,E)
-   cout << "S3_MultPhE = " << fS3_Phi_DetNbr.size() << endl;
-   for (UShort_t i = 0; i < fS3_Phi_DetNbr.size(); i++)
-      cout << "DetPhE: " << fS3_Phi_DetNbr[i] << " StripPhE: " << fS3_Phi_StripNbr[i] << " EnergyPh: " << fS3_Phi_Energy[i] << endl;
-
+   cout << "Paces_MultE = " << fPaces_DetNbr.size() << endl;
+   for (UShort_t i = 0; i < fPaces_DetNbr.size(); i++)
+      cout << "DetNbr: " << fPaces_DetNbr[i] << endl;
+   for (UShort_t i = 0; i < fPaces_Energy.size(); i++)
+      cout << "Energy: " << fPaces_Energy[i] << endl;
+      
    // First hit
    cout << "Position of First Hit Mult = " << fPositionFirstHit.size() << endl;
    for (UShort_t i = 0; i < fPositionFirstHit.size(); i++)   

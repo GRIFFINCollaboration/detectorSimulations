@@ -39,10 +39,11 @@ class TabulatedMagneticField
   // The physical extent of the defined region
   double dx, dy, dz;
   double fZoffset;
+  double fZrotation;
   bool invertX, invertY, invertZ;
 
 public:
-  TabulatedMagneticField(const char* filename, G4double zOffset );
+  TabulatedMagneticField(const char* filename, G4double zOffset, G4double zRotation  );
   void  GetFieldValue( const  double Point[4],
 		       double *Bfield          ) const;
 };
