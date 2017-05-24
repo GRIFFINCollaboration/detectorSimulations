@@ -33,6 +33,9 @@
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 
+//step length control // mhd 
+#include "G4StepLimiter.hh"
+
 // gamma
 #include "G4PhotoElectricEffect.hh"
 #include "G4LivermorePhotoElectricModel.hh"
@@ -94,7 +97,8 @@
 
 PhysListEmLowEnergy::PhysListEmLowEnergy(const G4String& name)
    :  G4VPhysicsConstructor(name)
-{}
+{       
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -107,16 +111,20 @@ void PhysListEmLowEnergy::ConstructProcess()
 {
   // Add EM Processes from G4EmLivermorePhysics builder
 
+G4cout << " PhysListEmLowEnergy::Construct Process " << G4endl ; 
+
   theParticleIterator->reset();
+   
   while( (*theParticleIterator)() ){
+      
     G4ParticleDefinition* particle = theParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
-
+      
     G4double LivermoreHighEnergyLimit = GeV;
      
     if (particleName == "gamma") {
-     
+      
       G4PhotoElectricEffect* thePhotoElectricEffect = new G4PhotoElectricEffect();
       G4LivermorePhotoElectricModel* theLivermorePhotoElectricModel = 
         new G4LivermorePhotoElectricModel();
@@ -145,7 +153,7 @@ void PhysListEmLowEnergy::ConstructProcess()
       pmanager->AddDiscreteProcess(theRayleigh);
       
     } else if (particleName == "e-") {
-  
+    
       G4eMultipleScattering* msc = new G4eMultipleScattering();
       //msc->AddEmModel(0, new G4UrbanMscModel93());
       msc->AddEmModel(0, new G4GoudsmitSaundersonMscModel());
@@ -168,7 +176,14 @@ void PhysListEmLowEnergy::ConstructProcess()
       theBremLivermore->SetHighEnergyLimit(LivermoreHighEnergyLimit);
       eBrem->AddEmModel(0, theBremLivermore);
       pmanager->AddProcess(eBrem, -1,-3, 3);
-            
+     
+      G4cout << " PhysListEmLowEnergy::Construct Process e- " << G4endl ; 
+        // Add the step limiter [mhd - 07 May 2015]                
+         // This will reduce the maximum step length made by the e-
+         // however it gives warnings and occasional crushes
+       G4StepLimiter* StepLimiter = new G4StepLimiter(); 
+       pmanager->AddDiscreteProcess(StepLimiter);    
+              
     } else if (particleName == "e+") {
 
       // Identical to G4EmStandardPhysics_option3
@@ -186,6 +201,13 @@ void PhysListEmLowEnergy::ConstructProcess()
       pmanager->AddProcess(new G4eBremsstrahlung, -1,-3, 3);      
       pmanager->AddProcess(new G4eplusAnnihilation,0,-1, 4);
 
+     G4cout << " PhysListEmLowEnergy::Construct Process e+ " << G4endl ; 
+        // Add the step limiter [mhd - 07 May 2015]                
+         // This will reduce the maximum step length made by the e+
+         // however it gives warnings and occasional crushes
+       G4StepLimiter* StepLimiter = new G4StepLimiter(); 
+       pmanager->AddDiscreteProcess(StepLimiter);  
+       
       
     } else if( particleName == "mu+" || 
                particleName == "mu-"    ) {
@@ -244,6 +266,9 @@ void PhysListEmLowEnergy::ConstructProcess()
       pmanager->AddProcess(new G4hPairProduction,     -1,-4, 4);
     }
   }
+  
+
+       
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

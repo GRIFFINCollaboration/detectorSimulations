@@ -70,6 +70,8 @@
 #include "DetectionSystemSpice.hh"
 #include "DetectionSystemS3.hh"
 #include "DetectionSystemPaces.hh"
+#include "DetectionSystemNew.hh"
+#include "NewSquareDetector.hh"
 #include "DetectionSystemSodiumIodide.hh"
 #include "DetectionSystemLanthanumBromide.hh"
 #include "ApparatusGenericTarget.hh"
@@ -91,8 +93,11 @@ DetectorConstruction::DetectorConstruction() :
     physiWorld( 0 )
 {
 
-	WorldSizeX  = WorldSizeY = WorldSizeZ = 10.0*m;
-
+  WorldSizeX  = WorldSizeY = WorldSizeZ = 10.0*m;
+  G4GeometryManager::GetInstance()->SetWorldMaximumExtent(WorldSizeX);//specify\
+  the surface tolerance to be relative to the extent of the world volume \
+  This can only be called once!
+	
   box_mat = "G4_WATER";
   box_thickness = 0.0*mm;
   box_inner_dimensions = G4ThreeVector(0.0*mm,0.0*mm,0.0*mm);
@@ -171,12 +176,13 @@ DetectorConstruction::~DetectorConstruction()
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
 
-	// Replaced by ConstructDetectionSystems
+  // Replaced by ConstructDetectionSystems
 	
   // Experimental hall (world volume)
   // search the world material by its name
-  
+ 
   G4GeometryManager::GetInstance()->OpenGeometry();
+
   G4PhysicalVolumeStore::GetInstance()->Clean();
   G4LogicalVolumeStore::GetInstance()->Clean();
   G4SolidStore::GetInstance()->Clean();
@@ -187,7 +193,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4cout << " ----> Material " << matWorldName << " not found, cannot build world! " << G4endl;
     return 0;
   }
-  
+  	
   solidWorld = new G4Box("World", WorldSizeX/2,WorldSizeY/2,WorldSizeZ/2);
   
   logicWorld = new G4LogicalVolume(solidWorld,		//its solid
@@ -201,11 +207,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                     0,                  //its mother  volume
                                     false,              //no boolean operation
                                     0);                 //copy number  
-  
+ 
+  // limit the maximum steplength in the world, 
+  // this is useful to map the magnetic field of the lens
+  // [mhd - 07 May 2015 ]
+  //------------------------
+   G4double maxStep = 10.*mm;
+   fStepLimit = new G4UserLimits(maxStep); 
+   logicWorld->SetUserLimits(fStepLimit);   
+  //------------------------
+        
   // Visualization Attributes
-
   logicWorld->SetVisAttributes (G4VisAttributes::Invisible); // The following block of code works too. 
-  
 //  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
 //  worldVisAtt->SetForceWireframe(true);
 //  worldVisAtt->SetVisibility(this->world_vis);
@@ -228,7 +241,8 @@ void DetectorConstruction::SetWorldDimensions( G4ThreeVector vec )
 	WorldSizeX = vec.x() ;
 	WorldSizeY = vec.y() ; 
 	WorldSizeZ = vec.z() ;
-  UpdateGeometry(); // auto update
+ 
+	UpdateGeometry(); // auto update
 }
 
 void DetectorConstruction::SetWorldVis( G4bool vis )
@@ -242,9 +256,9 @@ void DetectorConstruction::SetWorldMagneticField( G4ThreeVector vec )
     //expHallMagField->SetFieldValue(G4ThreeVector(vec.x(),vec.y(),vec.z()));
 }
 
-void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName)
+void DetectorConstruction::SetTabMagneticField(G4String PathAndTableName, G4double z_offset, G4double z_rotation)
 {
-  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,0);
+  nonUniformMagneticField* tabulatedField = new nonUniformMagneticField(PathAndTableName,z_offset,z_rotation);
 }
 
 void DetectorConstruction::UpdateGeometry()
@@ -740,7 +754,11 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
   G4int segmentID=0;
   G4double annularDetectorDistance = 115*mm /*+ 150*mm*/;
   G4ThreeVector pos(0,0,-annularDetectorDistance); 
+
+  pSpice->PlaceDetectorMount(logicWorld,pos);
+  pSpice->PlaceAnnularClamps(logicWorld,pos);   
   pSpice->PlaceGuardRing(logicWorld, pos);
+
   for(int ring = 0; ring<nRings; ring++)
     {
       for(int Seg=0; Seg<NumberSeg; Seg++)
@@ -751,21 +769,23 @@ void DetectorConstruction::AddDetectionSystemSpice(G4int nRings)
     } // end for(int ring = 0; ring<nRings; ring++)
 }
 
-void DetectorConstruction::AddDetectionSystemS3(G4int nRings)
+void DetectorConstruction::AddDetectionSystemS3(G4int nRings = 24, G4double posX = 0 , G4double posY = 0 , G4int posZ = 21, G4double AngleOffset = 20)
 {
 	DetectionSystemS3* pS3 = new DetectionSystemS3();
 	pS3->Build();
 	
-  G4int NumberSeg = 32; // Segments in Phi
-  G4int detID=0;
-  G4double S3DetectorDistance = 21*mm /*+ 150*mm*/;
-  G4ThreeVector pos(0,0,S3DetectorDistance); 
-  pS3->PlaceGuardRing(logicWorld, pos);
+	G4int detID=0;
+	G4int NumberSeg = 32; // Segments in Phi
+	
+	G4ThreeVector pos(posX*mm,posY*mm,posZ*mm); 
+	pS3->PlaceS3Mount(logicWorld, pos, AngleOffset);
+  	pS3->PlaceGuardRing(logicWorld, pos);
+  	
   for(int ring = 0; ring<nRings; ring++)
 	{
 		for(int Seg=0; Seg<NumberSeg; Seg++)
 		{
-			pS3->PlaceDetector(logicWorld, pos, ring, Seg, detID);
+			pS3->PlaceDetector(logicWorld, pos, AngleOffset , ring, Seg, detID);
 			detID++;
 		} // end for(int Seg=0; Seg<NumberSeg; Seg++)
 	} // end for(int ring = 0; ring<nRings; ring++)
@@ -778,3 +798,30 @@ void DetectorConstruction::AddDetectionSystemPaces(G4int ndet)
 	
 	pPaces->PlaceDetector( logicWorld, ndet ) ;
 }
+
+void DetectorConstruction::AddDetectionSystemNew(G4int ndet)
+{
+   //Create Target Chamber
+   DetectionSystemNew* pNew = new DetectionSystemNew();
+   pNew->Build( logicWorld );
+//   pNew->Place( logicWorld) ;
+
+}
+
+void DetectorConstruction::AddNewSquareDetector(G4int nDet)
+{
+  	NewSquareDetector* pNewSquare = new NewSquareDetector();
+	pNewSquare->Build();
+	
+  
+    for(int detector = 1; detector<(nDet+1); detector++)
+    {
+        pNewSquare->PlaceGuardRing(logicWorld, detector);
+
+
+        pNewSquare->PlaceDetector(logicWorld, detector);
+		
+    }
+} //end NewSquareDetector
+
+

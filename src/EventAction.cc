@@ -73,77 +73,76 @@ EventAction::~EventAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EventAction::BeginOfEventAction(const G4Event* evt)
-{  
-  evtNb = evt->GetEventID();
-  if (evtNb%printModulo == 0) 
-//    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
-    printf( " ---> Ev.# %5d\r", evtNb);
-    G4cout.flush();
-    
-	RootManager::instance()->SetEventNumber(evtNb); 
-    ClearVariables();
+void EventAction::BeginOfEventAction(const G4Event* evt) {
+
+  	//G4cout << " -------------------  \n\n NEW EVENT \n\n -------------------" << evtNb << G4endl ;
+	evtNb = evt->GetEventID();
+	if (evtNb%printModulo == 0) 	printf( " ---> Ev.# %5d\r", evtNb);
+	G4cout.flush();
+	//G4cin.get() ;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::EndOfEventAction(const G4Event*)
-{      
-        G4double eventNumber = 0 ;
-        G4double stepNumber = 0;
-        G4int	 cryNumber  = 0;
-        G4int	 detNumber  = 0;
-        G4double depEnergy  = 0;
-        G4double posx       = 0;
-        G4double posy       = 0;
-        G4double posz       = 0;
-        G4double time       = 0;
-        G4double originDirectionX       = 0;
-        G4double originDirectionY       = 0;
-        G4double originDirectionZ       = 0;
-        G4double originEnergy       	= 0;
-        G4int originPdg       	 		= 0;
-        G4int originID       	 		= 0;
-        G4int trackID       = 0;
-
-        G4String volume     = "";
+{  
+  
+    G4double eventNumber = 0 ;
+    G4double stepNumber = 0;
+    G4int	 cryNumber  = 0;
+    G4int	 detNumber  = 0;
+    G4double depEnergy  = 0;
+    G4double posx       = 0;
+    G4double posy       = 0;
+    G4double posz       = 0;
+    G4double time       = 0;
+    G4double originDirectionX       = 0;
+    G4double originDirectionY       = 0;
+    G4double originDirectionZ       = 0;
+    G4double originEnergy       	= 0;
+    G4int originPdg       	 		= 0;
+    G4int originID       	 		= 0;
+    G4int trackID       = 0;
+    G4String volume     = "";
                         
     for(G4int i = 0; i < MAXSTEPS; i++) {
-    
         if(stepTracker[1][i] != 0 && histoManager->GetStepTrackerBool()) {
-
-        eventNumber = stepTracker[0][i] ;
-        stepNumber = stepTracker[1][i];
-        cryNumber  = stepTracker[2][i];
-        detNumber  = stepTracker[3][i];
-        depEnergy  = stepTracker[4][i];
-        posx       = stepTracker[5][i]/mm;
-        posy       = stepTracker[6][i]/mm;
-        posz       = stepTracker[7][i]/mm;
-        time       = stepTracker[8][i]/second;
-        		// primary particle info
-				originDirectionX 	= stepTracker[9][i];
-				originDirectionY 	= stepTracker[10][i];
-				originDirectionZ 	= stepTracker[11][i];
-				originEnergy 		= stepTracker[12][i];
-				originPdg 			= stepTracker[13][i];
-				originID    		= stepTracker[14][i];
-        trackID    = stepTracker[15][i];
-
-        volume    = stepVolume[i];
-                                  
-        histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
-        RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID /* this should be particle pdg */, depEnergy, posx, posy, posz, originID, originPdg, originEnergy, originDirectionX, originDirectionY, originDirectionZ);
-
-        //RootManager::instance()->FillHist(1000/keV);		//optional
-        }
-		
+		    eventNumber = stepTracker[0][i] ;
+		    stepNumber = stepTracker[1][i];
+		    cryNumber  = stepTracker[2][i];
+		    detNumber  = stepTracker[3][i];
+		    depEnergy  = stepTracker[4][i];
+		    posx       = stepTracker[5][i]/mm;
+		    posy       = stepTracker[6][i]/mm;
+		    posz       = stepTracker[7][i]/mm;
+		    time       = stepTracker[8][i]/second;
+    		// primary particle info
+			originDirectionX 	= stepTracker[9][i];
+			originDirectionY 	= stepTracker[10][i];
+			originDirectionZ 	= stepTracker[11][i];
+			originEnergy 		= stepTracker[12][i];
+			originPdg 			= stepTracker[13][i];
+			originID    		= stepTracker[14][i];
+		    trackID    = stepTracker[15][i];
+		    volume    = stepVolume[i];                   
+		    
+		    histoManager->FillNtuple(eventNumber, stepNumber, cryNumber, detNumber, depEnergy, posx, posy, posz, time ); 
+		    //RootManager::instance()->FillHist(1000/keV);		//optional		    
+		    RootManager::instance()->FillG4Hit(volume, detNumber, cryNumber, trackID , // trackID <- this should be particle pdg 
+												depEnergy, posx, posy, posz, 
+												originID, originPdg, originEnergy, 
+												originDirectionX, originDirectionY, originDirectionZ);
+												
+        }	
     }
     
-    if (depEnergy>0.0) { // if condition satisfied Sort the HitCollection and make a physical event 
-		RootManager::instance()->SortEvent();
+    if (1 /*depEnergy>0.0*/) {     // if condition satisfied Sort the HitCollection and make a physical event
+        RootManager::instance()->ClearVariables();     
+		RootManager::instance()->SetHistory( PrimaryInfo );   
+		RootManager::instance()->SortEvent(evtNb);   
+		//G4cin.get(); 
 		}
-    
+  
   FillParticleType() ; 
   FillGridEkin() ;
   FillGriffinCryst() ;
@@ -157,14 +156,13 @@ void EventAction::EndOfEventAction(const G4Event*)
   FillSpiceCryst() ;
   FillPacesCryst() ; 
   Fill8piCryst() ;
-
+  FillNewCryst() ;
 
   //G4int i =0;
   //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
 
-  //histoManager->FillNtuple(stepTracker[0][i], stepTracker[1][i], stepTracker[2][i], stepTracker[3][i], stepTracker[4][i]/keV, stepTracker[5][i]/mm, stepTracker[6][i]/mm, stepTracker[7][i]/mm, stepTracker[8][i]/second );
+   ClearVariables();
 
-  ClearVariables() ;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -175,12 +173,15 @@ void EventAction::EndOfEventAction(const G4Event*)
 //  //histoManager->FillHisto2D(1, x, y);
 //}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oo/*oOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
 
 void EventAction::ClearVariables()
 {
+
+  PrimaryInfo.clear();
+  
   if(histoManager->GetStepTrackerBool()) {
       stepIndex = 0;
       for (G4int i = 0 ; i < MAXSTEPS; i++) {
@@ -215,6 +216,8 @@ void EventAction::ClearVariables()
       SpiceCrystTrackDet[i]							= 0 ;
       PacesCrystEnergyDet[i]						= 0 ;
       PacesCrystTrackDet[i]							= 0 ;
+      NewCrystTrackDet[i]               			=0 ;
+      NewCrystEnergyDet[i]             				 =0 ;
       
       
   }
@@ -240,6 +243,141 @@ void EventAction::ClearVariables()
   
 }
 
+
+  void EventAction::SetPrimaryInfo(TrackInformation * info ){
+ 
+	/*
+	bool family = false ; 
+	bool daughter = false ;
+	bool copy = false ;
+
+	unsigned iSize = 0; 
+	unsigned nSize = PrimaryInfo.size() ; 
+	*/ 
+	
+	//cout << " =============== Candidate info " << endl ;
+	//cout << " Adress " << info << endl ;
+	//info->Print(); 
+	//cout << " ================================ "  << endl ;
+
+
+	/* cout << " ++++++++++++++++++++ content At the begining : " << nSize << endl ; 
+	 for ( unsigned iSize = 0 ; iSize < nSize ; iSize++) {
+		cout << " Adress " << PrimaryInfo.at(iSize) << endl ;
+		PrimaryInfo.at(iSize)->Print();
+		}
+	 	cin.get(); 
+	 	 	
+	cout << "   original   parent   current  " << endl ;
+	cout << " new  " << info->GetOriginalTrackID() << "  " ;	
+	cout << "      " << info->GetParentTrackID() << "  " ;			
+	cout << "      " << info->GetCurrentTrackID() << endl ;   
+     */
+     
+     /*	  	
+	 for ( iSize = 0 ; iSize < nSize ; iSize++) {
+					
+	  	  
+	  	  //	cout << " old  " << PrimaryInfo.at(iSize)->GetOriginalTrackID() << "  " ;		
+	  	  // 	cout << "      " << PrimaryInfo.at(iSize)->GetParentTrackID() << "  " ;		
+		  //	cout << "      " << PrimaryInfo.at(iSize)->GetCurrentTrackID() << endl ;
+		  	
+		if (PrimaryInfo.at(iSize)->GetOriginalTrackID()==info->GetOriginalTrackID() ) {  //  same family
+	  		//cout << "Same family" << endl ;
+	  		family = true ; 
+			}
+			//else {  		  	cout << "Diff. family" << endl ;}
+	
+		if (family && info->GetParentTrackID() == PrimaryInfo.at(iSize)->GetCurrentTrackID()) {  // daughter contains all the history up to the family tree
+	  		//cout << "Daughter -> Update info " << endl ;
+	  		PrimaryInfo.at(iSize) = new TrackInformation(info) ; // replace this info with the updated one 
+	  		//PrimaryInfo.at(iSize)->Print();
+	  		daughter = true ;
+	  			copy = false ;  
+			break;
+			}
+			//else {  		  	cout << "Not Daughter" << endl ;}
+			
+		if (family && !daughter && info->GetCurrentTrackID() == PrimaryInfo.at(iSize)->GetCurrentTrackID() ) {  // if it's the same information skip!
+		  	//cout << "Same Information" << endl ;
+	  		copy = true ; 
+			break;
+			}
+			//else {  		  	cout << " Not Same Information" << endl ;}
+
+	 	}	
+	 	*/
+ 	 	
+ 	 	//if (nSize>0 && iSize == nSize) cout << " at end of loop iSize : " << iSize << " nSize : "<< nSize<< endl ;
+
+    	//if its a new track add it to the vector 
+  	 	//if (!daughter && !copy)   	 		{
+    		//cout << ">>>>>>>>>>>>>>>>>>>>> Add this info to the vector" << endl ; 
+	  	 	PrimaryInfo.push_back( new TrackInformation(info));
+	  	 	// }
+	  	
+			/*	
+        cout << " ++++++++++++++++++++ content size  : " << PrimaryInfo.size() << endl ; 
+ 	 	 for ( unsigned iSize = 0 ; iSize < PrimaryInfo.size() ; iSize++) {
+			PrimaryInfo.at(iSize)->Print();
+			}
+	  	 	cin.get(); 
+			*/
+
+  }
+
+void EventAction::AddStepTracker(G4double eventNumber, G4double stepNumber, G4String volume, 
+  						G4double cryNumber, G4double detNumber, 
+  						G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time, 
+  						G4double originDirectionX, G4double originDirectionY, G4double originDirectionZ, 
+  						G4double originEnergy, G4int originPdg, G4int originID, G4int trackID) {
+  						
+						 /*cout <<  "eventNumber " << eventNumber << endl  
+						 	 <<  "step Number " << stepNumber  << endl ;
+							 <<  "volume " << volume  << endl  
+						 	 <<  "cryNumber " << cryNumber  << endl 
+						 	 <<  "detNumber " << detNumber  << endl  
+						 	 <<  "depEnergy " << depEnergy  << endl 
+						 	 <<  "posx " << posx  << endl  
+						 	 <<  "posy " << posy  << endl 
+						 	 <<  "posz " << posz  << endl
+						 	 <<  "time " << time  << endl  
+						 	 <<  "originDirectionX " << originDirectionX  << endl 
+						 	 <<  "originDirectionY " << originDirectionY  << endl  
+						 	 <<  "originDirectionZ " << originDirectionZ  << endl 
+						 	 <<  "originEnergy " << originEnergy  << endl 
+						 	 <<  "originPdg " << originPdg  << endl  
+						 	 <<  "originID " << originID  << endl 
+						 	 <<  "trackID " << trackID  << endl ;
+						*/
+					  if(histoManager->GetStepTrackerBool())   {
+						  	stepTracker[0][stepIndex] = eventNumber; 
+						  	stepTracker[1][stepIndex] = stepNumber; 
+						  	stepTracker[2][stepIndex] = cryNumber; 
+						  	stepTracker[3][stepIndex] = detNumber; 
+						  	stepTracker[4][stepIndex] = depEnergy; 
+						  	stepTracker[5][stepIndex] = posx; 
+						  	stepTracker[6][stepIndex] = posy; 
+						  	stepTracker[7][stepIndex] = posz; 
+						  	stepTracker[8][stepIndex] = time; 
+						  	stepTracker[9][stepIndex] = originDirectionX;
+							stepTracker[10][stepIndex] = originDirectionY;
+							stepTracker[11][stepIndex] = originDirectionZ;
+						  	stepTracker[12][stepIndex] = originEnergy;
+						  	stepTracker[13][stepIndex] = originPdg;
+						  	stepTracker[14][stepIndex] = originID;
+						  	stepTracker[15][stepIndex] = trackID;
+      
+						  	stepVolume[stepIndex] = volume ; 
+						  		
+						  	stepIndex++; 
+						  	if(stepIndex == MAXSTEPS) {
+						  		G4cout << "\n ----> error 13423549 \n" << G4endl; 
+						  		exit(1);
+						  		}
+						  }; 
+ 	}
+ 	
 
 void EventAction::FillParticleType()
 {
@@ -468,19 +606,10 @@ void EventAction::FillPacesCryst()
     }     
 }
 
-//void AddStepTracker(G4int eventNumber, G4int stepNumber, G4int cryNumber, G4int detNumber, G4double depEnergy, G4double posx, G4double posy, G4double posz, G4double time)
-//{
-//    stepTracker[0][stepIndex] = (G4double)(eventNumber);
-//    stepTracker[1][stepIndex] = (G4double)(stepNumber);
-//    stepTracker[2][stepIndex] = (G4double)(cryNumber);
-//    stepTracker[3][stepIndex] = (G4double)(detNumber);
-//    stepTracker[4][stepIndex] = depEnergy;
-//    stepTracker[5][stepIndex] = posx;
-//    stepTracker[6][stepIndex] = posy;
-//    stepTracker[7][stepIndex] = posz;
-//    stepTracker[8][stepIndex] = time;
-//    stepIndex++;
-
+void EventAction::FillNewCryst() 
+{
+        
+}
 
 
 //}

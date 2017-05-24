@@ -46,6 +46,8 @@
 #include "G4UIcommand.hh"
 #include "G4UIparameter.hh"
 #include "G4UIcmdWithADouble.hh"
+#include "G4String.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -268,21 +270,39 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
   
   SetSpiceResolutionVariablesCmd = new G4UIcommand("/DetSys/Spice/setResolution",this);
   SetSpiceResolutionVariablesCmd->SetGuidance("Set Resolution of SPICE Detection System");
-  G4UIparameter *parameter1,*parameter2, *parameter3;
-  G4bool omitable;
-  parameter1 = new G4UIparameter ("inter", 'd', omitable = false);
+  G4UIparameter *parameter1,*parameter2;//, *parameter3;
+  parameter1 = new G4UIparameter ("inter", 'd', false);
   SetSpiceResolutionVariablesCmd->SetParameter(parameter1);
-  parameter2 = new G4UIparameter ("gain", 'd', omitable = false);
+  parameter2 = new G4UIparameter ("gain", 'd', false);
   SetSpiceResolutionVariablesCmd->SetParameter(parameter2);
   SetSpiceResolutionVariablesCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
-  AddDetectionSystemS3Cmd = new G4UIcmdWithAnInteger("/DetSys/det/addS3",this);
-  AddDetectionSystemS3Cmd->SetGuidance("Add Detection System S3");
+  AddDetectionSystemS3Cmd = new G4UIcommand("/DetSys/det/addS3",this);
+  AddDetectionSystemS3Cmd->SetGuidance("Add Detection System S3 [Nb of rings, xyz position of the center in mm]");
+  G4UIparameter *S3parameter1,*S3parameter2, *S3parameter3, *S3parameter4, *S3parameter5;
+  S3parameter1 = new G4UIparameter ("rings", 'i', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter1);
+  S3parameter2 = new G4UIparameter ("posX", 'd', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter2);
+  S3parameter3 = new G4UIparameter ("posY", 'd', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter3);
+  S3parameter4 = new G4UIparameter ("posZ", 'd', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter4);
+  S3parameter5 = new G4UIparameter ("AngleOffset", 'd', true);
+  AddDetectionSystemS3Cmd->SetParameter(S3parameter5);
   AddDetectionSystemS3Cmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   AddDetectionSystemPacesCmd = new G4UIcmdWithAnInteger("/DetSys/det/addPaces",this);
   AddDetectionSystemPacesCmd->SetGuidance("Add Detection System Paces");
   AddDetectionSystemPacesCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  AddDetectionSystemNewCmd = new G4UIcmdWithAnInteger("/DetSys/det/addNew",this);
+  AddDetectionSystemNewCmd->SetGuidance("Add Detection System New");
+  AddDetectionSystemNewCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  AddNewSquareDetectorCmd = new G4UIcmdWithAnInteger("/DetSys/det/addSquare",this);
+  AddNewSquareDetectorCmd->SetGuidance("Add New Square Detector");
+  AddNewSquareDetectorCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   UseTIGRESSPositionsCmd = new G4UIcmdWithABool("/DetSys/det/UseTIGRESSPositions",this);
   UseTIGRESSPositionsCmd->SetGuidance("Use TIGRESS detector positions rather than GRIFFIN");
@@ -334,6 +354,8 @@ DetectorMessenger::~DetectorMessenger()
   delete AddDetectionSystemSpiceCmd;
   delete AddDetectionSystemS3Cmd;
   delete AddDetectionSystemPacesCmd;
+  delete AddDetectionSystemNewCmd;
+  delete AddNewSquareDetectorCmd;
   
   delete AddDetectionSystemGriffinForwardCmd;
   delete AddDetectionSystemGriffinForwardDetectorCmd;
@@ -371,7 +393,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     Detector->SetWorldMagneticField(WorldMagneticFieldCmd->GetNew3VectorValue(newValue));
   }
   if( command == WorldTabMagneticFieldCmd ) {
-    Detector->SetTabMagneticField(newValue);
+    G4String path;
+    G4double z_offset, zrotation_offset;
+    const char* s = newValue;
+    std::istringstream is ((char*)s);
+    is>>path>>z_offset>>zrotation_offset;
+    Detector->SetTabMagneticField(path, z_offset, zrotation_offset ); // z in mm, angle in degree  
   }
   if( command == UpdateCmd ) { 
     Detector->UpdateGeometry(); 
@@ -501,14 +528,26 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     Detector->SetSpiceResolutionVariables(inter,gain);
   }
   if( command == AddDetectionSystemS3Cmd ) { 
-    Detector->AddDetectionSystemS3(AddDetectionSystemS3Cmd->GetNewIntValue(newValue)); 
+    G4int rings;
+    G4double x,y,z, angle_offset;
+    const char* s = newValue;
+    std::istringstream is ((char*)s);
+    is>>rings>>x>>y>>z>>angle_offset;
+    Detector->AddDetectionSystemS3(rings,x,y,z,angle_offset); // values in mm  
   }
   if( command == AddDetectionSystemPacesCmd ) {
     Detector->AddDetectionSystemPaces(AddDetectionSystemPacesCmd->GetNewIntValue(newValue));
   }
+  if( command == AddDetectionSystemNewCmd ) {
+    Detector->AddDetectionSystemNew(AddDetectionSystemNewCmd->GetNewIntValue(newValue));
+  }
+  if( command == AddNewSquareDetectorCmd ) {
+    Detector->AddNewSquareDetector(AddNewSquareDetectorCmd->GetNewIntValue(newValue));
+  }
   if( command == UseTIGRESSPositionsCmd ) {
     Detector->UseTIGRESSPositions(UseTIGRESSPositionsCmd->GetNewBoolValue(newValue));
   }
+	
 
 }
 

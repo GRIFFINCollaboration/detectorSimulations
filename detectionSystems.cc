@@ -43,6 +43,11 @@
 #include "HistoManager.hh" 
 #include "RootManager.hh"
 
+#include "G4StepLimiterBuilder.hh" // mhd [06 May 2015],  
+#include "G4GDMLParser.hh" // mhd [12 May 2015], create gdml file  
+#include "G4VPhysicalVolume.hh" // mhd [12 May 2015], create gdml file
+
+
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
@@ -67,6 +72,7 @@ int main(int argc,char** argv)
   // Set mandatory initialization classes
   //
   DetectorConstruction* detector = new DetectorConstruction;
+  
   runManager->SetUserInitialization(detector);
   //
   PhysicsList* physics = new PhysicsList;
@@ -76,7 +82,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(tracking_action); // MHD 19 April 2013
     
   HistoManager*  histo = new HistoManager(); // Included in new system
-    
+
   // Set user action classes
   //
 //  PrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction();
@@ -101,14 +107,13 @@ int main(int argc,char** argv)
   //
   SteppingAction* stepping_action = new SteppingAction(detector, event_action);
   runManager->SetUserAction(stepping_action);
-  
-  
+
   // Initialize G4 kernel
   //
   runManager->Initialize();
   
   // Visualization manager is different but seems to do the same thing. Modify once functionality is complete. 
-  
+  //   
 #ifdef G4VIS_USE
   // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive;
@@ -137,6 +142,11 @@ int main(int argc,char** argv)
 #endif
     }
 
+	// mhd [12 May 2015], create gdml file for visulaisation in ROOT 
+	G4VPhysicalVolume* pWorld = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();
+	G4GDMLParser parser;
+	parser.Write("g4SpiceS3.gdml", pWorld);
+		
   // Job termination
   // Free the store: user actions, physics_list and detector_description are
   //                 owned and deleted by the run manager, so they should not

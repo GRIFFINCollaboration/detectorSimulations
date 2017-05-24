@@ -1,9 +1,10 @@
 #include "TabulatedMagneticField.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4ThreeVector.hh"
 
-TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double zOffset ) 
-  :fZoffset(zOffset),invertX(false),invertY(false),invertZ(false)
+TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double zOffset, G4double zRotation ) 
+  :fZoffset(zOffset),fZrotation(zRotation),invertX(false),invertY(false),invertZ(false)
 {    
  
   double lenUnit= mm;
@@ -22,6 +23,12 @@ TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double z
   char buffer[256];
   file.getline(buffer,256);
   
+  if (!file.is_open()) {
+	  G4cout <<"\n\ncannot open file : " << filename <<"\n\n" ;
+	  G4cin.get();
+	  }
+	  
+
   // Read table dimensions 
   file >> nx >> ny >> nz; // Note dodgy order
 
@@ -75,6 +82,7 @@ TabulatedMagneticField::TabulatedMagneticField( const char* filename, G4double z
   }
   file.close();
 
+
   maxx = xval * lenUnit;
   maxy = yval * lenUnit;
   maxz = zval * lenUnit;
@@ -111,15 +119,33 @@ void TabulatedMagneticField::GetFieldValue(const double point[4],
 				      double *Bfield ) const
 {
 
+ //G4cout << "---> values x,y,z, t (GetFieldValue): " << point[0]/mm << " " << point[1]/mm << " " << point[2]/mm << " " << point[3]/nanosecond << " " << G4endl ; 
+	 
   double x = point[0];
   double y = point[1];
   double z = point[2] + fZoffset;
+  
+  //Rotation treatment Mhd : 25 Mar 2015
+	  /*
+	  x,y,z   ---Rot (angle) --->  x',y',z'
+	  			            		 |
+	  					   			 v
+	 Bx,By,Bz <---Rot (-angle)--- Bx',By',Bz'	 
+	  */
+  
+  // Rotate the position here : Mhd : 25 Mar 2015 
+  	G4ThreeVector R( x,  y,  z); 
+	R.rotateZ(-fZrotation*deg); // rotation made in the opposite direction of the lens
+	x = R.getX();
+	y = R.getY();
+    z = R.getZ();
+         
 
   // Check that the point is within the defined region 
   if ( x>=minx && x<=maxx &&
        y>=miny && y<=maxy && 
        z>=minz && z<=maxz ) {
-    
+        
     // Position of given point within region, normalized to the range
     // [0,1]
     double xfraction = (x - minx) / dx;
@@ -186,11 +212,19 @@ void TabulatedMagneticField::GetFieldValue(const double point[4],
       zField[xindex+1][yindex  ][zindex+1] *    xlocal  * (1-ylocal) *    zlocal  +
       zField[xindex+1][yindex+1][zindex  ] *    xlocal  *    ylocal  * (1-zlocal) +
       zField[xindex+1][yindex+1][zindex+1] *    xlocal  *    ylocal  *    zlocal ;
+      
+      // Rotate the BField here : Mhd : 25 Mar 2015  
+	G4ThreeVector B(Bfield[0],  Bfield[1],  Bfield[2]);
+	B.rotateZ(fZrotation*deg); // rotation made in the same direction of the lens
+	Bfield[0] = B.getX();
+	Bfield[1] = B.getY();
+    Bfield[2] = B.getZ();
 
   } else {
     Bfield[0] = 0.0;
     Bfield[1] = 0.0;
     Bfield[2] = 0.0;
   }
+  
 }
 

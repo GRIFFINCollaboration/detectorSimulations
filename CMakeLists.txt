@@ -6,17 +6,21 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 #----------------------------------------------------------------------------
 # Adding a variable to use root through out the G4 project. 
 #
-set(mytarget    			detectionSystems)  			# equivalent to "name := myexample" in G4 GNUmakefiles
-set(useROOT     			true            ) 		 	# use true or false (or comment to set to false)
-set(myROOTclassDir 			dataRootClass	) 			# directory of the root classes
-set(myROOTclass 			true			)   		# comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
-set(myROOTS3class 			TS3Data.cpp		)   		# comment if none 
-set(myROOTFragmentclass 	TFragment.cpp	) 			# comment if none 
-set(myROOTTigFragmentclass 	TTigFragment.cpp) 			# comment if none  
-set(myROOTSpiceclass 		TSpiceData.cpp	)   		# comment if none  
-set(myROOTGriffclass 		TGriffinData.cpp)  			# comment if none
-#set(myROOTNewclass 		TNewData.cpp) 				# comment if none  
 
+set(mytarget    		detectionSystems)  			# equivalent to "name := myexample" in G4 GNUmakefiles
+set(useROOT     		true            ) 		 	# use true or false (or comment to set to false)
+set(myROOTclassDir 		dataRootClass	) 			# directory of the root classes
+set(myROOTclass 		true			)   		# comment if none (please see http://root.cern.ch/phpBB3//viewtopic.php?t=6172)
+set(myROOTS3class 		TS3Data.cpp		)   		# comment if none
+set(myROOTSpiceclass 	TSpiceData.cpp	)   		# comment if none  
+set(myROOTPacesclass 	TPacesData.cpp	)   		# comment if none 
+set(myROOTNewclass 		    TNewData.cpp)  			    # comment if none 
+set(myROOTSceptarclass 		    TSceptarData.cpp)  			    # comment if none 
+set(myROOTGriffclass 	TGriffinData.cpp )  		# comment if none
+set(myROOTHistoryclass 	THistoryData.cpp	)   		# comment if none  
+set(myROOTFragmentclass 	TFragment.cpp	) 			# comment if none
+set(myROOTTigFragmentclass 	TTigFragment.cpp) 			# comment if none     
+#set(myROOTNewclass 	TNewData.cpp) 				# comment if none  
 
 # http://www.cmake.org/cmake/help/cmake_tutorial.html
 # http://www.cmake.org/cmake/help/cmake2.6docs.html
@@ -57,7 +61,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 #                   
 if(useROOT)
 	if(myROOTclass)
-	
+		
 		if(myROOTFragmentclass)
 		message(" --- compiling Fragment --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictFragment.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTFragmentclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Fragment_linkdef.h )
@@ -67,7 +71,7 @@ if(useROOT)
 		message(" --- compiling TigFragment --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictTigFragment.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTTigFragmentclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/TigFragment_linkdef.h )
 		endif(myROOTTigFragmentclass)
-		
+					
 		if(myROOTS3class)
 		message(" --- compiling S3 --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictS3.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTS3class} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/S3_linkdef.h )
@@ -78,11 +82,33 @@ if(useROOT)
 		EXECUTE_PROCESS(COMMAND rootcint -f dictSpice.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTSpiceclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Spice_linkdef.h )
 		endif(myROOTSpiceclass)
 
+		if(myROOTPacesclass)
+		message(" --- compiling Paces --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictPaces.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTPacesclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Paces_linkdef.h )
+		endif(myROOTPacesclass)
+
+		if(myROOTNewclass)
+		message(" --- compiling New --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictNew.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTNewclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/New_linkdef.h)
+		endif(myROOTNewclass)
+
+		if(myROOTSceptarclass)
+		message(" --- compiling Sceptar --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictSceptar.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTSceptarclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Sceptar_linkdef.h)
+		endif(myROOTSceptarclass)
+		
 		if(myROOTGriffclass)
 		message(" --- compiling Griffin --- ")
 		EXECUTE_PROCESS(COMMAND rootcint -f dictGriffin.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTGriffclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/Griffin_linkdef.h )
 		endif(myROOTGriffclass)
 
+		if(myROOTHistoryclass)
+		message(" --- compiling History --- ")
+		EXECUTE_PROCESS(COMMAND rootcint -f dictHistory.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTHistoryclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/History_linkdef.h )
+		endif(myROOTHistoryclass)
+	
+
+			
 		#if(myROOTNewclass)
 		#message(" --- compiling New --- ")
 		#EXECUTE_PROCESS(COMMAND rootcint -f dictNew.cxx -c ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/${myROOTNewclass} ${PROJECT_SOURCE_DIR}/${myROOTclassDir}/New_linkdef.h)
@@ -175,16 +201,36 @@ if(useROOT)
 		set(myROOTDict ${myROOTDict} dictSpice.cxx)
 		endif(myROOTSpiceclass)
 
+		if(myROOTPacesclass)
+			message(" --- Linking :  dictPaces.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictPaces.cxx)
+		endif(myROOTPacesclass)
+		
 		if(myROOTGriffclass)
 			message(" --- Linking :  dictGriffin.cxx --- ")
 		set(myROOTDict ${myROOTDict} dictGriffin.cxx)
 		endif(myROOTGriffclass)
-				
+
+		if(myROOTHistoryclass)
+			message(" --- Linking :  dictHistory.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictHistory.cxx)
+		endif(myROOTHistoryclass)
+										
+		if(myROOTNewclass)
+		message(" --- Linking :  dictNew.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictNew.cxx)
+		endif(myROOTNewclass)
+
+		if(myROOTSceptarclass)
+		message(" --- Linking :  dictSceptar.cxx --- ")
+		set(myROOTDict ${myROOTDict} dictSceptar.cxx)
+		endif(myROOTSceptarclass)
+
 		#if(myROOTNewclass)
 		#	message(" --- Linking :  dictNew.cxx --- ")
 		#set(myROOTDict ${myROOTDict} dictNew.cxx)
 		#endif(myROOTNewclass)
-		
+				
 		# This will replace the semicolons in a cmake list ";" to spaces " "	 
 		foreach(arg ${myROOTDict})
 			set(myROOTDictSPACED "${myROOTDictSPACED} ${arg}")

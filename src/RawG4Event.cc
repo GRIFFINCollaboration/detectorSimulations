@@ -7,8 +7,7 @@ RawG4Event::~RawG4Event(void){
 }
 			 
 
-void RawG4Event::FillVectors( 
-							int pdg,
+void RawG4Event::FillVectors( int pdg,
 							double Energy, // depositid energy
 							int detector, // detector 
 							int crystal, // crystal 
@@ -24,7 +23,6 @@ void RawG4Event::FillVectors(
 							fHCPosition.push_back(TVector3(Px,Py,Pz)) ;
 							fHCDetector.push_back(detector) ;
 							fHCCrystal.push_back(crystal) ;
-							
 							
 							fHCPrimaryID.push_back(ID) ;
 							fHCPrimaryPdg.push_back(PrimPdg) ;

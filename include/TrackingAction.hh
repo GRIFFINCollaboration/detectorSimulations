@@ -29,13 +29,6 @@ class TrackingAction : public G4UserTrackingAction
 I got this version from another Tip by Makoto Asai
 http://geant4.slac.stanford.edu/Tips/event/5.html
 
-#ifndef T01TrackingAction_h
-#define T01TrackingAction_h 1
-
-class G4Track;
-#include "G4UserTrackingAction.hh"
-#include "globals.hh"
-
 class T01TrackingAction : public G4UserTrackingAction 
 {
   public:

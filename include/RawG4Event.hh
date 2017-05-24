@@ -3,6 +3,7 @@
 
 //Root
 #include "TVector3.h"
+#include "TString.h"
 
 //c++
 #include "vector"
@@ -13,6 +14,7 @@ using namespace std;
 
 //g4              
 #include "globals.hh"             
+
 
 class RawG4Event
 {
@@ -44,7 +46,7 @@ map<double,int> 	fMapPrimaryPhi;
 
 
 /********************************************
-C O N S T R U C T O R -  D E S T R U C T E R 
+C O N S T R U C T O R -  D E S T R U C T O R 
 *********************************************/
  public:
 RawG4Event(void );
@@ -75,6 +77,8 @@ void FillVectors(int pdg, // particle pdg
 				 double PrimEnergy,//original(primary) energy
 				 double Mx, double My, double Mz); // primary particle momentum vector
 
+
+
 /*************************
       G E T T E R S 
 ************************/
@@ -86,6 +90,7 @@ Double_t    GetHCPrimaryEnergy(int i);
 TVector3    GetHCPrimaryMomentum(int i);
 Double_t    GetHCPrimaryTheta(int i);
 Double_t    GetHCPrimaryPhi(int i);
+
 
 // after treatment
 Double_t 	GetFullEnergy(void) ; // full energy in pad
@@ -109,6 +114,7 @@ Int_t    GetPrimaryPdgForID(int ID) ; // for a specific type of particle PDG
 Double_t GetPrimaryEnergyForID(int ID) ; // for a specific type of particle PDG
 Double_t GetDetectedEnergyForID(int ID) ; // full energy in pad for a specific type of particle PDG
 Double_t GetAngleOfEmissionForID(int ID) ; // for a specific type of particle PDG // from the moment
+
 
 /*
 

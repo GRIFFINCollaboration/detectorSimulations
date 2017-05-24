@@ -148,14 +148,14 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double monteCarloRand = UniformRand48();
 
 		// energy distribution
-    for(G4int i = 0 ; i < energyDist.size() ; i++ )
+    for(unsigned i = 0 ; i < energyDist.size() ; i++ )
     {
       if(monteCarloRand <= monteCarlo[i])
       {
         selectedEnergy = energyDist[i]*1.0*keV;
         break;
       }
-    } // end for(G4int i
+    } // end for(unsigned i
     
     energy = selectedEnergy;
     
@@ -204,7 +204,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     myGammaAndICParticle->GenerateParticles(this->outputTimeInSeconds);  // generate gamma and IC partile decay
     //myGammaAndICParticle->PrintAllGeneratedParticles();
     numberOfParticles = myGammaAndICParticle->GetNumberOfGeneratedParticles();
-    for( G4int i = 0 ; i < numberOfParticles ; i++ )  // get the number of particles in decay and loop over them
+    for( unsigned i = 0 ; i < numberOfParticles ; i++ )  // get the number of particles in decay and loop over them
     {
       if(emit_gamma_ic_flag)
       {
@@ -525,12 +525,12 @@ void PrimaryGeneratorAction::SetBetaPlusEmission( G4String file )
     exit (1);
   } 
 
-  for(G4int i = 0 ; i < weightDist.size() ; i++ )
+  for(unsigned i = 0 ; i < weightDist.size() ; i++ )
   {
     sumWeight = sumWeight + weightDist[i];
   }
 
-  for(G4int i = 0 ; i < weightDist.size() ; i++ )
+  for(unsigned i = 0 ; i < weightDist.size() ; i++ )
   {
     percentage = weightDist[i]/sumWeight;
     if(i == 0)
@@ -564,12 +564,12 @@ void PrimaryGeneratorAction::SetBetaMinusEmission( G4String file )
     exit (1);
   } 
 
-  for(G4int i = 0 ; i < weightDist.size() ; i++ )
+  for(unsigned i = 0 ; i < weightDist.size() ; i++ )
   {
     sumWeight = sumWeight + weightDist[i];
   }
 
-  for(G4int i = 0 ; i < weightDist.size() ; i++ )
+  for(unsigned i = 0 ; i < weightDist.size() ; i++ )
   {
     percentage = weightDist[i]/sumWeight;
     if(i == 0)
@@ -1009,18 +1009,18 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
     {
       // sum up the X-ray intensities and Auger intensities
       totalXRayIntensity = 0.;     
-      for(G4int i=0;i<fKXRayIntensity.size();i++)
+      for(unsigned i=0;i<fKXRayIntensity.size();i++)
 	totalXRayIntensity += fKXRayIntensity.at(i);
 	
       totalAugerIntensity = 0.;
-      for(G4int i = 0; i<fAugerIntensity.size(); i++)
+      for(unsigned i = 0; i<fAugerIntensity.size(); i++)
 	totalAugerIntensity += fAugerIntensity.at(i);
       
       // use random number to determine process
       xOrARandom = RandFlat::shoot(0.,100);
       if(totalXRayIntensity >= xOrARandom)
 	{ 	  	  	  
-	  G4int i = 0;
+	  unsigned i = 0;
 	  addedIntensity = fKXRayIntensity.at(0);
 	  while( addedIntensity < xOrARandom )
 	    {
@@ -1041,7 +1041,7 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
 	}
       else if( (totalXRayIntensity+totalAugerIntensity) >= xOrARandom)
 	{
-	  G4int i = 0;
+	  unsigned i = 0;
 	  addedIntensity = totalXRayIntensity+fAugerIntensity.at(0);
 	  while( addedIntensity < xOrARandom )
 	    {
@@ -1071,14 +1071,14 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
     {
       // sum up the X-ray intensities and Auger intensities
       totalXRayIntensity = 0.;      
-      for(G4int i=0;i<fL1XRayIntensity.size();i++)
+      for(unsigned i=0;i<fL1XRayIntensity.size();i++)
 	  totalXRayIntensity += fL1XRayIntensity.at(i);
 
       // use random number to determine process
       xRayRandom = RandFlat::shoot(0.,100);
       if(totalXRayIntensity > xRayRandom)
 	{   	    
-	  G4int i = 0;
+	  unsigned i = 0;
 	  addedIntensity = fL1XRayIntensity.at(0);
 	  while( addedIntensity < xRayRandom )
 	    {
@@ -1106,14 +1106,14 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
     {
       // sum up the X-ray intensities and Auger intensities
       totalXRayIntensity = 0.;      
-      for(G4int i=0;i<fL2XRayIntensity.size();i++)
+      for(unsigned i=0;i<fL2XRayIntensity.size();i++)
 	totalXRayIntensity += fL2XRayIntensity.at(i);
 
       // use random number to determine process
       xRayRandom = RandFlat::shoot(0.,100);
       if(totalXRayIntensity > xRayRandom)
 	{
-	  G4int i = 0;
+	  unsigned i = 0;
 	  addedIntensity = fL2XRayIntensity.at(0);
 	  while( addedIntensity < xRayRandom )
 	    {
@@ -1139,14 +1139,14 @@ void PrimaryGeneratorAction::EmissionForVacantShell(int shell, G4Event* myEvent)
     {
       // sum up the X-ray intensities and Auger intensities
       totalXRayIntensity = 0.;      
-      for(G4int i=0;i<fL3XRayIntensity.size();i++)
+      for(unsigned i=0;i<fL3XRayIntensity.size();i++)
 	totalXRayIntensity += fL3XRayIntensity.at(i);
 
       // use random number to determine process
       xRayRandom = RandFlat::shoot(0.,100);
       if(totalXRayIntensity > xRayRandom)
 	{
-	  G4int i = 0;
+	  unsigned i = 0;
 	  addedIntensity = fL3XRayIntensity.at(0);
 	  while( addedIntensity < xRayRandom )
 	    {

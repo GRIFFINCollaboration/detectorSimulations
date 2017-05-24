@@ -24,10 +24,10 @@
 //
 //  Constructors:
 
-nonUniformMagneticField::nonUniformMagneticField(const char* fieldName, G4double zOffset)
+nonUniformMagneticField::nonUniformMagneticField(const char* fieldName="./", G4double zOffset=0., G4double zRotation=0.)
   :  fChordFinder(0), fStepper(0)
 {
-  fMagneticField = new TabulatedMagneticField(fieldName, zOffset);
+  fMagneticField = new TabulatedMagneticField(fieldName, zOffset, zRotation);
   GetGlobalFieldManager()->CreateChordFinder(fMagneticField);
 
 //  fFieldMessenger = new F03FieldMessenger(this) ;  
@@ -35,7 +35,8 @@ nonUniformMagneticField::nonUniformMagneticField(const char* fieldName, G4double
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
  
   //  fMinStep     = 0.25*mm ; // minimal step of 1 mm is default
-  fMinStep     = 0.001*mm ; // minimal step of 1 mm is default
+  //fMinStep     = 0.001*mm ; // minimal step of 1 mm is default
+  fMinStep     = 5*mm ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
 
   fFieldManager = GetGlobalFieldManager();

@@ -31,10 +31,9 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 
 # Specify Shared libraries
 #-------------------------
-#SHARELIB      = libDetector.so libNewData.so libNew2Data.so
-
-SHARELIB      = libSpiceData.so  libS3Data.so libGriffinData.so\
-				libFragment.so  libTigFragment.so
+#SHARELIB      = libDetector.so libNewData.so libNew2Data.so (example)
+SHARELIB      = libSpiceData.so  libS3Data.so libPacesData.so libGriffinData.so libNewData.so\
+				libHistoryData.so  libFragment.so  libTigFragment.so 
 
 all:            $(SHARELIB)
 
@@ -62,6 +61,35 @@ libGriffinData.so:	TGriffinData.o   TGriffinDataDict.o
 TGriffinDataDict.cpp:	TGriffinData.h
 			rootcint -f $@ -c $^			
 
+# P A C E S
+libPacesData.so:	TPacesData.o   TPacesDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TPacesDataDict.cpp:	TPacesData.h
+			rootcint -f $@ -c $^
+
+# N E W
+libNewData.so: TNewData.o   TNewDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TNewDataDict.cpp: TNewData.h
+		rootcint -f $@ -c $^
+
+# S C E P T A R
+libSceptarData.so: TSceptarData.o   TSceptarDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+TSceptarDataDict.cpp: TSceptarData.h
+		rootcint -f $@ -c $^
+
+# H I S T O R Y
+libHistoryData.so:	THistoryData.o   THistoryDataDict.o
+		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
+
+THistoryDataDict.cpp:	THistoryData.h
+			rootcint -f $@ -c $^
+
+
 # F R A G M E N T 	(G R S I S P O O N) 
 libFragment.so:	TFragment.o   TFragmentDict.o
 		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
@@ -75,7 +103,6 @@ libTigFragment.so:	TTigFragment.o   TTigFragmentDict.o
 
 TTigFragmentDict.cpp:	TTigFragment.h
 			rootcint -f $@ -c $^
-
 
 #libNewData.so:	TNewData.o   TNewDataDict.o
 #		$(LD) $(SOFLAGS) $^ $(OutPutOpt) $@
@@ -98,8 +125,13 @@ distclean:
 
 # Manage dependancies
 #-------------------------
+TSpiceData.o:	TSpiceData.cpp		TSpiceData.h
+TS3Data.o:		TS3Data.cpp			TS3Data.h
+TPacesData.o:	TPacesData.cpp		TPacesData.h
+TNewData.o:         TNewData.cpp        TNewData.h
+TSceptarData.o:         TSceptarData.cpp        TSceptarData.h
+TGriffinData.o:	TGriffinData.cpp	TGriffinData.h
+THistoryData.o:	THistoryData.cpp		THistoryData.h
 TFragment.o:		TFragment.cpp		TFragment.h
 TTigFragment.o:		TTigFragment.cpp	TTigFragment.h
-TSpiceData.o:		TSpiceData.cpp		TSpiceData.h
-TS3Data.o:			TS3Data.cpp			TS3Data.h
-TGriffinData.o:		TGriffinData.cpp	TGriffinData.h
+

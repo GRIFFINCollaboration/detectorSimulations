@@ -9,6 +9,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SubtractionSolid.hh"
+#include "G4UnionSolid.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -29,8 +30,33 @@ DetectionSystemSpice::DetectionSystemSpice() :
     /////////////////////////////////////////////////////////////////////
     // SPICE Physical Properties
     /////////////////////////////////////////////////////////////////////
+	//-----------------------------//
+    // Materials     			   //
+    //-----------------------------//
+    this->wafer_material          = "Silicon";
+  	this->detector_mount_material = "Aluminum"; // CHECK ?
+  	this->annular_clamp_material  = "Peek"; // CHECK ?
+  
+	// ----------------------------
+	// Dimensions of Detector Mount
+	// ----------------------------
+	this->detector_mount_length = 148*mm;
+	this->detector_mount_width = 130*mm;
+	this->detector_mount_thickness = 8*mm;
+	this->detector_mount_inner_radius = 52.8*mm;
+	this->detector_mount_lip_radius = 48.3*mm;
+	this->detector_mount_lip_thickness = 1*mm;
+	this->detector_mount_angular_offset = 0*deg;
+	this->detector_to_target_distance = 115*mm;
+	this->detector_thickness = 6*mm;
 
-    this->wafer_material             = "Silicon";
+	// ---------------------------
+	// Dimensions of Annular Clamp
+	// ---------------------------
+	this->annular_clamp_thickness = 2*mm;
+	this->annular_clamp_length = 19.2*mm;
+	this->annular_clamp_width = 20*mm;
+	this->annular_clamp_plane_offset = 47.8*mm; //from beam line to first edge  
 
     //-----------------------------//
     // parameters for the annular  //
@@ -51,12 +77,17 @@ DetectionSystemSpice::DetectionSystemSpice() :
 }
 
 DetectionSystemSpice::~DetectionSystemSpice()
-{    // LogicalVolumes in ConstructSPICEDetectionSystem
-    delete [] siDetSpiceRing_log;
-
-    delete siInnerGuardRing_log;
-    delete siOuterGuardRing_log;
-
+{   
+	// LogicalVolumes in ConstructSPICEDetectionSystem
+	delete detector_mount_log;
+	delete annular_clamp_log;
+	delete [] siDetSpiceRing_log;
+	delete siInnerGuardRing_log;
+	delete siOuterGuardRing_log;
+	
+	//Physical volumes 
+	delete detector_mount_phys;
+	delete annular_clamp_phys;
 }
 
 //---------------------------------------------------------//
@@ -80,7 +111,10 @@ G4int DetectionSystemSpice::Build()
   
   BuildInnerGuardRing();
   BuildOuterGuardRing();
-
+  BuildDetectorMount();
+  BuildAnnularClamps();
+  
+  
   return 1;
 } // end Build
 
@@ -99,7 +133,7 @@ G4int DetectionSystemSpice::PlaceDetector(G4LogicalVolume* exp_hall_log, G4Three
   rotate->rotateZ(-210*deg-angle); // the axis are inverted, this operation will correct for it  [MHD : 03 April 2014]
   
   assemblySiRing[ringNumber]->MakeImprint(exp_hall_log, move, rotate, SegmentNumber);
-
+ 
   return 1;
 }
 
@@ -111,6 +145,41 @@ G4int DetectionSystemSpice::PlaceGuardRing(G4LogicalVolume* exp_hall_log, G4Thre
 
   return 1;
 }
+
+void DetectionSystemSpice::PlaceDetectorMount(G4LogicalVolume* exp_hall_log, G4ThreeVector move)
+{
+
+	G4double detector_mount_gap = this->detector_mount_thickness 
+	  - this->detector_mount_lip_thickness - this->detector_thickness;
+	 
+	G4double z_offset = - this->detector_mount_thickness/2. + detector_mount_gap ;
+	G4ThreeVector offset(0, 0, z_offset);
+	
+	move = move + offset ; 
+	G4RotationMatrix* rotate = new G4RotationMatrix(this->detector_mount_angular_offset, 0, 0);
+	detector_mount_phys = new G4PVPlacement(rotate, move, detector_mount_log,
+						"detector_mount", exp_hall_log, 
+						false, 0);
+
+} // end::PlaceDetectorMount()
+
+void DetectionSystemSpice::PlaceAnnularClamps(G4LogicalVolume* exp_hall_log, G4ThreeVector move) {
+  
+  G4double z_offset = this->annular_clamp_thickness/2. ;
+  G4double x_offset = (this->annular_clamp_plane_offset
+		       + this->annular_clamp_length/2.) 
+    * cos(this->detector_mount_angular_offset + 45*deg);
+  G4double y_offset = (this->annular_clamp_plane_offset
+		       + this->annular_clamp_length/2.)
+    * sin(this->detector_mount_angular_offset + 45*deg);
+  G4ThreeVector offset(-x_offset, -y_offset, z_offset);
+ 
+  move = move + offset ; 	 
+  G4RotationMatrix* rotate = new G4RotationMatrix(this->detector_mount_angular_offset + 45*deg, 0, 0);
+  annular_clamp_phys = new G4PVPlacement(rotate, move, annular_clamp_log,"annular_clamp", exp_hall_log,
+					 false,0);
+  
+} // end::PlaceAnnularClamps()
 
 //---------------------------------------------------------//
 // build functions for different parts                     //
@@ -154,7 +223,6 @@ G4int DetectionSystemSpice::BuildSiliconWafer(G4int RingID)  // RingID = { 0, 9 
 	}
 	
 	this->assemblySiRing[RingID]->AddPlacedVolume(siDetSpiceRing_log[RingID], move, rotate);
-
 
   return 1;
 }
@@ -230,6 +298,95 @@ G4int DetectionSystemSpice::BuildOuterGuardRing()
 
   return 1;
 }
+
+
+void DetectionSystemSpice::BuildDetectorMount() {
+
+  // ** Visualisation
+  G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(AL_COL));
+  vis_att->SetVisibility(true);
+  
+  // ** Dimensions
+  // Box
+  G4double box_half_width = this->detector_mount_width/2.;
+  G4double box_half_length = this->detector_mount_length/2.;
+  G4double box_half_thickness = this->detector_mount_thickness/2.;
+  // Inner Radius
+  G4double lip_radius = this->detector_mount_lip_radius;
+  //G4double lip_half_thickness = this->detector_mount_lip_thickness/2.;
+  G4double box_cut_radius = this->detector_mount_inner_radius;
+  // Annular Clamp
+  G4double clamp_half_thickness = this->annular_clamp_thickness;
+  G4double clamp_half_width = this->annular_clamp_width/2.;
+  G4double clamp_half_length = this->annular_clamp_length/2.;
+  
+  // ** Shapes
+  G4Box* mount_box = new G4Box("mount_box", box_half_width, box_half_length, box_half_thickness);
+  G4Tubs* inner_radius_cut = new G4Tubs("inner_radius_cut", 0, lip_radius, 2*box_half_thickness, 0, 360*deg);
+  G4Tubs* lip_cut = new G4Tubs("lip_cut", 0, box_cut_radius, box_half_thickness, 0, 360*deg);
+  G4Box* annular_clamp = new G4Box("annular_clamp", clamp_half_width, clamp_half_length, clamp_half_thickness);
+  
+  G4SubtractionSolid* detector_mount_pre = new G4SubtractionSolid("detector_mount_pre", mount_box, inner_radius_cut);
+  G4ThreeVector trans(0, 0, this->detector_mount_lip_thickness);
+  G4SubtractionSolid* detector_mount = new G4SubtractionSolid("detector_mount", detector_mount_pre, lip_cut, 0, trans);
+  
+  G4double plane_offset = (this->annular_clamp_plane_offset + clamp_half_length) / sqrt(2.);
+  G4double z_offset = box_half_thickness;
+  G4ThreeVector move(plane_offset, plane_offset, z_offset);
+  G4RotationMatrix* rotate = new G4RotationMatrix(45*deg, 0, 0);
+  G4SubtractionSolid* detector_mount2 = new G4SubtractionSolid("detector_mount2", detector_mount, annular_clamp, rotate, move);
+  move.setX(-plane_offset);
+  rotate->rotateZ(90*deg);
+  G4SubtractionSolid* detector_mount3 = new G4SubtractionSolid("detector_mount3", detector_mount2, annular_clamp, rotate, move);
+  move.setY(-plane_offset);
+  rotate->rotateZ(90*deg);
+  G4SubtractionSolid* detector_mount4 = new G4SubtractionSolid("detector_mount4", detector_mount3, annular_clamp, rotate, move);
+  move.setX(plane_offset);
+  rotate->rotateZ(90*deg);
+  G4SubtractionSolid* detector_mount5 = new G4SubtractionSolid("detector_mount5", detector_mount4, annular_clamp, rotate, move);
+  
+  // ** Logical
+  G4Material* detector_mount_material = G4Material::GetMaterial(this->detector_mount_material);
+  detector_mount_log = new G4LogicalVolume(detector_mount5, detector_mount_material, "detector_mount_log", 0, 0, 0);
+  detector_mount_log->SetVisAttributes(vis_att);
+  
+    //this->assembly->AddPlacedVolume(detector_mount_log, move, rotate); CHECK!!
+    
+} // end::BuildDetectorMount()
+
+void DetectionSystemSpice::BuildAnnularClamps() {
+
+	// ** Visualisation
+  G4VisAttributes* vis_att = new G4VisAttributes(G4Colour(PEEK_COL));
+  vis_att->SetVisibility(true);
+  
+  // ** Dimensions
+  G4double clamp_half_length = this->annular_clamp_length/2.;
+  G4double clamp_half_width = this->annular_clamp_width/2.;
+  G4double clamp_half_thickness = this->annular_clamp_thickness/2.;
+  // Distance
+  G4double beam_clamp_distance = this->annular_clamp_plane_offset + clamp_half_length;
+  
+  // ** Shapes
+  G4Box* annular_clamp = new G4Box("annular_clamp", clamp_half_width, clamp_half_length, clamp_half_thickness);
+  
+  G4ThreeVector move(2*beam_clamp_distance, 0, 0);
+  G4UnionSolid* double_clamps = new G4UnionSolid("double_clamps", annular_clamp, annular_clamp, 0, move);
+  
+  G4Box* annular_clamp2 = new G4Box("annular_clamp2", clamp_half_length, clamp_half_width, clamp_half_thickness);
+  G4ThreeVector trans(0, 2*beam_clamp_distance, 0);
+  G4UnionSolid* double_clamps2 = new G4UnionSolid("double_clamps2", annular_clamp2, annular_clamp2, 0, trans);
+  
+  G4ThreeVector trans2(beam_clamp_distance, -beam_clamp_distance, 0);
+  G4UnionSolid* four_clamps = new G4UnionSolid("four_clamps", double_clamps, double_clamps2, 0, trans2);
+  
+  // ** Logical
+  G4Material* annular_clamp_material = G4Material::GetMaterial(this->annular_clamp_material);
+  annular_clamp_log = new G4LogicalVolume(four_clamps, annular_clamp_material, "annular_clamp_log", 0, 0, 0);
+  annular_clamp_log->SetVisAttributes(vis_att);
+  
+} // end::BuildAnnularClamps()  
+
 
 ///////////////////////////////////////////////////////
 // Build one segment of Spice, 

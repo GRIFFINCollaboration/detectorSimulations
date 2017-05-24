@@ -33,6 +33,7 @@
 #define PhysicsList_h 1
 
 #include "G4VModularPhysicsList.hh"
+#include "G4StepLimiterBuilder.hh"
 #include "globals.hh"
 #include <vector>
 
@@ -78,6 +79,9 @@ private:
   G4VPhysicsConstructor*  fParticleList;
   G4VPhysicsConstructor*  fHadPhysicsList;
 
+//control the maximum step length, specially during transportation
+  G4StepLimiterBuilder*   fStepLimiterBuilder;// mhd 27 May 2015 
+  
   std::vector<G4VPhysicsConstructor*>  fHadronPhys;
   G4int fNhadcomp;  
 
